@@ -1,5 +1,5 @@
-site_name: DCS 404
-site_description: Artificial Intelligence and Machine Learning
+site_name: Applied ML
+site_description: Applied Machine Learning and AI
 
 nav:
   - Welcome: index.md

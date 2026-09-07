@@ -1,6 +1,6 @@
-# Machine Learning and Artificial Intelligence
+# Applied Machine Learning
 
-**Hi, I’m Aayush, your facilitator for this session. Welcome to DCS 404: Machine Learning and Artificial Intelligence!**
+**Hi, I’m Aayush, your facilitator for this module. Welcome to Applied Machine Learning Module**
 
 
 **Connect With Me**

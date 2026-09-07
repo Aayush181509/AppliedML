@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>ARIMA and SARIMA Models - DCS 404</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "ARIMA and SARIMA Models";
+        var mkdocs_page_input_path = "DCS404/12_arima_models.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> DCS 404
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Welcome</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../InstallationGuide/">Installation Guide</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Machine Learning and AI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../01_introduction_to_machine_learning/">Introduction to Machine Learning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02_ml_workflow/">ML Workflow</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../03_regression/">Regression</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04_gradient_descent/">Gradient Descent</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../05_regularization/">Regularization</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../06_logistic_regression/">Classification & Logistic Regression</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07_decision_trees/">Decision Trees</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../08_evaluation_metrics/">Evaluation Metrics</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../09_knn/">K-Nearest Neighbors</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Time Series Analysis</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../10_time_series_foundations/">Time Series Foundations</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../11_exponential_smoothing/">Exponential Smoothing</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">ARIMA and SARIMA Models</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-work-through-this">How to work through this</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#learning-objectives">Learning objectives</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#1-the-backshift-operator">1. The backshift operator</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-the-strategy">2. The strategy</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-arp-regressing-on-the-past">3. AR(p): regressing on the past</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#simulating-mind-the-sign-convention">Simulating: mind the sign convention</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#the-identification-rule-for-ar">The identification rule for AR</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#recovering-the-parameters">Recovering the parameters</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-maq-regressing-on-past-shocks">4. MA(q): regressing on past shocks</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#the-identification-rule-for-ma">The identification rule for MA</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-armapq-both-at-once">5. ARMA(p,q): both at once</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#the-identification-table-and-its-limit">The identification table — and its limit</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-arimapdq-folding-in-the-differencing">6. ARIMA(p,d,q): folding in the differencing</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-choosing-orders-aic-and-bic">7. Choosing orders: AIC and BIC</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#8-sarima-adding-the-seasons">8. SARIMA: adding the seasons</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#reading-seasonal-orders">Reading seasonal orders</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#9-residual-diagnostics">9. Residual diagnostics</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#the-ljung-box-test">The Ljung-Box test</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#10-forecasting-air-passengers">10. Forecasting Air Passengers</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#11-sarimax-bringing-in-outside-information">11. SARIMAX: bringing in outside information</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#12-your-turn">12. Your turn</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#13-if-you-remember-nothing-else">13. If you remember nothing else</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#14-further-reading-and-glossary">14. Further reading and glossary</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#further-reading">Further reading</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#glossary">Glossary</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Final Project</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../project/00_final_project/">Project Work</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">DCS 404</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Time Series Analysis</li>
+      <li class="breadcrumb-item active">ARIMA and SARIMA Models</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="arima-and-friends-modelling-the-memory-of-a-series">ARIMA and Friends: Modelling the Memory of a Series</h1>
+<p><strong>DCS 404 · Data Science and Machine Learning</strong></p>
+<hr />
+<p>Module 10 taught us to <em>diagnose</em> a time series — decompose it, difference it to stationarity, and read
+its ACF/PACF fingerprint. Module 11 gave us our first real forecasting family, exponential smoothing,
+which builds a forecast out of weighted averages of the recent past.</p>
+<p>This module completes the classical toolkit with the family that has dominated academic time series
+analysis since Box and Jenkins published their methodology in 1970: <strong>ARIMA</strong>. Where exponential smoothing
+describes a series through <em>components</em> (level, trend, season), ARIMA describes it through
+<strong>autocorrelation</strong> — the explicit statement that today's value is a linear function of specific past
+values and specific past shocks.</p>
+<p>The name is an acronym assembled from three ideas we will build one at a time:</p>
+<ul>
+<li><strong>AR</strong> — <em>AutoRegressive</em>: regress the series on <strong>its own past values</strong>.</li>
+<li><strong>I</strong> — <em>Integrated</em>: the differencing from Module 10, folded into the model as a parameter.</li>
+<li><strong>MA</strong> — <em>Moving Average</em>: regress the series on <strong>its own past forecast errors</strong>. (Nothing to do with
+  the rolling means of Module 10 — an unfortunate but universal collision of terminology.)</li>
+</ul>
+<p>Bolt on seasonal versions of all three and you get <strong>SARIMA</strong>; add external predictors and you get
+<strong>SARIMAX</strong>. That single expandable model covers most of what classical forecasting does.</p>
+<p>The Box-Jenkins promise is that model <em>identification</em> is a readable procedure rather than a guess: make
+the series stationary, read the orders off the correlogram, fit, then check that the residuals are white
+noise. By the end of this module we will run that procedure on the Air Passengers series and watch it
+rediscover — from the data alone — the specific model Box and Jenkins made famous with it.</p>
+<h2 id="how-to-work-through-this">How to work through this</h2>
+<p>The usual rhythm: run every code cell (<code>Shift + Enter</code>), study the output, <em>then</em> read the commentary.
+Cells build on each other, so if something errors, run from the top.</p>
+<p>The module is in four acts:</p>
+<ol>
+<li><strong>Sections 1–2</strong> set up the notation (the backshift operator) and the strategy.</li>
+<li><strong>Sections 3–5</strong> build the model from parts on <em>synthetic data where we know the true answer</em>: <strong>AR</strong>,
+   <strong>MA</strong>, then <strong>ARMA</strong>. Simulating series with known parameters is the only honest way to learn
+   identification — on real data you never find out whether you were right.</li>
+<li><strong>Sections 6–8</strong> handle real data: <strong>ARIMA</strong> for trend, order selection by <strong>AIC/BIC</strong>, and <strong>SARIMA</strong>
+   for seasonality.</li>
+<li><strong>Sections 9–11</strong> finish the job: <strong>residual diagnostics</strong> (the step everyone skips), a full
+   end-to-end forecast of Air Passengers scored against every baseline from Modules 10 and 11, and
+   <strong>SARIMAX</strong> for external predictors.</li>
+</ol>
+<blockquote>
+<p><strong>A note on the API.</strong> Much older material — including many textbooks and tutorials still online — uses
+<code>sm.tsa.ARMA</code>, <code>model.plot_predict()</code> and <code>fit(trend='nc', disp=-1)</code>. All of that was <strong>removed</strong> from
+statsmodels. The modern entry points are <code>statsmodels.tsa.arima.model.ARIMA</code> and
+<code>statsmodels.tsa.statespace.sarimax.SARIMAX</code>, which is what we use throughout.</p>
+</blockquote>
+<h2 id="learning-objectives">Learning objectives</h2>
+<p>After completing this module you will be able to:</p>
+<ul>
+<li>Write models compactly with the <strong>backshift operator</strong> <span class="arithmatex">\(B\)</span> and relate <span class="arithmatex">\(\nabla^d\)</span> to <span class="arithmatex">\((1-B)^d\)</span>.</li>
+<li>Define <strong>AR(p)</strong>, <strong>MA(q)</strong>, <strong>ARMA(p,q)</strong>, <strong>ARIMA(p,d,q)</strong> and <strong>SARIMA<span class="arithmatex">\((p,d,q)(P,D,Q)_s\)</span></strong>, and
+  state how each generalises the last.</li>
+<li>Use the <strong>ACF/PACF cut-off rules</strong> to propose candidate orders, and explain why they give only <em>upper
+  bounds</em> for a mixed ARMA process.</li>
+<li>Simulate processes with <code>ArmaProcess</code> (including the <strong>sign convention</strong> that trips everyone up) and
+  recover the true parameters by fitting.</li>
+<li>Select orders with <strong>AIC</strong> and <strong>BIC</strong> via a grid search, and explain the penalty each applies.</li>
+<li>Validate a fitted model with <strong>residual diagnostics</strong> — ACF, histogram, and the <strong>Ljung-Box</strong> test.</li>
+<li>Produce and back-transform a forecast with prediction intervals, and score it against baselines.</li>
+<li>Explain <strong>endogenous vs exogenous</strong> variables and fit a <strong>SARIMAX</strong> model with external regressors.</li>
+</ul>
+<h2 id="setup">Setup</h2>
+<p>Run this once. Libraries, plotting style, the Air Passengers series, and the metric functions from
+Module 10 so we can compare like with like.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">statsmodels.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.tsa.arima_process</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArmaProcess</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.tsa.arima.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">ARIMA</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.tsa.statespace.sarimax</span><span class="w"> </span><span class="kn">import</span> <span class="n">SARIMAX</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.tsa.stattools</span><span class="w"> </span><span class="kn">import</span> <span class="n">adfuller</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.graphics.tsaplots</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_acf</span><span class="p">,</span> <span class="n">plot_pacf</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.stats.diagnostic</span><span class="w"> </span><span class="kn">import</span> <span class="n">acorr_ljungbox</span>
+
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>   <span class="c1"># ML optimisers grumble during grid searches</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+    <span class="s2">&quot;figure.figsize&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+    <span class="s2">&quot;figure.dpi&quot;</span><span class="p">:</span> <span class="mi">110</span><span class="p">,</span>
+    <span class="s2">&quot;axes.grid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">&quot;grid.alpha&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="s2">&quot;axes.spines.top&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;axes.spines.right&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;font.size&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_palette</span><span class="p">(</span><span class="s2">&quot;deep&quot;</span><span class="p">)</span>
+<span class="n">RANDOM_STATE</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">load_csv</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;data/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;notebooks/data/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)]:</span>
+        <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> from: </span><span class="si">{</span><span class="n">candidate</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">air</span> <span class="o">=</span> <span class="n">load_csv</span><span class="p">(</span><span class="s2">&quot;air_passengers.csv&quot;</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Month&quot;</span><span class="p">],</span> <span class="n">index_col</span><span class="o">=</span><span class="s2">&quot;Month&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">asfreq</span><span class="p">(</span><span class="s2">&quot;MS&quot;</span><span class="p">)</span>
+<span class="n">passengers</span> <span class="o">=</span> <span class="n">air</span><span class="p">[</span><span class="s2">&quot;Passengers&quot;</span><span class="p">]</span>
+
+<span class="c1"># The same chronological split as Module 10, so every score is comparable</span>
+<span class="n">TEST_MONTHS</span> <span class="o">=</span> <span class="mi">24</span>
+<span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">passengers</span><span class="p">[:</span><span class="o">-</span><span class="n">TEST_MONTHS</span><span class="p">],</span> <span class="n">passengers</span><span class="p">[</span><span class="o">-</span><span class="n">TEST_MONTHS</span><span class="p">:]</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">mase</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">12</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mean Absolute Scaled Error: MAE relative to in-sample seasonal-naive MAE.&quot;&quot;&quot;</span>
+    <span class="n">naive_mae</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y_train</span><span class="p">[</span><span class="n">m</span><span class="p">:]</span><span class="o">.</span><span class="n">values</span> <span class="o">-</span> <span class="n">y_train</span><span class="p">[:</span><span class="o">-</span><span class="n">m</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y_true</span> <span class="o">-</span> <span class="n">y_pred</span><span class="p">))</span> <span class="o">/</span> <span class="n">naive_mae</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">12</span><span class="p">):</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;MAE&quot;</span><span class="p">:</span>  <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">e</span><span class="p">)),</span>
+        <span class="s2">&quot;RMSE&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">e</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)),</span>
+        <span class="s2">&quot;MAPE&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">e</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_true</span><span class="p">)))</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="s2">&quot;MASE&quot;</span><span class="p">:</span> <span class="n">mase</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_true</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_pred</span><span class="p">),</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">m</span><span class="p">),</span>
+    <span class="p">}</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Train: </span><span class="si">{</span><span class="n">train</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">%b %Y</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">train</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">%b %Y</span><span class="si">}</span><span class="s2">  (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">train</span><span class="p">)</span><span class="si">}</span><span class="s2"> months)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Test:  </span><span class="si">{</span><span class="n">test</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">%b %Y</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">test</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">%b %Y</span><span class="si">}</span><span class="s2">  (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">test</span><span class="p">)</span><span class="si">}</span><span class="s2"> months)&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Loaded air_passengers.csv from: data/air_passengers.csv
+Train: Jan 1949 to Dec 1958  (120 months)
+Test:  Jan 1959 to Dec 1960  (24 months)
+</code></pre></div>
+<hr />
+<h2 id="1-the-backshift-operator">1. The backshift operator</h2>
+<p>One piece of notation makes every formula in this module dramatically shorter, so we pay for it upfront.</p>
+<p>The <strong>backshift operator</strong> <span class="arithmatex">\(B\)</span> shifts a series one step into the past:</p>
+<div class="arithmatex">\[B y_t = y_{t-1}, \qquad B^k y_t = y_{t-k}\]</div>
+<p>It is <code>shift()</code> from Module 10, written as algebra. Its power is that it can be manipulated like an
+ordinary variable. Differencing, for instance, becomes multiplication:</p>
+<div class="arithmatex">\[\nabla y_t = y_t - y_{t-1} = y_t - B y_t = (1 - B) y_t\]</div>
+<p>so <span class="arithmatex">\(d\)</span>-th order differencing is just <span class="arithmatex">\(\nabla^d = (1-B)^d\)</span>, and seasonal differencing with period <span class="arithmatex">\(s\)</span> is
+<span class="arithmatex">\(\nabla_s = (1 - B^s)\)</span>. Expanding <span class="arithmatex">\((1-B)^2\)</span> with ordinary algebra even gives the correct second
+difference:</p>
+<div class="arithmatex">\[(1-B)^2 y_t = (1 - 2B + B^2)y_t = y_t - 2y_{t-1} + y_{t-2}\]</div>
+<p>We will write <strong>polynomials in <span class="arithmatex">\(B\)</span></strong> to package a whole set of coefficients:</p>
+<div class="arithmatex">\[\phi(B) = 1 - \phi_1 B - \phi_2 B^2 - \dots - \phi_p B^p \qquad\qquad
+\theta(B) = 1 + \theta_1 B + \theta_2 B^2 + \dots + \theta_q B^q\]</div>
+<p>Note the minus signs in <span class="arithmatex">\(\phi(B)\)</span> and the plus signs in <span class="arithmatex">\(\theta(B)\)</span>. That asymmetry is a genuine
+convention, not a typo, and it is the source of the most common bug in this entire topic — Section 3
+shows exactly where it bites.</p>
+<hr />
+<h2 id="2-the-strategy">2. The strategy</h2>
+<p>Every model in this module is a variation on one sentence:</p>
+<blockquote>
+<p><strong>The current value is a linear combination of past values and past random shocks.</strong></p>
+</blockquote>
+<p>Let <span class="arithmatex">\(Z_t\)</span> be <strong>white noise</strong> — the unforecastable innovations from Module 10, <span class="arithmatex">\(Z_t \sim N(0, \sigma^2)\)</span>,
+independent. The family is then organised by which ingredients are allowed:</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Uses past <strong>values</strong>?</th>
+<th>Uses past <strong>shocks</strong>?</th>
+<th>Handles trend?</th>
+<th>Handles season?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>AR(p)</strong></td>
+<td>yes</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td><strong>MA(q)</strong></td>
+<td>no</td>
+<td>yes</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td><strong>ARMA(p,q)</strong></td>
+<td>yes</td>
+<td>yes</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td><strong>ARIMA(p,d,q)</strong></td>
+<td>yes</td>
+<td>yes</td>
+<td>yes (via <span class="arithmatex">\(d\)</span>)</td>
+<td>no</td>
+</tr>
+<tr>
+<td><strong>SARIMA<span class="arithmatex">\((p,d,q)(P,D,Q)_s\)</span></strong></td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes (via <span class="arithmatex">\(D\)</span>, <span class="arithmatex">\(P\)</span>, <span class="arithmatex">\(Q\)</span>)</td>
+</tr>
+<tr>
+<td><strong>SARIMAX</strong></td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p>Each row is strictly more general than the one above; every model is a special case of SARIMAX with some
+orders set to zero. The <strong>Box-Jenkins methodology</strong> for choosing among them is a four-step loop, and it
+structures the rest of this module:</p>
+<ol>
+<li><strong>Identify</strong> — transform to stationarity (Module 10), then read candidate orders off the ACF/PACF.</li>
+<li><strong>Estimate</strong> — fit the candidates by maximum likelihood.</li>
+<li><strong>Check</strong> — verify the residuals are white noise. <em>If they are not, return to step 1.</em></li>
+<li><strong>Forecast</strong> — only once step 3 passes.</li>
+</ol>
+<hr />
+<h2 id="3-arp-regressing-on-the-past">3. AR(p): regressing on the past</h2>
+<p>An <strong>autoregressive</strong> model of order <span class="arithmatex">\(p\)</span> predicts <span class="arithmatex">\(y_t\)</span> from its own <span class="arithmatex">\(p\)</span> previous values:</p>
+<div class="arithmatex">\[y_t = c + \phi_1 y_{t-1} + \phi_2 y_{t-2} + \dots + \phi_p y_{t-p} + Z_t\]</div>
+<p>or compactly, <span class="arithmatex">\(\phi(B)\, y_t = c + Z_t\)</span>.</p>
+<p>It is literally a linear regression whose predictors are lagged copies of the target — which is why
+Module 10 spent time on <code>shift()</code>. AR(1) with <span class="arithmatex">\(\phi_1 = 0.9\)</span> describes a series with long memory that
+drifts slowly back to its mean; with <span class="arithmatex">\(\phi_1 = 0.2\)</span> it snaps back almost immediately.</p>
+<p>For an AR model to be <strong>stationary</strong> the <span class="arithmatex">\(\phi\)</span> coefficients are constrained. For AR(1) the condition is
+simply <span class="arithmatex">\(|\phi_1| &lt; 1\)</span>: if <span class="arithmatex">\(|\phi_1| &gt; 1\)</span> each value amplifies the last and the series explodes, and
+<span class="arithmatex">\(\phi_1 = 1\)</span> gives a <strong>random walk</strong> — the unit root that the ADF test hunts for.</p>
+<h3 id="simulating-mind-the-sign-convention">Simulating: mind the sign convention</h3>
+<p><code>ArmaProcess</code> expects the AR polynomial <strong>as written in <span class="arithmatex">\(\phi(B)\)</span></strong>, including its minus signs. So to
+simulate <span class="arithmatex">\(y_t = 0.6y_{t-1} + 0.25y_{t-2} + Z_t\)</span> you must pass <code>[1, -0.6, -0.25]</code>, <em>negating</em> your
+coefficients. Forgetting this is the classic error, and it silently produces a completely different
+process rather than raising an error.</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">simulate_arma</span><span class="p">(</span><span class="n">ar_params</span><span class="p">,</span> <span class="n">ma_params</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">rng</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simulate an ARMA series. Pass coefficients as they appear in the *model* equation;</span>
+<span class="sd">    the sign flip required by ArmaProcess is handled here.&quot;&quot;&quot;</span>
+    <span class="n">ar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ar_params</span><span class="p">)]</span>     <span class="c1"># phi(B) has MINUS signs</span>
+    <span class="n">ma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ma_params</span><span class="p">)]</span>      <span class="c1"># theta(B) has PLUS signs</span>
+    <span class="k">return</span> <span class="n">ArmaProcess</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="n">ma</span><span class="p">)</span><span class="o">.</span><span class="n">generate_sample</span><span class="p">(</span><span class="n">nsample</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">distrvs</span><span class="o">=</span><span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">)</span>
+
+<span class="n">ar1_strong</span> <span class="o">=</span> <span class="n">simulate_arma</span><span class="p">([</span><span class="mf">0.9</span><span class="p">],</span>  <span class="p">[],</span> <span class="mi">300</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">ar1_weak</span>   <span class="o">=</span> <span class="n">simulate_arma</span><span class="p">([</span><span class="mf">0.2</span><span class="p">],</span>  <span class="p">[],</span> <span class="mi">300</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">ar1_neg</span>    <span class="o">=</span> <span class="n">simulate_arma</span><span class="p">([</span><span class="o">-</span><span class="mf">0.8</span><span class="p">],</span> <span class="p">[],</span> <span class="mi">300</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">lbl</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="p">[</span><span class="n">ar1_strong</span><span class="p">,</span> <span class="n">ar1_weak</span><span class="p">,</span> <span class="n">ar1_neg</span><span class="p">],</span>
+                      <span class="p">[</span><span class="sa">r</span><span class="s2">&quot;$\phi_1=0.9$  long memory, slow drift&quot;</span><span class="p">,</span>
+                       <span class="sa">r</span><span class="s2">&quot;$\phi_1=0.2$  short memory, near-noise&quot;</span><span class="p">,</span>
+                       <span class="sa">r</span><span class="s2">&quot;$\phi_1=-0.8$  oscillating&quot;</span><span class="p">]):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C0&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">lbl</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mf">8.5</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Three AR(1) processes driven by the same random shocks&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../12_arima_models_files/12_arima_models_8_0.png" /></p>
+<p>All three panels were generated from the <em>same</em> random seed — the only difference is <span class="arithmatex">\(\phi_1\)</span>. A positive
+<span class="arithmatex">\(\phi_1\)</span> makes the series persistent (a high value is followed by another high value); a negative <span class="arithmatex">\(\phi_1\)</span>
+makes it alternate, because each value flips the sign of the next.</p>
+<h3 id="the-identification-rule-for-ar">The identification rule for AR</h3>
+<p>Here is the payoff of Module 10's PACF. For an AR(p) process:</p>
+<blockquote>
+<p><strong>The PACF cuts off sharply after lag <span class="arithmatex">\(p\)</span>. The ACF tails off gradually.</strong></p>
+</blockquote>
+<p>The reason is exactly the ACF/PACF distinction from Module 10. In an AR(2) process <span class="arithmatex">\(y_{t-3}\)</span> has <strong>no
+direct influence</strong> on <span class="arithmatex">\(y_t\)</span> — it acts only through <span class="arithmatex">\(y_{t-1}\)</span> and <span class="arithmatex">\(y_{t-2}\)</span>. The PACF, which removes
+intervening lags, therefore reports zero at lag 3 and beyond. The ACF, which keeps indirect paths, decays
+gradually because the influence propagates down the chain.</p>
+<div class="highlight"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">7.5</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">params</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([[</span><span class="mf">0.7</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">]]):</span>
+    <span class="n">series</span> <span class="o">=</span> <span class="n">simulate_arma</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="p">[],</span> <span class="mi">3000</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">RANDOM_STATE</span><span class="p">))</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">plot_acf</span><span class="p">(</span><span class="n">series</span><span class="p">,</span>  <span class="n">lags</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;ACF  - AR(</span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+    <span class="n">plot_pacf</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;PACF - AR(</span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;ywm&quot;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">p</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C3&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.4</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;PACF cuts off after lag p (red line); ACF tails off&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.00</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../12_arima_models_files/12_arima_models_10_0.png" /></p>
+<p>Read the right-hand column top to bottom. AR(1): one significant PACF spike, then nothing. AR(2): two
+spikes. AR(3): three. <strong>The red dashed line sits at <span class="arithmatex">\(p + 0.5\)</span> in every row, and the PACF dies exactly
+there.</strong> That is how you read <span class="arithmatex">\(p\)</span> off a plot.</p>
+<p>The left column shows the contrasting behaviour: the ACF decays smoothly and never cuts off.</p>
+<h3 id="recovering-the-parameters">Recovering the parameters</h3>
+<p>If the theory is right, fitting an AR model to data we generated ourselves should return the coefficients
+we chose. This is the check that separates understanding from hand-waving.</p>
+<div class="highlight"><pre><span></span><code><span class="n">true_ar</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">]</span>
+<span class="n">y_ar</span> <span class="o">=</span> <span class="n">simulate_arma</span><span class="p">(</span><span class="n">true_ar</span><span class="p">,</span> <span class="p">[],</span> <span class="mi">2000</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">RANDOM_STATE</span><span class="p">))</span>
+
+<span class="n">fit_ar</span> <span class="o">=</span> <span class="n">ARIMA</span><span class="p">(</span><span class="n">y_ar</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">trend</span><span class="o">=</span><span class="s2">&quot;n&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;AR(2) parameter recovery from 2000 observations</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;coefficient&#39;</span><span class="si">:</span><span class="s2">&lt;14</span><span class="si">}{</span><span class="s1">&#39;true&#39;</span><span class="si">:</span><span class="s2">&gt;8</span><span class="si">}{</span><span class="s1">&#39;estimated&#39;</span><span class="si">:</span><span class="s2">&gt;12</span><span class="si">}{</span><span class="s1">&#39;std err&#39;</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">true_val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">true_ar</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="n">est</span> <span class="o">=</span> <span class="n">fit_ar</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">se</span> <span class="o">=</span> <span class="n">fit_ar</span><span class="o">.</span><span class="n">bse</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;phi_</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">&lt;10</span><span class="si">}{</span><span class="n">true_val</span><span class="si">:</span><span class="s2">&gt;8.2f</span><span class="si">}{</span><span class="n">est</span><span class="si">:</span><span class="s2">&gt;12.3f</span><span class="si">}{</span><span class="n">se</span><span class="si">:</span><span class="s2">&gt;10.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">sigma^2 (noise variance), true 1.0 -&gt; </span><span class="si">{</span><span class="n">fit_ar</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>AR(2) parameter recovery from 2000 observations
+
+coefficient       true   estimated   std err
+phi_1             0.60       0.635     0.022
+phi_2             0.25       0.221     0.021
+
+sigma^2 (noise variance), true 1.0 -&gt; 1.005
+</code></pre></div>
+<p>The estimates land close to the truth — within roughly one and a half standard errors, which is ordinary
+sampling variation rather than bias. Note that the standard errors are around
+0.02 with 2000 observations — precision improves as <span class="arithmatex">\(\sqrt{n}\)</span>, so short series give genuinely uncertain
+coefficients. This is worth remembering when you fit a 3-parameter model to 60 monthly observations and
+the software reports the numbers to four decimal places anyway.</p>
+<p>Internally, statsmodels maximises the likelihood. The classical alternative is the <strong>Yule-Walker
+equations</strong>, a linear system relating the <span class="arithmatex">\(\phi_i\)</span> to the autocorrelations <span class="arithmatex">\(\rho_k\)</span>:</p>
+<div class="arithmatex">\[\rho_k = \phi_1 \rho_{k-1} + \phi_2 \rho_{k-2} + \dots + \phi_p \rho_{k-p}, \qquad k = 1, \dots, p\]</div>
+<p>which in matrix form is <span class="arithmatex">\(\mathbf{c} = \mathbf{C}\boldsymbol{\Phi}\)</span>, solved as
+<span class="arithmatex">\(\boldsymbol{\Phi} = \mathbf{C}^{-1}\mathbf{c}\)</span>. It is fast, has a closed form, and is where the "ywm"
+method in our PACF calls comes from.</p>
+<hr />
+<h2 id="4-maq-regressing-on-past-shocks">4. MA(q): regressing on past shocks</h2>
+<p>A <strong>moving average</strong> model of order <span class="arithmatex">\(q\)</span> predicts <span class="arithmatex">\(y_t\)</span> from the last <span class="arithmatex">\(q\)</span> <em>random shocks</em>:</p>
+<div class="arithmatex">\[y_t = \mu + Z_t + \theta_1 Z_{t-1} + \theta_2 Z_{t-2} + \dots + \theta_q Z_{t-q}\]</div>
+<p>or compactly, <span class="arithmatex">\(y_t = \mu + \theta(B) Z_t\)</span>.</p>
+<p>First, the terminology warning promised in the introduction: <strong>this is not the rolling mean of Module
+10.</strong> Nothing is being averaged over a window. The name is historical and unfortunate; read "MA" as
+"a weighted sum of recent shocks" and you will not be confused.</p>
+<p>The intuition is about <strong>shocks with a finite lifetime</strong>. An airline suffers a strike in March. March
+traffic collapses — that is <span class="arithmatex">\(Z_{\text{Mar}}\)</span>. April is still depressed because rebookings are working
+through the system, and May a little; by June the event has washed out completely. An MA(2) model says
+exactly that: a shock influences the next two periods and then vanishes.</p>
+<p>Contrast this with AR, where the influence of a shock decays <em>geometrically forever</em>, never quite
+reaching zero. <strong>AR has infinite memory that fades; MA has finite memory that stops.</strong></p>
+<h3 id="the-identification-rule-for-ma">The identification rule for MA</h3>
+<p>The rules are the mirror image of AR's:</p>
+<blockquote>
+<p><strong>The ACF cuts off sharply after lag <span class="arithmatex">\(q\)</span>. The PACF tails off gradually.</strong></p>
+</blockquote>
+<p>And the reason is direct: <span class="arithmatex">\(y_t\)</span> and <span class="arithmatex">\(y_{t-k}\)</span> share a common shock term only when <span class="arithmatex">\(k \le q\)</span>. Beyond that
+they have literally no ingredient in common, so their correlation is exactly zero.</p>
+<div class="highlight"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">7.5</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">params</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([[</span><span class="mf">0.8</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]]):</span>
+    <span class="n">series</span> <span class="o">=</span> <span class="n">simulate_arma</span><span class="p">([],</span> <span class="n">params</span><span class="p">,</span> <span class="mi">3000</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">RANDOM_STATE</span><span class="p">))</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">plot_acf</span><span class="p">(</span><span class="n">series</span><span class="p">,</span>  <span class="n">lags</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;ACF  - MA(</span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+    <span class="n">plot_pacf</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;PACF - MA(</span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;ywm&quot;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">q</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C3&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.4</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;ACF cuts off after lag q (red line); PACF tails off&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.00</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../12_arima_models_files/12_arima_models_15_0.png" /></p>
+<p>Now it is the <strong>left</strong> column that cuts off — cleanly at lag 1, 2 and 3 respectively — while the PACF on
+the right tails away. Compare this figure with the AR figure in Section 3 and the whole identification
+procedure is visible in one glance: <strong>whichever plot cuts off tells you which model you have, and where
+it cuts off tells you the order.</strong></p>
+<div class="highlight"><pre><span></span><code><span class="n">true_ma</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+<span class="n">y_ma</span> <span class="o">=</span> <span class="n">simulate_arma</span><span class="p">([],</span> <span class="n">true_ma</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">RANDOM_STATE</span><span class="p">))</span>
+
+<span class="n">fit_ma</span> <span class="o">=</span> <span class="n">ARIMA</span><span class="p">(</span><span class="n">y_ma</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">trend</span><span class="o">=</span><span class="s2">&quot;n&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MA(2) parameter recovery from 2000 observations</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;coefficient&#39;</span><span class="si">:</span><span class="s2">&lt;14</span><span class="si">}{</span><span class="s1">&#39;true&#39;</span><span class="si">:</span><span class="s2">&gt;8</span><span class="si">}{</span><span class="s1">&#39;estimated&#39;</span><span class="si">:</span><span class="s2">&gt;12</span><span class="si">}{</span><span class="s1">&#39;std err&#39;</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">true_val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">true_ma</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;theta_</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">&lt;8</span><span class="si">}{</span><span class="n">true_val</span><span class="si">:</span><span class="s2">&gt;8.2f</span><span class="si">}{</span><span class="n">fit_ma</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;12.3f</span><span class="si">}{</span><span class="n">fit_ma</span><span class="o">.</span><span class="n">bse</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;10.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>MA(2) parameter recovery from 2000 observations
+
+coefficient       true   estimated   std err
+theta_1           0.80       0.840     0.018
+theta_2           0.50       0.544     0.019
+</code></pre></div>
+<p>Recovered again. Note the asymmetry in difficulty, though: an AR model can be fitted by ordinary least
+squares because its predictors (<span class="arithmatex">\(y_{t-1}, \dots\)</span>) are <em>observed</em>. An MA model cannot, because its
+predictors (<span class="arithmatex">\(Z_{t-1}, \dots\)</span>) are <strong>never observed</strong> — they are the model's own errors, which depend on
+the parameters you are trying to estimate. MA fitting is therefore inherently iterative, and it is why
+MA-heavy models occasionally fail to converge.</p>
+<hr />
+<h2 id="5-armapq-both-at-once">5. ARMA(p,q): both at once</h2>
+<p>Combine them and you get <strong>ARMA(p,q)</strong>:</p>
+<div class="arithmatex">\[y_t = c + \underbrace{\sum_{i=1}^{p} \phi_i y_{t-i}}_{\text{past values}} + Z_t +
+\underbrace{\sum_{j=1}^{q} \theta_j Z_{t-j}}_{\text{past shocks}}
+\qquad\Longleftrightarrow\qquad \phi(B)\, y_t = c + \theta(B)\, Z_t\]</div>
+<p>with ARMA(p,0) = AR(p) and ARMA(0,q) = MA(q). Mixed models are common because they are <em>parsimonious</em>: a
+process needing AR(8) alone might be captured by ARMA(1,1), and fewer parameters means less overfitting
+and tighter forecasts.</p>
+<h3 id="the-identification-table-and-its-limit">The identification table — and its limit</h3>
+<p>Here is the summary you should memorise, extended to the mixed case:</p>
+<table>
+<thead>
+<tr>
+<th>Process</th>
+<th>ACF</th>
+<th>PACF</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>AR(p)</strong></td>
+<td>tails off</td>
+<td><strong>cuts off after lag <span class="arithmatex">\(p\)</span></strong></td>
+</tr>
+<tr>
+<td><strong>MA(q)</strong></td>
+<td><strong>cuts off after lag <span class="arithmatex">\(q\)</span></strong></td>
+<td>tails off</td>
+</tr>
+<tr>
+<td><strong>ARMA(p,q)</strong></td>
+<td>tails off</td>
+<td>tails off</td>
+</tr>
+</tbody>
+</table>
+<p>Look at the last row carefully, because it is a genuinely bad piece of news. <strong>For a mixed ARMA process
+neither plot cuts off</strong>, so the correlogram cannot tell you <span class="arithmatex">\(p\)</span> and <span class="arithmatex">\(q\)</span> — it can only suggest <em>upper
+bounds</em>. Identification by eye stops working exactly where models get interesting.</p>
+<div class="highlight"><pre><span></span><code><span class="n">y_arma</span> <span class="o">=</span> <span class="n">simulate_arma</span><span class="p">([</span><span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.7</span><span class="p">],</span> <span class="mi">3000</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">RANDOM_STATE</span><span class="p">))</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">3.4</span><span class="p">))</span>
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">y_arma</span><span class="p">,</span>  <span class="n">lags</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;ACF  - ARMA(1,1)&quot;</span><span class="p">)</span>
+<span class="n">plot_pacf</span><span class="p">(</span><span class="n">y_arma</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;PACF - ARMA(1,1)&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;ywm&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Neither plot cuts off cleanly - the eye cannot read p and q from this.&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../12_arima_models_files/12_arima_models_20_0.png" /></p>
+<div class="highlight"><pre><span></span><code>Neither plot cuts off cleanly - the eye cannot read p and q from this.
+</code></pre></div>
+<p>Both plots decay. Knowing the truth is ARMA(1,1), you might squint and defend it, but you would equally
+defend AR(2) or ARMA(2,1). This is not a failure of your eyesight — it is a real limitation of the
+method, and it is precisely why Section 7 replaces eyeballing with a numerical criterion.</p>
+<p>The honest workflow is therefore: <strong>use ACF/PACF to bound the search space, then use an information
+criterion to choose within it.</strong></p>
+<hr />
+<h2 id="6-arimapdq-folding-in-the-differencing">6. ARIMA(p,d,q): folding in the differencing</h2>
+<p>ARMA requires stationarity, and Module 10 showed that real series rarely oblige. We already know the fix —
+difference the series — and <strong>ARIMA simply makes the number of differences a model parameter.</strong></p>
+<p>Let <span class="arithmatex">\(y'_t = \nabla^d y_t\)</span>. Then ARIMA(p,d,q) says <span class="arithmatex">\(y'_t\)</span> follows an ARMA(p,q):</p>
+<div class="arithmatex">\[\phi(B)\, (1-B)^d\, y_t = c + \theta(B)\, Z_t\]</div>
+<p>The <strong>I</strong> stands for <em>integrated</em>, "integration" being the inverse of differencing — the cumulative
+summation that puts a forecast of <em>changes</em> back onto the scale of <em>levels</em>.</p>
+<p>The practical consequence is one you must not get wrong: <strong>fit ARIMA to the original series and let <span class="arithmatex">\(d\)</span>
+do the differencing.</strong> If you difference by hand and then fit with <span class="arithmatex">\(d = 0\)</span>, the model will forecast
+differences, and undoing that transformation (plus its prediction intervals) becomes your problem. Passing
+<span class="arithmatex">\(d\)</span> makes statsmodels handle both directions for you.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># A trended series: cumulative sum of an ARMA(1,1) process -&gt; ARIMA(1,1,1) by construction</span>
+<span class="n">y_stat</span> <span class="o">=</span> <span class="n">simulate_arma</span><span class="p">([</span><span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.4</span><span class="p">],</span> <span class="mi">600</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">7</span><span class="p">))</span>
+<span class="n">y_trend</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">y_stat</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">3.4</span><span class="p">))</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">y_trend</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C0&quot;</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;y: wanders, non-stationary&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">y_trend</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C2&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\nabla y$: stationary&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># How many differences does the ADF test demand?</span>
+<span class="n">d</span><span class="p">,</span> <span class="n">series</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y_trend</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="k">while</span> <span class="n">adfuller</span><span class="p">(</span><span class="n">series</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.05</span> <span class="ow">and</span> <span class="n">d</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+    <span class="n">series</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ADF-selected d = </span><span class="si">{</span><span class="n">d</span><span class="si">}</span><span class="s2">   (final p-value </span><span class="si">{</span><span class="n">adfuller</span><span class="p">(</span><span class="n">series</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+<span class="n">fit_arima</span> <span class="o">=</span> <span class="n">ARIMA</span><span class="p">(</span><span class="n">y_trend</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">trend</span><span class="o">=</span><span class="s2">&quot;n&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Fitted on the ORIGINAL series with d=</span><span class="si">{</span><span class="n">d</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  phi_1   = </span><span class="si">{</span><span class="n">fit_arima</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">  (true 0.5)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  theta_1 = </span><span class="si">{</span><span class="n">fit_arima</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">  (true 0.4)&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../12_arima_models_files/12_arima_models_23_0.png" /></p>
+<div class="highlight"><pre><span></span><code>ADF-selected d = 1   (final p-value 0.00000)
+
+
+
+Fitted on the ORIGINAL series with d=1:
+  phi_1   = 0.514  (true 0.5)
+  theta_1 = 0.400  (true 0.4)
+</code></pre></div>
+<p>The automatic loop finds <span class="arithmatex">\(d = 1\)</span>, and fitting ARIMA(1,1,1) to the <em>undifferenced</em> series recovers both
+underlying parameters. That loop is a reasonable way to pick <span class="arithmatex">\(d\)</span> in practice — though be conservative:
+<strong>over-differencing is a real hazard</strong>, and Module 10 gave its signature (an inflated variance and a large
+negative spike at lag 1 of the ACF). In practice <span class="arithmatex">\(d\)</span> is almost always 0, 1, or 2.</p>
+<hr />
+<h2 id="7-choosing-orders-aic-and-bic">7. Choosing orders: AIC and BIC</h2>
+<p>Section 5 left us needing a numerical criterion. The obvious idea — pick the model with the best
+likelihood — fails immediately, because likelihood <em>always</em> improves as you add parameters. It is the
+overfitting problem from the Regularization module, in a new costume, and the solution is the same:
+<strong>penalise complexity.</strong></p>
+<p>For a model with <span class="arithmatex">\(K\)</span> parameters fitted to <span class="arithmatex">\(n\)</span> observations with maximised likelihood <span class="arithmatex">\(\hat{L}\)</span>:</p>
+<div class="arithmatex">\[\text{AIC} = -2\log \hat{L} + 2K \qquad\qquad \text{BIC} = -2\log \hat{L} + K\log n\]</div>
+<p><strong>Lower is better for both.</strong> The first term rewards fit; the second charges rent per parameter. They
+differ only in the rent:</p>
+<ul>
+<li><strong>AIC</strong> charges <span class="arithmatex">\(2\)</span> per parameter, flat. It targets <em>predictive accuracy</em> and tends to pick slightly
+  larger models.</li>
+<li><strong>BIC</strong> charges <span class="arithmatex">\(\log n\)</span>, which exceeds 2 as soon as <span class="arithmatex">\(n &gt; 7\)</span> — so for any realistic series BIC is
+  <strong>harsher</strong> and prefers smaller models. It targets <em>finding the true model</em>.</li>
+</ul>
+<p>Neither is universally right. A common practice — which we follow — is to grid-search a small space of
+orders and inspect both.</p>
+<div class="highlight"><pre><span></span><code><span class="n">y_search</span> <span class="o">=</span> <span class="n">simulate_arma</span><span class="p">([</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span> <span class="mi">2500</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">1000</span><span class="p">))</span>  <span class="c1"># true ARMA(2,2)</span>
+
+<span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">ARIMA</span><span class="p">(</span><span class="n">y_search</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">q</span><span class="p">),</span> <span class="n">trend</span><span class="o">=</span><span class="s2">&quot;n&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="n">p</span><span class="p">,</span> <span class="s2">&quot;q&quot;</span><span class="p">:</span> <span class="n">q</span><span class="p">,</span> <span class="s2">&quot;AIC&quot;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">aic</span><span class="p">,</span> <span class="s2">&quot;BIC&quot;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">bic</span><span class="p">})</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+<span class="n">grid</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Best 6 by AIC (true process is ARMA(2,2)):</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;AIC&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">AIC picks: ARMA(</span><span class="si">{</span><span class="n">grid</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">grid</span><span class="o">.</span><span class="n">AIC</span><span class="o">.</span><span class="n">idxmin</span><span class="p">(),</span><span class="w"> </span><span class="s1">&#39;p&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">grid</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">grid</span><span class="o">.</span><span class="n">AIC</span><span class="o">.</span><span class="n">idxmin</span><span class="p">(),</span><span class="w"> </span><span class="s1">&#39;q&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;BIC picks: ARMA(</span><span class="si">{</span><span class="n">grid</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">grid</span><span class="o">.</span><span class="n">BIC</span><span class="o">.</span><span class="n">idxmin</span><span class="p">(),</span><span class="w"> </span><span class="s1">&#39;p&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">grid</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">grid</span><span class="o">.</span><span class="n">BIC</span><span class="o">.</span><span class="n">idxmin</span><span class="p">(),</span><span class="w"> </span><span class="s1">&#39;q&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Best 6 by AIC (true process is ARMA(2,2)):
+
+ p  q         AIC         BIC
+ 1  3 6995.655298 7024.775528
+ 2  2 6996.032699 7025.152929
+ 2  3 6997.641829 7032.586105
+ 3  2 6997.813652 7032.757928
+ 1  2 6998.040823 7021.337007
+ 3  3 6999.391804 7040.160126
+
+AIC picks: ARMA(1, 3)
+BIC picks: ARMA(1, 2)
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">3.6</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">crit</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;AIC&quot;</span><span class="p">,</span> <span class="s2">&quot;BIC&quot;</span><span class="p">]):</span>
+    <span class="n">pivot</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">crit</span><span class="p">)</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">pivot</span><span class="p">,</span> <span class="n">annot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;.0f&quot;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;viridis_r&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">cbar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">annot_kws</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">crit</span><span class="si">}</span><span class="s2"> surface (lower = better)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../12_arima_models_files/12_arima_models_27_0.png" /></p>
+<p><strong>Neither criterion picked the true model, and you should not gloss over that.</strong> The data really was
+ARMA(2,2), 2500 observations of it; AIC chose ARMA(1,3) and BIC chose ARMA(1,2). The true model came
+<em>second</em> on AIC — by a margin of about 0.4 units.</p>
+<p>That is the lesson, not a bug. Different <span class="arithmatex">\((p,q)\)</span> combinations can describe almost the same
+autocorrelation structure, so the criterion surface is nearly flat across a whole neighbourhood of
+models, and which one wins is decided by sampling noise. The heatmaps make this visible: a broad basin of
+near-equivalent models rather than one sharp peak.</p>
+<p>The practical rules that follow are:</p>
+<ul>
+<li><strong>Differences of 1–2 units are noise.</strong> Treat everything within a few units of the best as tied.</li>
+<li><strong>Break ties by parsimony</strong> — prefer the smaller model, since it will generalise better and is easier
+  to interpret.</li>
+<li><strong>Do not report the selected orders as "the truth".</strong> They are one reasonable description among
+  several, chosen by a criterion that is itself an estimate.</li>
+</ul>
+<p>Two cautions before you automate this:</p>
+<ul>
+<li><strong>AIC and BIC are only comparable between models fitted to the same data with the same <span class="arithmatex">\(d\)</span>.</strong>
+  Differencing changes the number of observations and hence the likelihood, so an ARIMA(1,1,1) AIC cannot
+  be compared with an ARIMA(1,0,1) AIC. Choose <span class="arithmatex">\(d\)</span> first, by stationarity testing; then search <span class="arithmatex">\(p\)</span> and <span class="arithmatex">\(q\)</span>.</li>
+<li><strong>They are in-sample criteria.</strong> They estimate out-of-sample error rather than measuring it. The real
+  verdict is still a held-out test set — which is why we keep one.</li>
+</ul>
+<hr />
+<h2 id="8-sarima-adding-the-seasons">8. SARIMA: adding the seasons</h2>
+<p>Air Passengers has a strong annual cycle, and nothing so far can represent it. An ARIMA model would need
+<span class="arithmatex">\(p \ge 12\)</span> to reach back a year — twelve parameters to express one idea.</p>
+<p><strong>SARIMA</strong> solves this by bolting a <em>second, seasonal</em> set of terms onto the model, operating at lag <span class="arithmatex">\(s\)</span>
+instead of lag 1:</p>
+<div class="arithmatex">\[\underbrace{\Phi_P(B^s)\, \phi_p(B)}_{\text{AR: seasonal} \times \text{non-seasonal}}
+\underbrace{\nabla_s^D \nabla^d}_{\text{differencing}} y_t =
+\underbrace{\Theta_Q(B^s)\, \theta_q(B)}_{\text{MA: seasonal} \times \text{non-seasonal}} Z_t\]</div>
+<p>written <strong>SARIMA<span class="arithmatex">\((p,d,q)(P,D,Q)_s\)</span></strong>. The uppercase orders are the seasonal counterparts of the lowercase
+ones, and everything is in terms of <span class="arithmatex">\(B^s\)</span> — so <span class="arithmatex">\(\Phi_1(B^{12})\)</span> links this month to the same month <em>last
+year</em>.</p>
+<p>The two sets <strong>multiply</strong> rather than add, which is what makes the model compact. Expanding
+SARIMA<span class="arithmatex">\((1,0,1)(1,0,1)_{12}\)</span> gives</p>
+<div class="arithmatex">\[y_t = \phi y_{t-1} + \Phi y_{t-12} - \Phi\phi\, y_{t-13} + Z_t + \theta Z_{t-1} + \Theta Z_{t-12} +
+\Theta\theta\, Z_{t-13}\]</div>
+<p>Look at the <span class="arithmatex">\(y_{t-13}\)</span> term. Nobody put it there — it <em>fell out of the multiplication</em>, and it says
+something sensible: if this month depends on last month, and on this month a year ago, then it also
+depends on last month a year ago. Four parameters generate seven terms of structure.</p>
+<h3 id="reading-seasonal-orders">Reading seasonal orders</h3>
+<p>The identification rules carry over, applied <strong>at multiples of <span class="arithmatex">\(s\)</span></strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Seasonal process</th>
+<th>ACF at lags <span class="arithmatex">\(s, 2s, 3s\dots\)</span></th>
+<th>PACF at lags <span class="arithmatex">\(s, 2s, 3s\dots\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>AR<span class="arithmatex">\((P)_s\)</span></strong></td>
+<td>tails off</td>
+<td><strong>cuts off after lag <span class="arithmatex">\(Ps\)</span></strong></td>
+</tr>
+<tr>
+<td><strong>MA<span class="arithmatex">\((Q)_s\)</span></strong></td>
+<td><strong>cuts off after lag <span class="arithmatex">\(Qs\)</span></strong></td>
+<td>tails off</td>
+</tr>
+</tbody>
+</table>
+<p>So you read the plot <strong>twice</strong>: look at lags <span class="arithmatex">\(1, 2, \dots, s-1\)</span> for the non-seasonal orders <span class="arithmatex">\(p, q\)</span>, and at
+lags <span class="arithmatex">\(s, 2s, 3s\)</span> for the seasonal orders <span class="arithmatex">\(P, Q\)</span>.</p>
+<div class="highlight"><pre><span></span><code><span class="n">log_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">train</span><span class="p">)</span>                              <span class="c1"># multiplicative -&gt; additive (Module 10)</span>
+<span class="n">stationary</span> <span class="o">=</span> <span class="n">log_train</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>        <span class="c1"># d=1, D=1</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">3.6</span><span class="p">))</span>
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">stationary</span><span class="p">,</span>  <span class="n">lags</span><span class="o">=</span><span class="mi">36</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;ACF  - log, d=1, D=1&quot;</span><span class="p">)</span>
+<span class="n">plot_pacf</span><span class="p">(</span><span class="n">stationary</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="mi">36</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;PACF - log, d=1, D=1&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;ywm&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">lag</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">36</span><span class="p">):</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">lag</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C3&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ADF p-value after d=1, D=1: </span><span class="si">{</span><span class="n">adfuller</span><span class="p">(</span><span class="n">stationary</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../12_arima_models_files/12_arima_models_30_0.png" /></p>
+<div class="highlight"><pre><span></span><code>ADF p-value after d=1, D=1: 0.00139
+</code></pre></div>
+<p>Read this plot the way Box and Jenkins did in 1970.</p>
+<ul>
+<li><strong>Non-seasonal part (low lags).</strong> The ACF has one clear significant spike at lag 1, then falls inside
+  the band. That is the MA cut-off signature: <span class="arithmatex">\(q = 1\)</span>, <span class="arithmatex">\(p = 0\)</span>.</li>
+<li><strong>Seasonal part (dotted red lines at 12, 24, 36).</strong> A large spike at lag 12, and essentially nothing at
+  24 or 36. Same signature at the seasonal frequency: <span class="arithmatex">\(Q = 1\)</span>, <span class="arithmatex">\(P = 0\)</span>.</li>
+</ul>
+<p>Together the plot proposes <strong>SARIMA<span class="arithmatex">\((0,1,1)(0,1,1)_{12}\)</span></strong> on the logged series — which is famous enough
+to have its own name, the <strong>airline model</strong>, precisely because Box and Jenkins identified it on <em>this
+dataset</em>. Let us see whether an exhaustive search agrees with the eyeball.</p>
+<div class="highlight"><pre><span></span><code><span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Q</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">SARIMAX</span><span class="p">(</span><span class="n">log_train</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">q</span><span class="p">),</span> <span class="n">seasonal_order</span><span class="o">=</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">disp</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;order&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">q</span><span class="p">),</span> <span class="s2">&quot;seasonal&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span>
+                        <span class="s2">&quot;AIC&quot;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">aic</span><span class="p">,</span> <span class="s2">&quot;BIC&quot;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">bic</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">params</span><span class="p">)})</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+<span class="n">search</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;AIC&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Searched </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">search</span><span class="p">)</span><span class="si">}</span><span class="s2"> models. Top 6 by AIC:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">search</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Searched 36 models. Top 6 by AIC:
+
+    order      seasonal         AIC         BIC  params
+(0, 1, 1) (0, 1, 1, 12) -389.009724 -380.991238       3
+(1, 1, 0) (0, 1, 1, 12) -388.643057 -380.624570       3
+(0, 1, 1) (1, 1, 1, 12) -387.220007 -376.528692       4
+(0, 1, 2) (0, 1, 1, 12) -387.065411 -376.374096       4
+(1, 1, 0) (1, 1, 1, 12) -386.774772 -376.083457       4
+(1, 1, 1) (0, 1, 1, 12) -386.674591 -375.983276       4
+</code></pre></div>
+<p>The search agrees with the correlogram: <strong>SARIMA<span class="arithmatex">\((0,1,1)(0,1,1)_{12}\)</span> is best on AIC — and on BIC too</strong>,
+which is notable, since BIC's harsher penalty often disagrees with AIC. When the visual identification,
+AIC and BIC all converge on the same model, you can be reasonably confident in it.</p>
+<p>Notice also how little separates the top few models — a couple of AIC units across quite different order
+combinations. The winner is among the <em>smallest</em> of that group (three parameters), so parsimony and the
+criteria point the same way.</p>
+<div class="highlight"><pre><span></span><code><span class="n">best</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">SARIMAX</span><span class="p">(</span><span class="n">log_train</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">best</span><span class="p">[</span><span class="s2">&quot;order&quot;</span><span class="p">],</span> <span class="n">seasonal_order</span><span class="o">=</span><span class="n">best</span><span class="p">[</span><span class="s2">&quot;seasonal&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">disp</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>==============================================================================
+                 coef    std err          z      P&gt;|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+ma.L1         -0.3422      0.087     -3.922      0.000      -0.513      -0.171
+ma.S.L12      -0.5405      0.105     -5.158      0.000      -0.746      -0.335
+sigma2         0.0014      0.000      7.869      0.000       0.001       0.002
+==============================================================================
+</code></pre></div>
+<p>Both coefficients are strongly significant (<span class="arithmatex">\(p &lt; 0.001\)</span>) and both are <strong>negative</strong>, which has a clean
+interpretation. <span class="arithmatex">\(\theta_1 \approx -0.34\)</span> says a positive shock this month is partly <em>corrected</em> next
+month; <span class="arithmatex">\(\Theta_{12} \approx -0.54\)</span> says the same about the shock from twelve months ago. The series
+overshoots and pulls back, at both timescales.</p>
+<p>The coefficients you would have got from the deprecated <code>sm.tsa.ARMA</code> API differ in sign convention from
+the modern one — one more reason to keep to a single, current API.</p>
+<hr />
+<h2 id="9-residual-diagnostics">9. Residual diagnostics</h2>
+<p><strong>This is the step people skip, and it is the step that catches broken models.</strong></p>
+<p>The logic is the one Module 10 established: a model's job is to extract all forecastable structure, so
+whatever remains must be <em>unforecastable</em> — white noise. Concretely, residuals should be</p>
+<ol>
+<li><strong>uncorrelated</strong> — any leftover autocorrelation is signal you failed to model;</li>
+<li><strong>zero-mean</strong> — otherwise the forecast is biased;</li>
+<li><strong>constant-variance</strong> and roughly <strong>normal</strong> — needed for the prediction intervals to be honest.</li>
+</ol>
+<p>Requirement 1 is essential; 3 matters mainly for the intervals rather than the point forecast.</p>
+<div class="highlight"><pre><span></span><code><span class="n">fig</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">plot_diagnostics</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../12_arima_models_files/12_arima_models_37_0.png" /></p>
+<p><code>plot_diagnostics</code> gives four panels at once:</p>
+<ul>
+<li><strong>Top-left, standardised residuals</strong> — should look like noise around zero with no changing spread.</li>
+<li><strong>Top-right, histogram + density</strong> — the orange KDE should track the green <span class="arithmatex">\(N(0,1)\)</span> reference.</li>
+<li><strong>Bottom-left, Normal Q-Q</strong> — points on the red line mean normality; curvature at the ends means heavy
+  tails.</li>
+<li><strong>Bottom-right, correlogram</strong> — <strong>the most important panel.</strong> Every spike should sit inside the band.</li>
+</ul>
+<h3 id="the-ljung-box-test">The Ljung-Box test</h3>
+<p>The correlogram is a judgement call over many lags, and with 20 spikes at a 95% band you <em>expect</em> one to
+poke out. The <strong>Ljung-Box</strong> test formalises it by asking whether the first <span class="arithmatex">\(h\)</span> autocorrelations are
+<em>jointly</em> zero:</p>
+<div class="arithmatex">\[Q = n(n+2) \sum_{k=1}^{h} \frac{\hat{\rho}_k^2}{n-k} \;\sim\; \chi^2_{h}\]</div>
+<p>Its null hypothesis is <strong>"the residuals are independent"</strong> — so here, unusually, a <strong>large p-value is the
+good outcome</strong>.</p>
+<div class="highlight"><pre><span></span><code><span class="n">resid</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">resid</span><span class="p">[</span><span class="mi">13</span><span class="p">:]</span>           <span class="c1"># drop the first d + D*s = 13 values lost to differencing</span>
+<span class="n">lb</span> <span class="o">=</span> <span class="n">acorr_ljungbox</span><span class="p">(</span><span class="n">resid</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">24</span><span class="p">],</span> <span class="n">return_df</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">lb</span><span class="p">[</span><span class="s2">&quot;verdict&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lb</span><span class="p">[</span><span class="s2">&quot;lb_pvalue&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.05</span><span class="p">,</span> <span class="s2">&quot;white noise OK&quot;</span><span class="p">,</span> <span class="s2">&quot;STRUCTURE LEFT&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Ljung-Box  (H0 = residuals independent, so we WANT p &gt; 0.05)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lb</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Mean residual: </span><span class="si">{</span><span class="n">resid</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">+.5f</span><span class="si">}</span><span class="s2">  (log scale; want ~0)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Residual std:  </span><span class="si">{</span><span class="n">resid</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Ljung-Box  (H0 = residuals independent, so we WANT p &gt; 0.05)
+
+    lb_stat  lb_pvalue         verdict
+6    4.8820     0.5590  white noise OK
+12   6.0738     0.9123  white noise OK
+18  10.5067     0.9141  white noise OK
+24  17.9889     0.8035  white noise OK
+
+Mean residual: +0.00028  (log scale; want ~0)
+Residual std:  0.03857
+</code></pre></div>
+<p>Every p-value is comfortably above 0.05 — at lag 12 it is around 0.91 — so we cannot reject independence
+at any horizon tested. Combined with a mean residual of essentially zero, the model passes.</p>
+<p><strong>This is the moment you are allowed to forecast.</strong> Had any p-value come in below 0.05, the correct
+response would be to return to identification with the residual ACF as the clue: a leftover spike at lag
+12 means the seasonal orders are wrong, one at lag 1 means the non-seasonal orders are.</p>
+<hr />
+<h2 id="10-forecasting-air-passengers">10. Forecasting Air Passengers</h2>
+<p>Now we spend the model. Three things to get right: forecast on the <strong>log</strong> scale the model was fitted on,
+<strong>back-transform</strong> with <code>np.exp</code>, and carry the <strong>prediction intervals</strong> through the same transformation.</p>
+<div class="highlight"><pre><span></span><code><span class="n">fc</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_forecast</span><span class="p">(</span><span class="n">steps</span><span class="o">=</span><span class="n">TEST_MONTHS</span><span class="p">)</span>
+<span class="n">pred_log</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">predicted_mean</span>
+<span class="n">ci_log</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">conf_int</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+
+<span class="c1"># Back-transform: exp() maps the log-scale interval to a (correctly asymmetric) interval on the original scale</span>
+<span class="n">pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">pred_log</span><span class="p">)</span>
+<span class="n">lower</span><span class="p">,</span> <span class="n">upper</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">ci_log</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">ci_log</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">pred</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">lower</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">upper</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">test</span><span class="o">.</span><span class="n">index</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">train</span><span class="p">[</span><span class="o">-</span><span class="mi">60</span><span class="p">:],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C0&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Train&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Actual&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C3&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;SARIMA forecast&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C3&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.18</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;95</span><span class="si">% i</span><span class="s2">nterval&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;SARIMA$(0,1,1)(0,1,1)_</span><span class="si">{12}</span><span class="s2">$ on log(Air Passengers), 24 months ahead&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Passengers (thousands)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">coverage</span> <span class="o">=</span> <span class="p">((</span><span class="n">test</span> <span class="o">&gt;=</span> <span class="n">lower</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">test</span> <span class="o">&lt;=</span> <span class="n">upper</span><span class="p">))</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Actual values inside the 95% interval: </span><span class="si">{</span><span class="n">coverage</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../12_arima_models_files/12_arima_models_42_0.png" /></p>
+<div class="highlight"><pre><span></span><code>Actual values inside the 95% interval: 100%
+</code></pre></div>
+<p>The forecast reproduces both the growth and the seasonal shape, and the interval widens with the horizon —
+exactly as it should, since uncertainty compounds. Interval <strong>coverage</strong> is the diagnostic to check here:
+a nominal 95% interval that captures far less than 95% of actuals is overconfident, and the model's
+uncertainty estimates cannot be trusted even if the point forecasts look fine.</p>
+<p>Now the comparison that this entire section of the course has been building towards.</p>
+<div class="highlight"><pre><span></span><code><span class="n">m_</span> <span class="o">=</span> <span class="mi">12</span>
+<span class="n">h</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+<span class="n">baselines</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Mean&quot;</span><span class="p">:</span>           <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">index</span><span class="o">=</span><span class="n">test</span><span class="o">.</span><span class="n">index</span><span class="p">),</span>
+    <span class="s2">&quot;Naive&quot;</span><span class="p">:</span>          <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="n">test</span><span class="o">.</span><span class="n">index</span><span class="p">),</span>
+    <span class="s2">&quot;Seasonal naive&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="n">m_</span><span class="p">:]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="o">%</span> <span class="n">m_</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="n">test</span><span class="o">.</span><span class="n">index</span><span class="p">),</span>
+    <span class="s2">&quot;Drift&quot;</span><span class="p">:</span>          <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">h</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                                <span class="o">*</span> <span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">train</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">test</span><span class="o">.</span><span class="n">index</span><span class="p">),</span>
+    <span class="s2">&quot;SARIMA(0,1,1)(0,1,1)12&quot;</span><span class="p">:</span> <span class="n">pred</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># Module 11&#39;s winner, refitted here so all three modules appear in one table</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.tsa.holtwinters</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExponentialSmoothing</span>
+<span class="n">hw</span> <span class="o">=</span> <span class="n">ExponentialSmoothing</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">trend</span><span class="o">=</span><span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="n">seasonal</span><span class="o">=</span><span class="s2">&quot;mul&quot;</span><span class="p">,</span> <span class="n">seasonal_periods</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<span class="n">baselines</span><span class="p">[</span><span class="s2">&quot;Holt-Winters (mult)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hw</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="n">TEST_MONTHS</span><span class="p">)</span>
+
+<span class="n">table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">train</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">baselines</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span><span class="o">.</span><span class="n">T</span>
+<span class="n">table</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;MASE&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+
+<span class="n">sn_mae</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;Seasonal naive&quot;</span><span class="p">,</span> <span class="s2">&quot;MAE&quot;</span><span class="p">]</span>
+<span class="n">sar_mae</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;SARIMA(0,1,1)(0,1,1)12&quot;</span><span class="p">,</span> <span class="s2">&quot;MAE&quot;</span><span class="p">]</span>
+<span class="n">hw_mae</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;Holt-Winters (mult)&quot;</span><span class="p">,</span> <span class="s2">&quot;MAE&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">SARIMA reduces MAE vs the best baseline (seasonal naive) by </span><span class="si">{</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">sar_mae</span><span class="o">/</span><span class="n">sn_mae</span><span class="p">)</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Holt-Winters beats SARIMA by a further </span><span class="si">{</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">hw_mae</span><span class="o">/</span><span class="n">sar_mae</span><span class="p">)</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>                           MAE    RMSE   MAPE  MASE
+Holt-Winters (mult)      28.98   32.49   6.39  1.01
+SARIMA(0,1,1)(0,1,1)12   39.45   43.19   8.52  1.38
+Seasonal naive           71.25   76.99  15.52  2.49
+Drift                    91.62  115.70  18.41  3.21
+Naive                   115.25  137.33  23.58  4.03
+Mean                    206.34  219.44  44.23  7.22
+
+SARIMA reduces MAE vs the best baseline (seasonal naive) by 45%
+Holt-Winters beats SARIMA by a further 27%
+</code></pre></div>
+<p>Two things to take from this table, and the second one matters more than the first.</p>
+<p><strong>SARIMA comprehensively beats the baselines.</strong> It roughly halves the MAE of seasonal naive — the
+benchmark Module 10 warned was genuinely hard to beat — and it does so for the reason we designed it to:
+<span class="arithmatex">\(d=1\)</span> models the growth that seasonal naive ignored, while <span class="arithmatex">\(D=1\)</span> models the season that drift ignored.</p>
+<p><strong>And Holt-Winters, from Module 11, beats SARIMA.</strong> That is not a mistake, and it is not an argument that
+one module was wasted. It is the single most important empirical fact in this section of the course, so
+let us state it plainly: <strong>the more sophisticated, more famous, harder-to-fit model lost.</strong></p>
+<p>Why? Air Passengers is almost a textbook illustration of what exponential smoothing is built for — a
+smooth trend with a stable multiplicative seasonal profile, and nothing else going on. Holt-Winters models
+exactly that structure directly, with three interpretable components. SARIMA has to reach the same place
+through differencing and autocorrelation, which is a more roundabout route to a shape that was already
+obvious. In the M-competitions — the large-scale empirical forecasting contests that settled a lot of
+these arguments — simple exponential smoothing methods beat ARIMA on a great many real series, and this
+is a small replication of that result.</p>
+<p>The correct conclusion is <em>not</em> "ARIMA is bad". ARIMA earns its keep where the structure is genuinely
+autocorrelative rather than componential, where you need exogenous regressors (Section 11), or where you
+want the statistical apparatus — significance tests, information criteria, principled prediction
+intervals — that the Box-Jenkins framework provides and exponential smoothing does not. The conclusion is:</p>
+<blockquote>
+<p><strong>Model complexity is not a proxy for model quality. Fit both, hold out a test set, and let it decide.</strong></p>
+</blockquote>
+<p>That is the arc of all three modules. Module 10 built the diagnosis and the benchmark; Modules 11 and 12
+built competing models; and the ranking between them was settled by data no model had seen, not by which
+one had the more impressive derivation.</p>
+<div class="highlight"><pre><span></span><code><span class="n">sarima_resid</span> <span class="o">=</span> <span class="n">test</span> <span class="o">-</span> <span class="n">pred</span>
+<span class="n">sn_resid</span> <span class="o">=</span> <span class="n">test</span> <span class="o">-</span> <span class="n">baselines</span><span class="p">[</span><span class="s2">&quot;Seasonal naive&quot;</span><span class="p">]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mf">3.4</span><span class="p">))</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sn_resid</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C0&quot;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Seasonal naive&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sarima_resid</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C3&quot;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;SARIMA&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Test residuals&quot;</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">sarima_resid</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C3&quot;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;SARIMA residual distribution&quot;</span><span class="p">)</span>
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">sarima_resid</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;SARIMA residual ACF&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean test residual - seasonal naive: </span><span class="si">{</span><span class="n">sn_resid</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">+7.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean test residual - SARIMA:         </span><span class="si">{</span><span class="n">sarima_resid</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">+7.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../12_arima_models_files/12_arima_models_46_0.png" /></p>
+<div class="highlight"><pre><span></span><code>Mean test residual - seasonal naive:  +71.25
+Mean test residual - SARIMA:          +39.45
+</code></pre></div>
+<p>Read the printed means carefully, because they say something more interesting than "SARIMA won".</p>
+<p>For <strong>both</strong> methods the mean test residual is <em>equal to the MAE</em> — which can only happen if <strong>every
+single residual is positive</strong>. Seasonal naive under-forecasts all 24 months, and so does SARIMA. The bias
+is smaller (about <span class="arithmatex">\(+39\)</span> versus <span class="arithmatex">\(+71\)</span>), but it has not been eliminated.</p>
+<p>So the Module 10 diagnosis was only half right. Adding a trend component shrank the under-forecast without
+removing it, and the reason is visible in the forecast plot of Section 10: 1959–60 grew <em>faster</em> than the
+1949–58 average that the model extrapolated. A model fitted on a decade of history cannot know that the
+last two years accelerate; it is not mis-specified so much as asked to predict a change in regime.</p>
+<p>This is the honest limit of the exercise, and worth sitting with. In-sample residual diagnostics
+(Section 9) were clean — Ljung-Box passed at every lag — yet the <em>out-of-sample</em> residuals are visibly
+biased. <strong>Passing residual diagnostics means the model has extracted the structure that was present in
+the training data. It does not promise the future will keep obeying it.</strong> That gap is exactly why we hold
+out a test set instead of trusting AIC and Ljung-Box alone.</p>
+<hr />
+<h2 id="11-sarimax-bringing-in-outside-information">11. SARIMAX: bringing in outside information</h2>
+<p>Everything so far has been <strong>univariate</strong> — the series explained purely by its own history. Often you know
+more: promotions drive sales, temperature drives electricity demand, holidays drive traffic.</p>
+<p>The distinction is between two kinds of variable:</p>
+<ul>
+<li><strong>Endogenous</strong> (<span class="arithmatex">\(y_t\)</span>) — the variable the model explains, determined <em>inside</em> the system.</li>
+<li><strong>Exogenous</strong> (<span class="arithmatex">\(u_t\)</span>) — an input determined <em>outside</em> the system, taken as given.</li>
+</ul>
+<p>The <strong>X</strong> in SARIMAX adds exogenous regressors as an ordinary linear term:</p>
+<div class="arithmatex">\[\Phi_P(B^s)\phi_p(B)\, \nabla_s^D \nabla^d y_t = \boldsymbol{\tau}^\top \mathbf{u}_t +
+\Theta_Q(B^s)\theta_q(B)\, Z_t\]</div>
+<p>The model becomes "regression with ARIMA errors": a regression on <span class="arithmatex">\(\mathbf{u}_t\)</span>, where the leftover
+correlated structure is handled by the SARIMA machinery instead of being wrongly assumed independent.</p>
+<p>To demonstrate it we need an exogenous variable. Air Passengers has no natural one, so we use a
+<strong>deterministic calendar feature</strong> — a summer indicator — which is legitimate because the calendar is
+genuinely known in advance.</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">summer_flag</span><span class="p">(</span><span class="n">index</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;1 for the peak travel months, 0 otherwise. Known in advance for any future date.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;summer&quot;</span><span class="p">:</span> <span class="n">index</span><span class="o">.</span><span class="n">month</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)},</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
+
+<span class="n">exog_train</span><span class="p">,</span> <span class="n">exog_test</span> <span class="o">=</span> <span class="n">summer_flag</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">index</span><span class="p">),</span> <span class="n">summer_flag</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+
+<span class="n">model_x</span> <span class="o">=</span> <span class="n">SARIMAX</span><span class="p">(</span><span class="n">log_train</span><span class="p">,</span> <span class="n">exog</span><span class="o">=</span><span class="n">exog_train</span><span class="p">,</span>
+                  <span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">seasonal_order</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">disp</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">model_x</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="n">pred_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">model_x</span><span class="o">.</span><span class="n">get_forecast</span><span class="p">(</span><span class="n">steps</span><span class="o">=</span><span class="n">TEST_MONTHS</span><span class="p">,</span> <span class="n">exog</span><span class="o">=</span><span class="n">exog_test</span><span class="p">)</span><span class="o">.</span><span class="n">predicted_mean</span><span class="p">)</span>
+<span class="n">pred_x</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">test</span><span class="o">.</span><span class="n">index</span>
+
+<span class="n">comparison</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">&quot;SARIMA (no exog)&quot;</span><span class="p">:</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">train</span><span class="p">),</span>
+    <span class="s2">&quot;SARIMAX (+summer)&quot;</span><span class="p">:</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">pred_x</span><span class="p">,</span> <span class="n">train</span><span class="p">),</span>
+<span class="p">})</span><span class="o">.</span><span class="n">T</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">comparison</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">AIC  without exog: </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">aic</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="se">\n</span><span class="s2">AIC  with exog:    </span><span class="si">{</span><span class="n">model_x</span><span class="o">.</span><span class="n">aic</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>==============================================================================
+                 coef    std err          z      P&gt;|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+summer      9.786e-11   4.63e-11      2.114      0.035    7.13e-12    1.89e-10
+ma.L1         -0.3422      0.087     -3.920      0.000      -0.513      -0.171
+ma.S.L12      -0.5404      0.105     -5.154      0.000      -0.746      -0.335
+sigma2         0.0014      0.000      7.863      0.000       0.001       0.002
+==============================================================================
+
+                     MAE   RMSE  MAPE  MASE
+SARIMA (no exog)   39.45  43.19  8.52  1.38
+SARIMAX (+summer)  39.46  43.19  8.52  1.38
+
+AIC  without exog: -389.01
+AIC  with exog:    -387.01
+</code></pre></div>
+<p>This result is worth more than a success would have been. The summer indicator adds essentially nothing —
+the metrics barely move and AIC gets <em>worse</em> once the extra parameter is charged for.</p>
+<p>The reason is that the information is <strong>already in the model</strong>. The seasonal terms <span class="arithmatex">\((0,1,1)_{12}\)</span> have
+learned the entire monthly profile from the data, and "it is summer" is a strictly poorer description of
+that profile than the twelve-month pattern SARIMA already holds. The exogenous variable is redundant.</p>
+<p>The lesson generalises: <strong>exogenous variables help only when they carry information the series' own
+history does not.</strong> A promotion calendar, a competitor's price change, a policy shift — those are genuinely
+external. Anything that recurs on a fixed calendar cycle is already covered by the seasonal terms. When
+you do use exogenous variables, remember the practical catch: to forecast <span class="arithmatex">\(h\)</span> steps ahead you need
+<span class="arithmatex">\(\mathbf{u}_t\)</span> for those future periods, so either it is known in advance (calendars, holidays) or you must
+forecast it too — and its error then propagates into yours.</p>
+<hr />
+<h2 id="12-your-turn">12. Your turn</h2>
+<p>Add cells below each exercise. Exercises 4 and 5 consolidate the big ideas.</p>
+<p><strong>Exercise 1 — Feel the sign convention.</strong>
+Simulate <span class="arithmatex">\(y_t = 0.8y_{t-1} + Z_t\)</span> correctly (<code>ar=[1, -0.8]</code>), then repeat with the sign mistake
+(<code>ar=[1, 0.8]</code>). Plot both and compare their ACFs. What process did the buggy call actually generate, and
+why does nothing raise an error?</p>
+<p><strong>Exercise 2 — Identification drill.</strong>
+Write a function that takes a series, plots its ACF and PACF, and prints your suggested <span class="arithmatex">\((p, q)\)</span>. Test it
+on five simulated processes whose orders you choose but do not reveal until after you have read the
+plots. How often does the eyeball agree with an AIC grid search? Where does it fail — and does the
+failure pattern match the ARMA warning in Section 5?</p>
+<p><strong>Exercise 3 — AIC versus BIC.</strong>
+Run the Section 7 grid search on ARMA(2,2) data at <span class="arithmatex">\(n = 200\)</span>, <span class="arithmatex">\(n = 1000\)</span> and <span class="arithmatex">\(n = 5000\)</span>. Record which
+orders AIC and BIC each select at each size. BIC's penalty grows with <span class="arithmatex">\(\log n\)</span> — does it become <em>more</em>
+or <em>less</em> likely to find the true model as <span class="arithmatex">\(n\)</span> grows, and does AIC over-select as theory predicts?</p>
+<p><strong>Exercise 4 — Break the model, then read the residuals.</strong>
+Deliberately fit the wrong model to Air Passengers: SARIMA<span class="arithmatex">\((0,1,1)(0,0,0)_{12}\)</span> — that is, no seasonal
+terms. Run the full diagnostic suite. Which Ljung-Box lags fail, and where exactly are the spikes in the
+residual ACF? Show how those spikes would have told you the seasonal orders were missing even without
+knowing the answer.</p>
+<p><strong>Exercise 5 — A genuinely useful exogenous variable.</strong>
+Section 11 failed because the summer flag was redundant. Construct one that is not: split Air Passengers
+at 1955 and add an exogenous step variable marking the later era (a crude proxy for the arrival of jet
+aircraft). Does it improve AIC or the test metrics? Then argue, in a few sentences, whether this is a
+legitimate feature or a form of hindsight that would be unavailable in a real forecasting setting.</p>
+<hr />
+<h2 id="13-if-you-remember-nothing-else">13. If you remember nothing else</h2>
+<ol>
+<li>
+<p><strong>ARIMA models autocorrelation, not components.</strong> <strong>AR</strong> regresses on past <em>values</em> (infinite fading
+   memory), <strong>MA</strong> on past <em>shocks</em> (finite memory that stops dead), <strong>I</strong> is the differencing from
+   Module 10 promoted to a parameter. "MA" here has nothing to do with a rolling mean.</p>
+</li>
+<li>
+<p><strong>The correlogram identifies the model — up to a point.</strong> AR(p): <strong>PACF cuts off at <span class="arithmatex">\(p\)</span></strong>. MA(q):
+   <strong>ACF cuts off at <span class="arithmatex">\(q\)</span></strong>. Mixed ARMA: <em>neither</em> cuts off, so the plots give only upper bounds and you
+   must fall back on an information criterion.</p>
+</li>
+<li>
+<p><strong>SARIMA<span class="arithmatex">\((p,d,q)(P,D,Q)_s\)</span> multiplies a seasonal model onto the non-seasonal one.</strong> Read the low lags
+   for <span class="arithmatex">\(p, q\)</span> and the lags at multiples of <span class="arithmatex">\(s\)</span> for <span class="arithmatex">\(P, Q\)</span>. The multiplication generates cross terms (like
+   <span class="arithmatex">\(y_{t-13}\)</span>) for free, which is why so few parameters go so far.</p>
+</li>
+<li>
+<p><strong>AIC and BIC trade fit against complexity</strong> (<span class="arithmatex">\(-2\log\hat{L}\)</span> plus <span class="arithmatex">\(2K\)</span> or <span class="arithmatex">\(K\log n\)</span>). Lower is better;
+   BIC is harsher and prefers smaller models. Compare only across models with the <strong>same <span class="arithmatex">\(d\)</span> on the same
+   data</strong>, and treat differences of 1–2 units as ties broken by parsimony.</p>
+</li>
+<li>
+<p><strong>Residual diagnostics are not optional.</strong> Uncorrelated, zero-mean, roughly normal residuals are the
+   licence to forecast. <strong>Ljung-Box</strong> tests them jointly, and here a <strong>large p-value is the good
+   outcome</strong>. Structure left in the residual ACF tells you <em>which</em> order to fix — a lag-<span class="arithmatex">\(s\)</span> spike means
+   seasonal, a lag-1 spike means non-seasonal.</p>
+</li>
+<li>
+<p><strong>Follow the Box-Jenkins loop and it works.</strong> On Air Passengers, visual identification, AIC and BIC all
+   converged on SARIMA<span class="arithmatex">\((0,1,1)(0,1,1)_{12}\)</span> — the airline model — whose residuals passed every check and
+   which cut the best baseline's error roughly in half on data it had never seen. But its <em>test</em>
+   residuals were still all positive: clean in-sample diagnostics prove the model captured the structure
+   in the training data, not that the future will keep obeying it. Hold out a test set regardless.</p>
+</li>
+<li>
+<p><strong>Exogenous variables (the X) help only when they add information the series' own history lacks.</strong> A
+   summer flag added nothing because the seasonal terms already knew. And any exogenous variable must be
+   <em>available for the future periods you forecast</em>.</p>
+</li>
+<li>
+<p><strong>Holt-Winters beat SARIMA on this series.</strong> The simpler, older, componential model won because the
+   data's structure (smooth trend, stable multiplicative season) is exactly what it represents directly.
+   Sophistication is not quality. Fit the simple model and the complex one, score both on held-out data,
+   and prefer the winner — not the one with the longer derivation.</p>
+</li>
+</ol>
+<hr />
+<h2 id="14-further-reading-and-glossary">14. Further reading and glossary</h2>
+<h3 id="further-reading">Further reading</h3>
+<ul>
+<li>Hyndman &amp; Athanasopoulos, <a href="https://otexts.com/fpp3/arima.html"><em>Forecasting: Principles and Practice</em></a>,
+  Chapter 9 — the clearest treatment of ARIMA in print, free online, with excellent ACF/PACF intuition.</li>
+<li>Box, Jenkins, Reinsel &amp; Ljung, <em>Time Series Analysis: Forecasting and Control</em> — the original
+  methodology. The airline model of Section 8 comes from this book, fitted to this dataset.</li>
+<li>Shumway &amp; Stoffer, <a href="https://www.stat.pitt.edu/stoffer/tsa4/"><em>Time Series Analysis and Its Applications</em></a>
+  — the standard graduate text; Chapter 3 covers ARMA and SARIMA with full derivations.</li>
+<li><a href="https://www.statsmodels.org/stable/generated/statsmodels.tsa.statespace.sarimax.SARIMAX.html">statsmodels SARIMAX documentation</a>
+  — the current API, including exogenous regressors and the state-space machinery underneath.</li>
+<li><a href="https://alkaline-ml.com/pmdarima/"><code>pmdarima</code>'s <code>auto_arima</code></a> — an automated stepwise search that
+  packages Sections 7 and 8 into one call. Useful once you can do it by hand; misleading before.</li>
+</ul>
+<h3 id="glossary">Glossary</h3>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Backshift operator <span class="arithmatex">\(B\)</span></strong></td>
+<td><span class="arithmatex">\(B y_t = y_{t-1}\)</span>; makes <span class="arithmatex">\(\nabla^d = (1-B)^d\)</span></td>
+</tr>
+<tr>
+<td><strong>AR(p)</strong></td>
+<td>Autoregressive: <span class="arithmatex">\(y_t\)</span> is a linear function of its own <span class="arithmatex">\(p\)</span> past values</td>
+</tr>
+<tr>
+<td><strong>MA(q)</strong></td>
+<td>Moving average: <span class="arithmatex">\(y_t\)</span> is a linear function of the last <span class="arithmatex">\(q\)</span> shocks (not a rolling mean)</td>
+</tr>
+<tr>
+<td><strong>ARMA(p,q)</strong></td>
+<td>Both, on a stationary series</td>
+</tr>
+<tr>
+<td><strong>ARIMA(p,d,q)</strong></td>
+<td>ARMA applied after <span class="arithmatex">\(d\)</span> differences</td>
+</tr>
+<tr>
+<td><strong>SARIMA<span class="arithmatex">\((p,d,q)(P,D,Q)_s\)</span></strong></td>
+<td>ARIMA times a seasonal ARIMA operating at lag <span class="arithmatex">\(s\)</span></td>
+</tr>
+<tr>
+<td><strong>SARIMAX</strong></td>
+<td>SARIMA plus exogenous regressors</td>
+</tr>
+<tr>
+<td><strong><span class="arithmatex">\(\phi_i\)</span> / <span class="arithmatex">\(\theta_j\)</span></strong></td>
+<td>AR / MA coefficients (non-seasonal); <span class="arithmatex">\(\Phi\)</span>, <span class="arithmatex">\(\Theta\)</span> seasonal</td>
+</tr>
+<tr>
+<td><strong>White noise <span class="arithmatex">\(Z_t\)</span></strong></td>
+<td>Independent zero-mean constant-variance shocks; the unforecastable part</td>
+</tr>
+<tr>
+<td><strong>Random walk</strong></td>
+<td>AR(1) with <span class="arithmatex">\(\phi_1 = 1\)</span>; the unit-root case</td>
+</tr>
+<tr>
+<td><strong>Cut off / tail off</strong></td>
+<td>Drops abruptly to zero after a lag / decays gradually — the identification signature</td>
+</tr>
+<tr>
+<td><strong>Yule-Walker equations</strong></td>
+<td>Linear system relating AR coefficients to autocorrelations</td>
+</tr>
+<tr>
+<td><strong>AIC / BIC</strong></td>
+<td><span class="arithmatex">\(-2\log\hat{L} + 2K\)</span> / <span class="arithmatex">\(+K\log n\)</span>; lower is better, BIC is harsher</td>
+</tr>
+<tr>
+<td><strong>Ljung-Box test</strong></td>
+<td>Joint test that the first <span class="arithmatex">\(h\)</span> residual autocorrelations are zero; want p &gt; 0.05</td>
+</tr>
+<tr>
+<td><strong>Airline model</strong></td>
+<td>SARIMA<span class="arithmatex">\((0,1,1)(0,1,1)_{12}\)</span> on a logged series; Box &amp; Jenkins' fit to this data</td>
+</tr>
+<tr>
+<td><strong>Endogenous / exogenous</strong></td>
+<td>Explained by the model / supplied from outside as a given input</td>
+</tr>
+<tr>
+<td><strong>Prediction interval</strong></td>
+<td>Range expected to contain the future value with stated probability; widens with horizon</td>
+</tr>
+<tr>
+<td><strong>Box-Jenkins methodology</strong></td>
+<td>Identify → estimate → check residuals → forecast, looping on failure</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../11_exponential_smoothing/" class="btn btn-neutral float-left" title="Exponential Smoothing"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../project/00_final_project/" class="btn btn-neutral float-right" title="Project Work">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright &copy; 2026 - Aayush Raj Regmi</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../11_exponential_smoothing/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../project/00_final_project/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../javascripts/mathjax.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>K-Nearest Neighbors - DCS 404</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "K-Nearest Neighbors";
+        var mkdocs_page_input_path = "DCS404/09_knn.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> DCS 404
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Welcome</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../InstallationGuide/">Installation Guide</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Machine Learning and AI</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../01_introduction_to_machine_learning/">Introduction to Machine Learning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02_ml_workflow/">ML Workflow</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../03_regression/">Regression</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04_gradient_descent/">Gradient Descent</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../05_regularization/">Regularization</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../06_logistic_regression/">Classification & Logistic Regression</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07_decision_trees/">Decision Trees</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../08_evaluation_metrics/">Evaluation Metrics</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">K-Nearest Neighbors</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-work-through-this">How to work through this</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#learning-objectives">Learning objectives</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#1-two-ways-to-generalize">1. Two ways to generalize</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#from-rote-learning-to-neighbors">From rote learning to neighbors</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-distance-the-heart-of-the-algorithm">2. Distance: the heart of the algorithm</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#the-post-office-problem">The post office problem</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#euclidean-distance-as-the-crow-flies">Euclidean distance — as the crow flies</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#manhattan-distance-as-the-taxi-drives">Manhattan distance — as the taxi drives</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#minkowski-distance-both-of-the-above-one-dial">Minkowski distance — both of the above, one dial</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#solving-the-post-office-problem">Solving the post office problem</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-the-k-nn-algorithm">3. The K-NN algorithm</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-k-nn-from-scratch">4. K-NN from scratch</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-k-is-the-bias-variance-dial">5. K is the bias-variance dial</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#k-1-trust-one-witness">K = 1: trust one witness</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#turning-the-dial">Turning the dial</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#weighted-voting-neighbors-arent-all-equal">Weighted voting: neighbors aren't all equal</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-the-scale-trap">6. The scale trap</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-the-curse-of-dimensionality">7. The curse of dimensionality</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#8-k-nn-regression">8. K-NN regression</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#an-honest-rematch-knn-vs-linear-regression">An honest rematch: KNN vs. linear regression</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#9-making-it-fast-kd-trees-and-ball-trees">9. Making it fast: KD-trees and ball trees</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#kd-trees-binary-search-for-space">KD-trees: binary search for space</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#ball-trees-for-higher-dimensions">Ball trees: for higher dimensions</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#in-scikit-learn-already-done">In scikit-learn: already done</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#10-the-verdict-on-k-nn">10. The verdict on K-NN</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#11-your-turn">11. Your turn</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#12-if-you-remember-nothing-else">12. If you remember nothing else</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#13-further-reading-and-glossary">13. Further reading and glossary</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#further-reading">Further reading</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#glossary">Glossary</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Time Series Analysis</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../10_time_series_foundations/">Time Series Foundations</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../11_exponential_smoothing/">Exponential Smoothing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../12_arima_models/">ARIMA and SARIMA Models</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Final Project</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../project/00_final_project/">Project Work</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">DCS 404</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Machine Learning and AI</li>
+      <li class="breadcrumb-item active">K-Nearest Neighbors</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="k-nearest-neighbors-learning-by-looking-around">K-Nearest Neighbors: Learning by Looking Around</h1>
+<p><strong>DCS 404 · Data Science and Machine Learning</strong></p>
+<hr />
+<p>Every model in this course so far has <em>trained</em>. Linear and logistic regression ran gradient descent until
+their coefficients settled; decision trees grew and pruned themselves into shape. Training distilled the
+dataset into a compact artifact — a handful of weights, a flowchart — and then the data itself could be
+thrown away.</p>
+<p>Today's algorithm refuses to distill. <strong>K-Nearest Neighbors (KNN)</strong> just <em>keeps the entire training set</em>,
+and when a new sample arrives, it answers by analogy: <em>find the <span class="arithmatex">\(K\)</span> stored examples most similar to this
+one, and let them vote</em> (or, for regression, average them). That's the whole algorithm. No cost function,
+no gradients, no coefficients — the "model" <em>is</em> the memorized data.</p>
+<p>This makes KNN the simplest serious algorithm in machine learning, and also the most honest mirror of a
+deep assumption we've been making all along: <strong>similar inputs have similar outputs</strong>. KNN bets everything
+on that one idea. In exchange, it surfaces questions the other models let us dodge: what exactly does
+<em>similar</em> mean (distance metrics)? How many neighbors should vote (<span class="arithmatex">\(K\)</span> — our old friend, the bias-variance
+dial, in its purest form)? And what happens to "nearness" itself when features live on wild scales, or when
+there are hundreds of dimensions? By the end, you'll also see why the <em>prediction</em> — free for every earlier
+model — is the expensive step here, and how clever data structures (KD-trees, ball trees) rescue it.</p>
+<h2 id="how-to-work-through-this">How to work through this</h2>
+<p>The usual rhythm: run every code cell (<code>Shift + Enter</code>), study the output, <em>then</em> read the commentary.
+Cells build on each other, so if something errors, run from the top.</p>
+<p>The module is in three acts:</p>
+<ol>
+<li><strong>Sections 1–4</strong> build the algorithm: instance-based learning, distance metrics (the post office
+   problem), the voting scheme, and a from-scratch implementation checked against scikit-learn.</li>
+<li><strong>Sections 5–7</strong> are the practical hazards: choosing <span class="arithmatex">\(K\)</span> (bias-variance again), the scale trap that
+   silently breaks distance, and the curse of dimensionality.</li>
+<li><strong>Sections 8–10</strong> finish the story: KNN for regression (with a surprise win over linear regression),
+   how KD-trees and ball trees make neighbor search fast, and an honest pros/cons verdict.</li>
+</ol>
+<p>Old friends return throughout: iris, the diabetes data, the Advertising data, and the noisy sine wave.</p>
+<h2 id="learning-objectives">Learning objectives</h2>
+<p>After completing this module you will be able to:</p>
+<ul>
+<li>Contrast <strong>model-based</strong> and <strong>instance-based (lazy) learning</strong>, and place KNN in the second family.</li>
+<li>State the properties of a <strong>distance metric</strong> and compute <strong>Euclidean</strong>, <strong>Manhattan</strong>, and general
+  <strong>Minkowski</strong> distances.</li>
+<li>Implement a KNN classifier <strong>from scratch</strong> with numpy, and use scikit-learn's <code>KNeighborsClassifier</code> /
+  <code>KNeighborsRegressor</code>.</li>
+<li>Explain the effect of <span class="arithmatex">\(K\)</span> on the decision boundary in <strong>bias-variance</strong> terms, and choose <span class="arithmatex">\(K\)</span> with a
+  validation sweep; describe <strong>distance-weighted</strong> voting.</li>
+<li>Demonstrate why <strong>feature scaling is mandatory</strong> for KNN, and what noisy/irrelevant features (the
+  <strong>curse of dimensionality</strong>) do to it.</li>
+<li>Use KNN for <strong>regression</strong>, describe its step-shaped fit and its inability to extrapolate.</li>
+<li>Sketch how <strong>KD-trees</strong> and <strong>ball trees</strong> accelerate nearest-neighbor search, and list KNN's practical
+  pros and cons.</li>
+</ul>
+<h2 id="setup">Setup</h2>
+<p>Run this once. Libraries, plotting style, and the two returning datasets (diabetes and Advertising).</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.neighbors</span><span class="w"> </span><span class="kn">import</span> <span class="n">KNeighborsClassifier</span><span class="p">,</span> <span class="n">KNeighborsRegressor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">StandardScaler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_pipeline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_iris</span><span class="p">,</span> <span class="n">load_wine</span><span class="p">,</span> <span class="n">make_classification</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.inspection</span><span class="w"> </span><span class="kn">import</span> <span class="n">DecisionBoundaryDisplay</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">classification_report</span><span class="p">,</span> <span class="n">mean_absolute_error</span><span class="p">,</span> <span class="n">r2_score</span>
+
+<span class="c1"># A consistent look for every plot in this notebook</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+    <span class="s2">&quot;figure.figsize&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">),</span>
+    <span class="s2">&quot;figure.dpi&quot;</span><span class="p">:</span> <span class="mi">110</span><span class="p">,</span>
+    <span class="s2">&quot;axes.grid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">&quot;grid.alpha&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="s2">&quot;axes.spines.top&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;axes.spines.right&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;font.size&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_palette</span><span class="p">(</span><span class="s2">&quot;deep&quot;</span><span class="p">)</span>
+<span class="n">RANDOM_STATE</span> <span class="o">=</span> <span class="mi">42</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">load_csv</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;data/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;notebooks/data/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)]:</span>
+        <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> from: </span><span class="si">{</span><span class="n">candidate</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">. Expected it in a data/ folder next to the notebook.&quot;</span><span class="p">)</span>
+
+<span class="n">diabetes</span> <span class="o">=</span> <span class="n">load_csv</span><span class="p">(</span><span class="s2">&quot;diabetes.csv&quot;</span><span class="p">)</span>
+<span class="n">ads</span> <span class="o">=</span> <span class="n">load_csv</span><span class="p">(</span><span class="s2">&quot;Advertising.csv&quot;</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Loaded diabetes.csv from: data/diabetes.csv
+Loaded Advertising.csv from: data/Advertising.csv
+</code></pre></div>
+<hr />
+<h2 id="1-two-ways-to-generalize">1. Two ways to generalize</h2>
+<p>Think about how <em>people</em> handle a new situation. Sometimes we apply a rule we've internalized
+("red sky at night, sailor's delight"). Sometimes we just recall similar past cases ("the last two times a
+restaurant looked like this, the food was great"). Machine learning has both temperaments:</p>
+<ul>
+<li>
+<p><strong>Model-based learning</strong> — everything so far in this course. Training data goes in, a <em>parameterized
+  hypothesis</em> <span class="arithmatex">\(h(x)\)</span> comes out (coefficients, tree splits), and the data can be discarded. Training is
+  slow and thoughtful; prediction is instant — plug into the formula.</p>
+</li>
+<li>
+<p><strong>Instance-based learning</strong> (also <em>lazy learning</em> or <em>memory-based learning</em>) — the system <strong>stores the
+  training examples themselves</strong> and postpones all work to prediction time. When a query arrives, it
+  hunts through memory for <em>similar</em> stored examples and derives the answer from them, leaning entirely on
+  one assumption: <strong>similar inputs have similar targets</strong>.</p>
+</li>
+</ul>
+<div align="center">
+<img src="../assets/knn_instance_learning.gif" width="560">
+
+*Figure 1 — Instance-based learning: store everything, answer new queries by consulting the most similar
+stored examples.*
+</div>
+
+<p>The trade flips every cost we're used to: "training" is instant (it's just storage), but <em>prediction</em>
+requires touching the whole dataset, and the model's memory footprint is the dataset. The hypothesis also
+grows with the data — more examples means a finer-grained answer machine, with no fixed formula anywhere.</p>
+<h3 id="from-rote-learning-to-neighbors">From rote learning to neighbors</h3>
+<p>The crudest instance-based learner is <strong>rote learning</strong>: answer only if the new sample <em>exactly matches</em> a
+stored one. Consider a tiny dataset for predicting whether a restaurant is worth queueing for:</p>
+<table>
+<thead>
+<tr>
+<th>Id</th>
+<th>Food quality</th>
+<th>Ambience</th>
+<th>Hygiene</th>
+<th>Service</th>
+<th>Worth the queue?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>good</td>
+<td>classy</td>
+<td>clean</td>
+<td>fast</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td>2</td>
+<td>good</td>
+<td>casual</td>
+<td>clean</td>
+<td>fast</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td>3</td>
+<td>bad</td>
+<td>casual</td>
+<td>dirty</td>
+<td>slow</td>
+<td><strong>no</strong></td>
+</tr>
+<tr>
+<td>4</td>
+<td>good</td>
+<td>classy</td>
+<td>dirty</td>
+<td>slow</td>
+<td><strong>no</strong></td>
+</tr>
+<tr>
+<td>5</td>
+<td>good</td>
+<td>casual</td>
+<td>clean</td>
+<td>slow</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td>6</td>
+<td>bad</td>
+<td>classy</td>
+<td>clean</td>
+<td>fast</td>
+<td><strong>no</strong></td>
+</tr>
+</tbody>
+</table>
+<p>A new restaurant — (good, classy, clean, <strong>slow</strong>) — has no exact match in the table, so rote learning
+simply shrugs. That's a hopeless failure mode: exact matches almost never happen in real, continuous data.</p>
+<p>The fix is to relax "identical" into "<strong>closest</strong>": find the stored example <em>most similar</em> to the query and
+copy its label — the <strong>nearest neighbor (1-NN)</strong> rule. Our new restaurant's closest match is Id 5 (three of
+four features agree), which says <strong>yes</strong>. And once "closest" is doing all the work, one question becomes
+urgent — what exactly does <em>close</em> mean?</p>
+<hr />
+<h2 id="2-distance-the-heart-of-the-algorithm">2. Distance: the heart of the algorithm</h2>
+<h3 id="the-post-office-problem">The post office problem</h3>
+<p>You're standing at position (12, 9) in a city and need to mail a letter. Seven post offices are scattered
+around you:</p>
+<div align="center">
+<img src="../assets/knn_post_office.png" width="560">
+
+*Figure 2 — The post office problem: which one is "nearest"?*
+</div>
+
+<p>The question is unanswerable until you define <strong>distance</strong> — and that definition is a genuine choice, not
+a given. Formally, a function <span class="arithmatex">\(d(x, y)\)</span> is a <strong>distance metric</strong> if for all points <span class="arithmatex">\(x, y, z\)</span>:</p>
+<ol>
+<li><strong>Non-negativity:</strong> <span class="arithmatex">\(d(x,y) \geq 0\)</span> — distances are never negative.</li>
+<li><strong>Identity:</strong> <span class="arithmatex">\(d(x,y) = 0 \iff x = y\)</span> — zero distance means the same point.</li>
+<li><strong>Symmetry:</strong> <span class="arithmatex">\(d(x,y) = d(y,x)\)</span> — the trip there equals the trip back.</li>
+<li><strong>Triangle inequality:</strong> <span class="arithmatex">\(d(x,z) \leq d(x,y) + d(y,z)\)</span> — detours never help.</li>
+</ol>
+<p>Many functions satisfy these; three matter most for us.</p>
+<h3 id="euclidean-distance-as-the-crow-flies">Euclidean distance — as the crow flies</h3>
+<p>The straight-line distance, Pythagoras in <span class="arithmatex">\(n\)</span> dimensions:</p>
+<div class="arithmatex">\[d(x, y) = \sqrt{\sum_{i=1}^{n} (x_i - y_i)^2}\]</div>
+<div align="center">
+<img src="../assets/knn_euclidean.png" width="440">
+
+*Figure 3 — Euclidean distance: the hypotenuse.*
+</div>
+
+<h3 id="manhattan-distance-as-the-taxi-drives">Manhattan distance — as the taxi drives</h3>
+<p>In a gridded city you can't cut through buildings; you travel along the blocks. Sum the absolute
+differences per coordinate:</p>
+<div class="arithmatex">\[d(x, y) = \sum_{i=1}^{n} |x_i - y_i|\]</div>
+<div align="center">
+<img src="../assets/knn_manhattan.png" width="440">
+
+*Figure 4 — Manhattan (taxicab) distance: along the grid, never through it.*
+</div>
+
+<h3 id="minkowski-distance-both-of-the-above-one-dial">Minkowski distance — both of the above, one dial</h3>
+<div class="arithmatex">\[d(x, y) = \left( \sum_{i=1}^{n} |x_i - y_i|^p \right)^{1/p}\]</div>
+<p>Set <span class="arithmatex">\(p = 1\)</span> and you get Manhattan; <span class="arithmatex">\(p = 2\)</span>, Euclidean. Scikit-learn's KNN exposes exactly this dial (the
+<code>p</code> parameter, default 2). Larger <span class="arithmatex">\(p\)</span> weights the biggest single-coordinate gap ever more heavily.</p>
+<p><em>(One more worth knowing by name: </em><em>Mahalanobis distance</em><em>, which measures distance from a point to a
+distribution — it rescales and de-correlates the features using their covariance matrix before applying
+Euclidean distance. It's the principled fix when features are correlated; we'll meet its cheaper cousin,
+plain standardization, in Section 6.)</em></p>
+<h3 id="solving-the-post-office-problem">Solving the post office problem</h3>
+<p>In a real city we travel by blocks, so Manhattan distance is the honest metric here. The <strong>brute-force</strong>
+solution: measure the distance to <em>every</em> candidate, take the minimum —</p>
+<div class="highlight"><pre><span></span><code><span class="n">post_offices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">11</span><span class="p">),</span> <span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">10</span><span class="p">)])</span>
+<span class="n">you</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">12</span><span class="p">,</span> <span class="mi">9</span><span class="p">])</span>
+
+<span class="n">manhattan_distances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">post_offices</span> <span class="o">-</span> <span class="n">you</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="p">(</span><span class="n">ox</span><span class="p">,</span> <span class="n">oy</span><span class="p">),</span> <span class="n">dist</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">post_offices</span><span class="p">,</span> <span class="n">manhattan_distances</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Post office (</span><span class="si">{</span><span class="n">ox</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">oy</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="n">dist</span><span class="si">}</span><span class="s2"> blocks&quot;</span><span class="p">)</span>
+
+<span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="n">post_offices</span><span class="p">[</span><span class="n">manhattan_distances</span><span class="o">.</span><span class="n">argmin</span><span class="p">()]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">→ Nearest post office: (</span><span class="si">{</span><span class="n">nx</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">ny</span><span class="si">}</span><span class="s2">), </span><span class="si">{</span><span class="n">manhattan_distances</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">}</span><span class="s2"> blocks away&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Post office (6, 12): 9 blocks
+Post office (3, 7): 11 blocks
+Post office (10, 10): 3 blocks
+Post office (8, 4): 9 blocks
+Post office (15, 2): 10 blocks
+Post office (12, 11): 2 blocks
+Post office (14, 10): 3 blocks
+
+→ Nearest post office: (12, 11), 2 blocks away
+</code></pre></div>
+<p>Post office (12, 11) wins at 2 blocks. Note what the computation cost: one distance per stored point —
+<span class="arithmatex">\(O(n \cdot d)\)</span> for <span class="arithmatex">\(n\)</span> points in <span class="arithmatex">\(d\)</span> dimensions, <em>every time you ask</em>. Seven post offices, trivial; seven
+million products in a recommender system, a real problem. Pin that thought for Section 9.</p>
+<hr />
+<h2 id="3-the-k-nn-algorithm">3. The K-NN algorithm</h2>
+<p>One nearest neighbor is a fragile advisor — if the single closest stored example happens to be an outlier
+or mislabelled, the prediction is garbage. The obvious remedy is the one we use when buying a house: don't
+price it off <em>one</em> neighboring sale, consult the whole <strong>neighborhood</strong>. That's the "K" in KNN:</p>
+<p><strong>Hyperparameters</strong> (chosen before anything runs): the number of neighbors <span class="arithmatex">\(K\)</span> and the distance metric <span class="arithmatex">\(d\)</span>.</p>
+<p><strong>Training phase:</strong> store the training set <span class="arithmatex">\(D = \{(x_i, y_i)\}_{i=1}^{n}\)</span>. That's all.</p>
+<p><strong>Prediction phase</strong>, for a query <span class="arithmatex">\(x_t\)</span>:
+1. Compute <span class="arithmatex">\(d(x_t, x_i)\)</span> for every stored example.
+2. Take the <span class="arithmatex">\(K\)</span> examples with the smallest distances — the <em>neighborhood</em>.
+3. <strong>Classification:</strong> predict the <strong>majority vote</strong> of the neighborhood's labels.
+   <strong>Regression:</strong> predict the <strong>average</strong> (we'll get there in Section 8).</p>
+<div align="center">
+<img src="../assets/knn_voting.gif" width="560">
+
+*Figure 5 — KNN classification: the query point polls its $K$ closest neighbors and takes the majority.*
+</div>
+
+<p>Try it on the restaurant table with <span class="arithmatex">\(K = 3\)</span>: our query (good, classy, clean, slow) has neighbors Id 5
+(3 features shared, <strong>yes</strong>), Id 1 (3 shared, <strong>yes</strong>), and Id 4 (2 shared, <strong>no</strong>) — the vote is 2–1,
+prediction <strong>yes</strong>. Notice how the lone "no" got outvoted: that's exactly the robustness 1-NN lacked.</p>
+<p><em>(A tie-breaking practicality: for binary problems, choose an odd <span class="arithmatex">\(K\)</span> so the vote can't split evenly.)</em></p>
+<hr />
+<h2 id="4-k-nn-from-scratch">4. K-NN from scratch</h2>
+<p>An algorithm this simple deserves to be built by hand — the entire classifier is a dozen lines of numpy.
+Distance, sort, vote:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">knn_predict_one</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">x_new</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Classify a single sample by majority vote of its k nearest neighbors.&quot;&quot;&quot;</span>
+    <span class="n">distances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(((</span><span class="n">X_train</span> <span class="o">-</span> <span class="n">x_new</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>   <span class="c1"># Euclidean to every stored point</span>
+    <span class="n">nearest</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">distances</span><span class="p">)[:</span><span class="n">k</span><span class="p">]</span>                          <span class="c1"># indices of the k closest</span>
+    <span class="n">votes</span> <span class="o">=</span> <span class="n">y_train</span><span class="p">[</span><span class="n">nearest</span><span class="p">]</span>                                     <span class="c1"># their labels</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">votes</span><span class="p">)</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>                           <span class="c1"># majority vote</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">knn_classifier</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_new</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Classify every row of X_new.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">knn_predict_one</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X_new</span><span class="p">])</span>
+</code></pre></div>
+<p>Note there is no <code>fit</code> worth writing — "training" is the act of keeping <code>X_train</code> and <code>y_train</code> around.
+All the work lives in prediction, and its cost is visible in the code: for each query, a distance to <em>all</em>
+<span class="arithmatex">\(n\)</span> stored points (<span class="arithmatex">\(O(n \cdot d)\)</span>), plus the sort. Brute-force KNN prediction costs roughly
+<span class="arithmatex">\(O(k \, n \, d)\)</span> per batch of queries.</p>
+<p>Let's test it on iris (150 flowers, 4 measurements, 3 species) against scikit-learn's
+<code>KNeighborsClassifier</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="n">iris</span> <span class="o">=</span> <span class="n">load_iris</span><span class="p">()</span>
+<span class="n">X_ir_train</span><span class="p">,</span> <span class="n">X_ir_test</span><span class="p">,</span> <span class="n">y_ir_train</span><span class="p">,</span> <span class="n">y_ir_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">iris</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">iris</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">iris</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
+
+<span class="c1"># Ours</span>
+<span class="n">y_pred_scratch</span> <span class="o">=</span> <span class="n">knn_classifier</span><span class="p">(</span><span class="n">X_ir_train</span><span class="p">,</span> <span class="n">y_ir_train</span><span class="p">,</span> <span class="n">X_ir_test</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="c1"># Scikit-learn&#39;s</span>
+<span class="n">sk_knn</span> <span class="o">=</span> <span class="n">KNeighborsClassifier</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">sk_knn</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_ir_train</span><span class="p">,</span> <span class="n">y_ir_train</span><span class="p">)</span>
+<span class="n">y_pred_sklearn</span> <span class="o">=</span> <span class="n">sk_knn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_ir_test</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;From-scratch accuracy: </span><span class="si">{</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_ir_test</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred_scratch</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scikit-learn accuracy: </span><span class="si">{</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_ir_test</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred_sklearn</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Predictions identical: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">y_pred_scratch</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred_sklearn</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>From-scratch accuracy: 0.9778
+Scikit-learn accuracy: 0.9778
+Predictions identical: True
+</code></pre></div>
+<p>Identical predictions, ≈96% accuracy, and the entire algorithm fits on an index card. From here on we'll
+use scikit-learn's version — same logic, but with the fast search structures of Section 9 built in.</p>
+<hr />
+<h2 id="5-k-is-the-bias-variance-dial">5. K is the bias-variance dial</h2>
+<p><span class="arithmatex">\(K\)</span> is KNN's <em>only</em> real knob, and it is the purest form of the complexity dial we've been turning all
+course (polynomial degree, tree depth…). Let's watch it work.</p>
+<h3 id="k-1-trust-one-witness">K = 1: trust one witness</h3>
+<p>With <span class="arithmatex">\(K=1\)</span>, space is carved into one cell per training point — every location is claimed by whichever
+training point is closest. The resulting mosaic is called a <strong>Voronoi diagram</strong>, and its boundaries are the
+potential decision boundaries of 1-NN:</p>
+<div align="center">
+<img src="../assets/knn_voronoi.png" width="520">
+
+*Figure 6 — The Voronoi view of 1-NN: each training point rules its own cell, outliers included.*
+</div>
+
+<p>Every training point is perfectly classified — including the mislabelled and the freakish. Sound familiar?
+<span class="arithmatex">\(K=1\)</span> is KNN's version of the fully grown decision tree: <strong>zero bias, maximal variance</strong>, private fences
+around every noisy point.</p>
+<h3 id="turning-the-dial">Turning the dial</h3>
+<p>Let's see the whole range live, on a noisy 3-class dataset:</p>
+<div class="highlight"><pre><span></span><code><span class="n">X_syn</span><span class="p">,</span> <span class="n">y_syn</span> <span class="o">=</span> <span class="n">make_classification</span><span class="p">(</span>
+    <span class="n">n_samples</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">n_features</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_informative</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_redundant</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_repeated</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">n_classes</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">n_clusters_per_class</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">class_sep</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">51</span><span class="p">]):</span>
+    <span class="n">clf</span> <span class="o">=</span> <span class="n">KNeighborsClassifier</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_syn</span><span class="p">,</span> <span class="n">y_syn</span><span class="p">)</span>
+    <span class="n">DecisionBoundaryDisplay</span><span class="o">.</span><span class="n">from_estimator</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="n">X_syn</span><span class="p">,</span> <span class="n">response_method</span><span class="o">=</span><span class="s2">&quot;predict&quot;</span><span class="p">,</span>
+                                           <span class="n">multiclass_colors</span><span class="o">=</span><span class="s2">&quot;Pastel2&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X_syn</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">X_syn</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">y_syn</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Dark2&quot;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;K = </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;The decision boundary smooths as K grows&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.01</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../09_knn_files/09_knn_16_0.png" /></p>
+<p>Read the four panels as a story:</p>
+<ul>
+<li><strong>K = 1:</strong> jagged coastlines and tiny islands — one enclave per noisy point. Overfitting, drawn as a map.</li>
+<li><strong>K = 5, 15:</strong> the islands dissolve; boundaries follow the genuine class structure.</li>
+<li><strong>K = 51:</strong> so smooth it starts ignoring real detail — with <span class="arithmatex">\(K\)</span> approaching the dataset size, every
+  prediction drifts toward the <em>global</em> majority class. Underfitting.</li>
+</ul>
+<p>Small <span class="arithmatex">\(K\)</span> → <strong>high variance, low bias</strong> (decisions hang on one or two possibly-noisy points). Large <span class="arithmatex">\(K\)</span> →
+<strong>low variance, high bias</strong> (decisions average over so many neighbors that local structure is smoothed
+away). The sweet spot lives in between, and — as with every hyperparameter in this course — we find it by
+sweeping held-out accuracy. On the diabetes data (standardized; Section 6 explains why):</p>
+<div class="highlight"><pre><span></span><code><span class="n">X_diab</span> <span class="o">=</span> <span class="n">diabetes</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">&quot;Outcome&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">y_diab</span> <span class="o">=</span> <span class="n">diabetes</span><span class="p">[</span><span class="s2">&quot;Outcome&quot;</span><span class="p">]</span>
+<span class="n">Xd_train</span><span class="p">,</span> <span class="n">Xd_test</span><span class="p">,</span> <span class="n">yd_train</span><span class="p">,</span> <span class="n">yd_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">X_diab</span><span class="p">,</span> <span class="n">y_diab</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+
+<span class="n">k_values</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>                       <span class="c1"># odd values: no tied votes</span>
+<span class="n">train_acc</span><span class="p">,</span> <span class="n">test_acc</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">k_values</span><span class="p">:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">make_pipeline</span><span class="p">(</span><span class="n">StandardScaler</span><span class="p">(),</span> <span class="n">KNeighborsClassifier</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="n">k</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Xd_train</span><span class="p">,</span> <span class="n">yd_train</span><span class="p">)</span>
+    <span class="n">train_acc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">Xd_train</span><span class="p">,</span> <span class="n">yd_train</span><span class="p">))</span>
+    <span class="n">test_acc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">Xd_test</span><span class="p">,</span> <span class="n">yd_test</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">k_values</span><span class="p">,</span> <span class="n">train_acc</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;training accuracy&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">k_values</span><span class="p">,</span> <span class="n">test_acc</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;test accuracy&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;K (number of neighbors)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Accuracy&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Choosing K on the diabetes data&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">best_k</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">k_values</span><span class="p">)[</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">test_acc</span><span class="p">))]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;K=1:  train </span><span class="si">{</span><span class="n">train_acc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">, test </span><span class="si">{</span><span class="n">test_acc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">   ← memorization&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Best test accuracy </span><span class="si">{</span><span class="nb">max</span><span class="p">(</span><span class="n">test_acc</span><span class="p">)</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2"> at K = </span><span class="si">{</span><span class="n">best_k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../09_knn_files/09_knn_18_0.png" /></p>
+<div class="highlight"><pre><span></span><code>K=1:  train 100.0%, test 63.6%   ← memorization
+Best test accuracy 75.3% at K = 55
+</code></pre></div>
+<p>The signature curve of the whole course, one more time: at <span class="arithmatex">\(K=1\)</span> training accuracy is a perfect 100%
+(every point is its own nearest neighbor!) while test accuracy is the <em>worst on the chart</em>; test accuracy
+then climbs to a plateau in the middle <span class="arithmatex">\(K\)</span> range and sags as <span class="arithmatex">\(K\)</span> grows toward underfitting. In production
+you'd pick <span class="arithmatex">\(K\)</span> by cross-validation rather than a single test split — but the shape of the decision is
+exactly this.</p>
+<h3 id="weighted-voting-neighbors-arent-all-equal">Weighted voting: neighbors aren't all equal</h3>
+<p>Plain KNN gives every neighborhood member one vote, whether it's a hair's breadth away or at the far edge
+of the neighborhood. <strong>Distance-weighted KNN</strong> weights each vote by <span class="arithmatex">\(1/d\)</span> — closer neighbors speak louder.
+Scikit-learn: <code>weights="distance"</code> (default <code>"uniform"</code>).</p>
+<div class="highlight"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">11.5</span><span class="p">,</span> <span class="mf">4.4</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;uniform&quot;</span><span class="p">,</span> <span class="s2">&quot;distance&quot;</span><span class="p">]):</span>
+    <span class="n">clf</span> <span class="o">=</span> <span class="n">KNeighborsClassifier</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">w</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_syn</span><span class="p">,</span> <span class="n">y_syn</span><span class="p">)</span>
+    <span class="n">DecisionBoundaryDisplay</span><span class="o">.</span><span class="n">from_estimator</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="n">X_syn</span><span class="p">,</span> <span class="n">response_method</span><span class="o">=</span><span class="s2">&quot;predict&quot;</span><span class="p">,</span>
+                                           <span class="n">multiclass_colors</span><span class="o">=</span><span class="s2">&quot;Pastel2&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X_syn</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">X_syn</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">y_syn</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Dark2&quot;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;K = 15, weights=&quot;</span><span class="si">{</span><span class="n">w</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../09_knn_files/09_knn_20_0.png" /></p>
+<p>Weighting sharpens the boundary near dense regions (a very close neighbor can outvote several distant
+ones) while keeping the noise-resistance of a large <span class="arithmatex">\(K\)</span>. It also quietly solves vote ties. The cost: the
+model bends further toward individual training points — a little variance bought back. Treat
+<code>weights</code> as a second, smaller hyperparameter to validate alongside <span class="arithmatex">\(K\)</span>.</p>
+<hr />
+<h2 id="6-the-scale-trap">6. The scale trap</h2>
+<p>Here is KNN's most dangerous failure mode, and it makes <em>no error message</em>. Distance treats every feature's
+units at face value. Consider house data:</p>
+<table>
+<thead>
+<tr>
+<th>Area (sq. ft.)</th>
+<th>Price (K)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2424</td>
+<td>162000</td>
+</tr>
+<tr>
+<td>960</td>
+<td>1265</td>
+</tr>
+<tr>
+<td>840</td>
+<td>89450</td>
+</tr>
+</tbody>
+</table>
+<p>A difference of 1,000 in <em>price</em> and 1,000 in <em>area</em> contribute identically to Euclidean distance — yet
+1,000 sq. ft. is a mansion-sized difference while ₹1,000 in price is a rounding error. <strong>Whichever feature
+has the biggest numbers owns the distance</strong>, and the others might as well not exist.</p>
+<p>Watch it happen on the classic wine dataset (13 chemical measurements, 3 grape cultivars). One feature —
+<code>proline</code> — ranges in the hundreds-to-thousands while most others live between 0 and 5:</p>
+<div class="highlight"><pre><span></span><code><span class="n">wine</span> <span class="o">=</span> <span class="n">load_wine</span><span class="p">()</span>
+<span class="n">Xw_train</span><span class="p">,</span> <span class="n">Xw_test</span><span class="p">,</span> <span class="n">yw_train</span><span class="p">,</span> <span class="n">yw_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">wine</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">wine</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">wine</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
+
+<span class="c1"># Feature ranges: spot the bully</span>
+<span class="n">ranges</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">wine</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">wine</span><span class="o">.</span><span class="n">feature_names</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">([</span><span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ranges</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;max&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+
+<span class="n">knn_raw</span> <span class="o">=</span> <span class="n">KNeighborsClassifier</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Xw_train</span><span class="p">,</span> <span class="n">yw_train</span><span class="p">)</span>
+<span class="n">knn_scaled</span> <span class="o">=</span> <span class="n">make_pipeline</span><span class="p">(</span><span class="n">StandardScaler</span><span class="p">(),</span> <span class="n">KNeighborsClassifier</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Xw_train</span><span class="p">,</span> <span class="n">yw_train</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">KNN on raw features:          </span><span class="si">{</span><span class="n">knn_raw</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">Xw_test</span><span class="p">,</span><span class="w"> </span><span class="n">yw_test</span><span class="p">)</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;KNN on standardized features: </span><span class="si">{</span><span class="n">knn_scaled</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">Xw_test</span><span class="p">,</span><span class="w"> </span><span class="n">yw_test</span><span class="p">)</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>                     min     max
+alcohol             11.0    14.8
+alcalinity_of_ash   10.6    30.0
+magnesium           70.0   162.0
+proline            278.0  1680.0
+
+KNN on raw features:          72.2%
+KNN on standardized features: 94.4%
+</code></pre></div>
+<p><strong>Twenty-two percentage points</strong>, from one line of preprocessing. On the raw features, "nearest" secretly
+meant "nearest in proline" — twelve of the thirteen measurements were being ignored. Standardization
+(mean 0, variance 1 — the same <code>StandardScaler</code> from the Gradient Descent module) gives every feature an
+equal voice, and the other twelve suddenly matter.</p>
+<p>The rule is absolute: <strong>KNN must never see unscaled features.</strong> Contrast this with last module's decision
+trees, which are scale-<em>invariant</em> (a threshold test doesn't care about units) — a reminder that
+preprocessing needs differ per model family. And notice the pipeline detail: the scaler is <em>fitted on
+training data only</em>, exactly as the ML Workflow module taught, so no test-set information leaks into the
+distances.</p>
+<p><em>(Which features you feed KNN matters just as much as their scale — on iris, KNN with only the two sepal
+measurements reaches ~82% test accuracy, the two petal measurements ~93%, all four ~98%. Distance can only
+find structure in the features you give it. Exercise 2 has you verify this.)</em></p>
+<hr />
+<h2 id="7-the-curse-of-dimensionality">7. The curse of dimensionality</h2>
+<p>Scaling makes features equal — but what if some features simply <em>shouldn't</em> be there? Every irrelevant
+feature adds a dimension of pure noise to the distance calculation, and distance degrades gracelessly:
+in high-dimensional space, <em>everything becomes far from everything</em>, and the contrast between "nearest"
+and "farthest" neighbor shrinks toward nothing. This is the <strong>curse of dimensionality</strong>, and KNN — whose
+entire worldview is distance — suffers it worse than any model we've met.</p>
+<p>The demonstration writes itself: take iris (four honest features, ~91% accuracy at <span class="arithmatex">\(K=5\)</span> on this split)
+and progressively bury it in standardized random-noise features:</p>
+<div class="highlight"><pre><span></span><code><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">n_junk</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">]:</span>
+    <span class="n">Xtr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">X_ir_train</span><span class="p">,</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X_ir_train</span><span class="p">),</span> <span class="n">n_junk</span><span class="p">))]</span>
+    <span class="n">Xte</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">X_ir_test</span><span class="p">,</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X_ir_test</span><span class="p">),</span> <span class="n">n_junk</span><span class="p">))]</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">make_pipeline</span><span class="p">(</span><span class="n">StandardScaler</span><span class="p">(),</span> <span class="n">KNeighborsClassifier</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Xtr</span><span class="p">,</span> <span class="n">y_ir_train</span><span class="p">)</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;junk features&quot;</span><span class="p">:</span> <span class="n">n_junk</span><span class="p">,</span> <span class="s2">&quot;total dimensions&quot;</span><span class="p">:</span> <span class="mi">4</span> <span class="o">+</span> <span class="n">n_junk</span><span class="p">,</span>
+                    <span class="s2">&quot;test accuracy&quot;</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">Xte</span><span class="p">,</span> <span class="n">y_ir_test</span><span class="p">)})</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;junk features&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>total dimensions</th>
+      <th>test accuracy</th>
+    </tr>
+    <tr>
+      <th>junk features</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>4</td>
+      <td>0.911</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>9</td>
+      <td>0.844</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>24</td>
+      <td>0.778</td>
+    </tr>
+    <tr>
+      <th>50</th>
+      <td>54</td>
+      <td>0.711</td>
+    </tr>
+    <tr>
+      <th>100</th>
+      <td>104</td>
+      <td>0.556</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>Every batch of noise features drags accuracy down — with 100 of them, KNN has lost roughly a third of its
+accuracy <em>without a single informative feature being touched</em>. The four real measurements are still in
+there, pristine; they've simply been outvoted in the distance sum by a hundred coin-flips. (Note that
+scaling can't save us here — the noise features are already standardized. Scale fixes <em>loud</em> features;
+nothing in the distance fixes <em>meaningless</em> ones.)</p>
+<p>Two practical morals:</p>
+<ul>
+<li><strong>KNN needs curated features.</strong> Feature selection (recall the lasso's talent for it, from the
+  Regularization module) or dimensionality reduction is often a prerequisite, not an optimization.</li>
+<li><strong>KNN prefers wide data short</strong>: many samples, few dimensions. Hundreds of features with modest sample
+  counts is decision-tree or regularized-linear territory.</li>
+</ul>
+<hr />
+<h2 id="8-k-nn-regression">8. K-NN regression</h2>
+<p>Swap one word in the algorithm — <em>vote</em> becomes <em>average</em> — and KNN does regression:</p>
+<div class="arithmatex">\[\hat{y}_t = \frac{1}{K} \sum_{x_i \in \text{neighborhood}(x_t)} y_i\]</div>
+<p>Everything else (distance, <span class="arithmatex">\(K\)</span>, scaling, the curse) carries over unchanged. Scikit-learn:
+<code>KNeighborsRegressor</code>. Let's fit our old friend the noisy sine wave and look hard at the <em>shape</em> of what
+KNN produces:</p>
+<div class="highlight"><pre><span></span><code><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+<span class="n">x_sine</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">40</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">y_sine</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x_sine</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+
+<span class="n">x_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">20</span><span class="p">]):</span>
+    <span class="n">knn_reg</span> <span class="o">=</span> <span class="n">KNeighborsRegressor</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_sine</span><span class="p">,</span> <span class="n">y_sine</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x_sine</span><span class="p">,</span> <span class="n">y_sine</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:red&quot;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;training data&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_grid</span><span class="p">,</span> <span class="n">knn_reg</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x_grid</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;KNN, K=</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_grid</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x_grid</span><span class="p">),</span> <span class="s2">&quot;k--&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;true function&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;K = </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../09_knn_files/09_knn_29_0.png" /></p>
+<p>Three observations, all characteristic of KNN regression:</p>
+<ul>
+<li><strong>The fit is a staircase.</strong> Between two training points the neighborhood doesn't change, so neither does
+  the prediction — the function is piecewise-constant, never smooth. (Compare the smooth polynomials of
+  the Regression module.)</li>
+<li><strong><span class="arithmatex">\(K\)</span> is the same dial as ever.</strong> <span class="arithmatex">\(K=1\)</span> chases every noisy point (the staircase wiggles); <span class="arithmatex">\(K=20\)</span>
+  averages half the dataset and flattens the peaks it should preserve.</li>
+<li><strong>It never invented anything.</strong> The prediction is always an average of <em>observed</em> <span class="arithmatex">\(y\)</span> values — which is
+  robust, but has a sharp consequence at the edges:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="n">x_wide</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mi">600</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>      <span class="c1"># well beyond the training range [0, 1]</span>
+
+<span class="n">knn_reg</span> <span class="o">=</span> <span class="n">KNeighborsRegressor</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_sine</span><span class="p">,</span> <span class="n">y_sine</span><span class="p">)</span>
+<span class="n">lin_reg</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_sine</span><span class="p">,</span> <span class="n">y_sine</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x_sine</span><span class="p">,</span> <span class="n">y_sine</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:red&quot;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;training data&quot;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_wide</span><span class="p">,</span> <span class="n">knn_reg</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x_wide</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;KNN (K=5)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_wide</span><span class="p">,</span> <span class="n">lin_reg</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x_wide</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;linear regression&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.12</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.12</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;outside training range&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;KNN cannot extrapolate&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../09_knn_files/09_knn_31_0.png" /></p>
+<p>In the shaded zones — anywhere outside the training range — KNN's prediction goes <strong>perfectly flat</strong>: the
+nearest neighbors of a far-away query are just the boundary points, forever. Linear regression at least
+<em>extends its trend</em> (rightly or wrongly); KNN cannot say anything it hasn't seen. Never deploy KNN
+regression where queries can leave the training distribution (forecasting beyond the observed range,
+pricing bigger houses than any on record…).</p>
+<h3 id="an-honest-rematch-knn-vs-linear-regression">An honest rematch: KNN vs. linear regression</h3>
+<p>So is the staircase model any good? On the Advertising data — where the Regression module found signs that
+media budgets <em>interact</em> — the flexibility pays off:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Xa</span> <span class="o">=</span> <span class="n">ads</span><span class="p">[[</span><span class="s2">&quot;TV&quot;</span><span class="p">,</span> <span class="s2">&quot;radio&quot;</span><span class="p">,</span> <span class="s2">&quot;newspaper&quot;</span><span class="p">]]</span>
+<span class="n">ya</span> <span class="o">=</span> <span class="n">ads</span><span class="p">[</span><span class="s2">&quot;sales&quot;</span><span class="p">]</span>
+<span class="n">Xa_train</span><span class="p">,</span> <span class="n">Xa_test</span><span class="p">,</span> <span class="n">ya_train</span><span class="p">,</span> <span class="n">ya_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">Xa</span><span class="p">,</span> <span class="n">ya</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+
+<span class="n">knn_ads</span> <span class="o">=</span> <span class="n">make_pipeline</span><span class="p">(</span><span class="n">StandardScaler</span><span class="p">(),</span> <span class="n">KNeighborsRegressor</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Xa_train</span><span class="p">,</span> <span class="n">ya_train</span><span class="p">)</span>
+<span class="n">lin_ads</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Xa_train</span><span class="p">,</span> <span class="n">ya_train</span><span class="p">)</span>
+
+<span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;KNN regression (K=4)&quot;</span><span class="p">,</span> <span class="n">knn_ads</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;Linear regression&quot;</span><span class="p">,</span> <span class="n">lin_ads</span><span class="p">)]:</span>
+    <span class="n">pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">Xa_test</span><span class="p">)</span>
+    <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                 <span class="s2">&quot;MAE&quot;</span><span class="p">:</span> <span class="n">mean_absolute_error</span><span class="p">(</span><span class="n">ya_test</span><span class="p">,</span> <span class="n">pred</span><span class="p">),</span>
+                 <span class="s2">&quot;R²&quot;</span><span class="p">:</span> <span class="n">r2_score</span><span class="p">(</span><span class="n">ya_test</span><span class="p">,</span> <span class="n">pred</span><span class="p">)})</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;model&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>MAE</th>
+      <th>R²</th>
+    </tr>
+    <tr>
+      <th>model</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>KNN regression (K=4)</th>
+      <td>1.085</td>
+      <td>0.909</td>
+    </tr>
+    <tr>
+      <th>Linear regression</th>
+      <td>1.512</td>
+      <td>0.861</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>KNN wins comfortably — MAE cut by roughly a quarter, <span class="arithmatex">\(R^2\)</span> from 0.86 to 0.91. Why? Linear regression is
+<em>committed to a shape</em>: sales must be a flat weighted sum of the three budgets. The truth (high TV <em>and</em>
+high radio together outperform the sum of their parts) bends away from that plane, and KNN — which assumes
+<strong>no shape at all</strong>, only that similar budget mixes yield similar sales — follows the bend for free.</p>
+<p>That's the general trade: when the true function is close to linear, linear regression's strong assumption
+is a gift (more accuracy from less data, plus coefficients you can read). When it isn't, KNN's
+assumption-free flexibility wins — at the price of interpretability, scaling discipline, and everything in
+Section 7. There is no free lunch; there are only well-chosen assumptions.</p>
+<hr />
+<h2 id="9-making-it-fast-kd-trees-and-ball-trees">9. Making it fast: KD-trees and ball trees</h2>
+<p>Time to pay the bill from Section 2. Brute-force prediction touches all <span class="arithmatex">\(n\)</span> training points for <em>every</em>
+query — <span class="arithmatex">\(O(n d)\)</span> per query. A recommender with millions of items answering thousands of queries a second
+cannot afford that. The rescue is the same trick that makes databases fast: <strong>build a data structure once,
+search it many times.</strong></p>
+<h3 id="kd-trees-binary-search-for-space">KD-trees: binary search for space</h3>
+<p>A <strong>KD-tree</strong> (k-dimensional tree) recursively splits the training points: sort by <span class="arithmatex">\(x\)</span>, cut at the median;
+within each half sort by <span class="arithmatex">\(y\)</span>, cut at the median; alternate coordinates until the cells are small. The
+result is a binary tree whose nodes carve space into nested rectangles — you've seen this movie: it's the
+decision tree's partitioning, repurposed for <em>search</em> instead of prediction.</p>
+<div align="center">
+<img src="../assets/knn_kdtree_partition.gif" width="560">
+
+*Figure 7 — Building a KD-tree over the post offices: alternate axes, cut at medians, recurse.*
+</div>
+
+<p>A nearest-neighbor query then descends the tree like binary search (<span class="arithmatex">\(O(\log n)\)</span> hops for a first
+candidate), and <em>backtracks</em> only where a better neighbor could still hide: keep the current best distance
+as a radius, and any region farther than that radius is skipped wholesale — typically eliminating half the
+data or more per level. Average query cost drops from <span class="arithmatex">\(O(n)\)</span> to roughly <span class="arithmatex">\(O(\log n)\)</span>.</p>
+<p>The fine print: median-finding makes construction cost <span class="arithmatex">\(O(n \log n)\)</span> (paid once), and the rectangles'
+usefulness decays as dimensions grow — the curse of dimensionality again, now taxing <em>speed</em> instead of
+accuracy. Beyond roughly 20 dimensions, KD-trees degrade toward brute force.</p>
+<h3 id="ball-trees-for-higher-dimensions">Ball trees: for higher dimensions</h3>
+<p>The <strong>ball tree</strong> plays the same game with <em>hyperspheres</em> instead of rectangles: recursively split the
+points into two balls, each stored with its center and radius. The triangle inequality — property 4 from
+Section 2, finally earning its keep — lets a query discard an entire ball at a glance: if
+<span class="arithmatex">\(d(q, \text{center}) - r\)</span> already exceeds the current best distance, nothing inside can compete. Balls
+adapt to the data's intrinsic shape rather than the axes, so ball trees hold up in higher dimensions where
+KD-trees give out.</p>
+<h3 id="in-scikit-learn-already-done">In scikit-learn: already done</h3>
+<p><code>KNeighborsClassifier(algorithm=...)</code> accepts <code>"brute"</code>, <code>"kd_tree"</code>, <code>"ball_tree"</code> — or the default
+<code>"auto"</code>, which picks sensibly from the data's size and dimensionality. You've been using these structures
+all module without knowing:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="n">X_big</span><span class="p">,</span> <span class="n">y_big</span> <span class="o">=</span> <span class="n">make_classification</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="mi">50000</span><span class="p">,</span> <span class="n">n_features</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">n_informative</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                                   <span class="n">n_redundant</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+<span class="n">X_query</span> <span class="o">=</span> <span class="n">X_big</span><span class="p">[:</span><span class="mi">5000</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">algo</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;brute&quot;</span><span class="p">,</span> <span class="s2">&quot;kd_tree&quot;</span><span class="p">,</span> <span class="s2">&quot;ball_tree&quot;</span><span class="p">]:</span>
+    <span class="n">knn</span> <span class="o">=</span> <span class="n">KNeighborsClassifier</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="n">algo</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_big</span><span class="p">,</span> <span class="n">y_big</span><span class="p">)</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+    <span class="n">knn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_query</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">algo</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> s for 5,000 queries against 50,000 points&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>    brute: 0.072 s for 5,000 queries against 50,000 points
+  kd_tree: 0.006 s for 5,000 queries against 50,000 points
+ball_tree: 0.067 s for 5,000 queries against 50,000 points
+</code></pre></div>
+<p>Same predictions, very different bills — in three dimensions the KD-tree typically answers an order of
+magnitude faster than brute force. (Timings vary by machine and, crucially, by dimensionality: as
+dimensions grow, the trees' pruning power fades and highly-optimized <code>brute</code> matrix arithmetic crawls back
+ahead — which is exactly why <code>"auto"</code> exists.)</p>
+<hr />
+<h2 id="10-the-verdict-on-k-nn">10. The verdict on K-NN</h2>
+<p><strong>Pros</strong></p>
+<ul>
+<li><strong>Radical simplicity</strong> — the entire algorithm is "store, measure, vote"; you built it in twelve lines.</li>
+<li><strong>No assumed shape</strong> — handles arbitrarily non-linear structure (Section 8's win over linear regression)
+  and needs no knowledge of the underlying function.</li>
+<li><strong>Instant training, easy updating</strong> — new data? Just append it. No retraining run.</li>
+<li><strong>Naturally multiclass</strong> — voting doesn't care how many classes exist (no one-vs-rest scaffolding).</li>
+</ul>
+<p><strong>Cons</strong></p>
+<ul>
+<li><strong>Expensive predictions and heavy memory</strong> — the model <em>is</em> the dataset; even tree-accelerated search
+  costs real time at scale.</li>
+<li><strong>Distance is fragile</strong> — mandatory feature scaling (Section 6), collapses under irrelevant features and
+  high dimension (Section 7), needs a domain-appropriate metric and <span class="arithmatex">\(K\)</span>.</li>
+<li><strong>Cannot extrapolate</strong> — silent nonsense outside the training range (Section 8).</li>
+<li><strong>Nothing to interpret</strong> — no coefficients, no flowchart; the "explanation" of a prediction is a list of
+  lookalike examples (though sometimes, e.g. in medicine, "here are the 5 most similar past cases" is
+  exactly the explanation a human wants).</li>
+</ul>
+<p><strong>Where it's used:</strong> recommender systems ("users similar to you"), image and document similarity search,
+missing-value imputation (<code>KNNImputer</code>), anomaly detection (a point whose neighbors are all far away is
+suspicious), and as the honest baseline every fancier model must beat.</p>
+<hr />
+<h2 id="11-your-turn">11. Your turn</h2>
+<p>Add cells below each exercise. Exercises 3 and 4 consolidate the big ideas.</p>
+<p><strong>Exercise 1 — Change the metric.</strong>
+Redo the post office computation with Euclidean distance. Does the winner change? Then refit the Section 5
+diabetes sweep with <code>KNeighborsClassifier(metric="manhattan")</code> — does the best <span class="arithmatex">\(K\)</span> or best accuracy move
+much?</p>
+<p><strong>Exercise 2 — Features are a choice.</strong>
+Verify the claim from Section 6: fit <span class="arithmatex">\(K=5\)</span> KNN on iris using (a) only the two sepal features, (b) only the
+two petal features, (c) all four. Report test accuracies and explain the ordering using the scatter of
+each feature pair.</p>
+<p><strong>Exercise 3 — The 1-NN training-accuracy trap.</strong>
+Prove to yourself <em>why</em> 1-NN always scores 100% training accuracy: predict the <em>training</em> set with
+<code>knn_classifier(..., k=1)</code> and check. Then explain in two sentences why this makes training accuracy
+completely useless for choosing <span class="arithmatex">\(K\)</span>, and what you should use instead.</p>
+<p><strong>Exercise 4 — KNN joins the diabetes rematch.</strong>
+Evaluate the tuned diabetes KNN (best <span class="arithmatex">\(K\)</span> from Section 5, scaled) with the full toolkit from the
+Evaluation Metrics module: classification report, ROC-AUC, and log loss, side by side with logistic
+regression. Where does KNN sit between the tree and logistic regression — and are its probability
+estimates (fractions of <span class="arithmatex">\(K\)</span> votes) well calibrated?</p>
+<p><strong>Exercise 5 — Weighted regression at the edges.</strong>
+Refit the sine-wave model with <code>KNeighborsRegressor(n_neighbors=5, weights="distance")</code> and re-plot the
+extrapolation figure. Does distance weighting fix the flat-line problem outside the training range?
+Explain why or why not.</p>
+<hr />
+<h2 id="12-if-you-remember-nothing-else">12. If you remember nothing else</h2>
+<ol>
+<li>
+<p><strong>KNN doesn't train — it remembers.</strong> Instance-based (lazy) learning stores the data and answers
+   queries by analogy: find the <span class="arithmatex">\(K\)</span> nearest stored examples, then <strong>vote</strong> (classification) or <strong>average</strong>
+   (regression). The one load-bearing assumption: similar inputs have similar targets.</p>
+</li>
+<li>
+<p><strong>"Nearest" requires a chosen metric.</strong> Euclidean (straight line), Manhattan (city blocks), Minkowski
+   (<span class="arithmatex">\(p\)</span> generalizes both) — all obeying non-negativity, identity, symmetry, triangle inequality. The
+   choice is part of the modelling.</p>
+</li>
+<li>
+<p><strong><span class="arithmatex">\(K\)</span> is the bias-variance dial in its purest form.</strong> <span class="arithmatex">\(K=1\)</span>: Voronoi cells, 100% training accuracy,
+   maximal variance. <span class="arithmatex">\(K \to n\)</span>: everything predicts the global majority, maximal bias. Pick <span class="arithmatex">\(K\)</span> (odd, for
+   binary problems) by validation sweep; <code>weights="distance"</code> lets close neighbors speak louder.</p>
+</li>
+<li>
+<p><strong>Scale or die.</strong> The feature with the biggest numbers silently owns the distance — standardization
+   took wine from 72% to 94%. And scaling can't fix <em>irrelevant</em> features: noise dimensions dilute
+   distance itself (the curse of dimensionality), so KNN needs curated, low-dimensional features.</p>
+</li>
+<li>
+<p><strong>KNN regression is a staircase that cannot extrapolate</strong> — predictions are averages of observed
+   values, flat outside the training range. But its assumption-free flexibility beat linear regression on
+   the interacting Advertising data: strong assumptions win when true, lose when false.</p>
+</li>
+<li>
+<p><strong>Prediction, not training, is the expensive step</strong> — <span class="arithmatex">\(O(nd)\)</span> per query by brute force. <strong>KD-trees</strong>
+   (median splits, nested rectangles) and <strong>ball trees</strong> (nested hyperspheres, pruned via the triangle
+   inequality) cut it to ~<span class="arithmatex">\(O(\log n)\)</span>; scikit-learn's <code>algorithm="auto"</code> chooses for you.</p>
+</li>
+</ol>
+<hr />
+<h2 id="13-further-reading-and-glossary">13. Further reading and glossary</h2>
+<h3 id="further-reading">Further reading</h3>
+<ul>
+<li><em>An Introduction to Statistical Learning</em>, <a href="https://www.statlearning.com/">Chapter 2 &amp; 3</a> — KNN
+  classification (§2.2.3) and the KNN-vs-linear-regression comparison (§3.5) that Section 8 recreates.</li>
+<li>Kilian Weinberger's Cornell <a href="https://www.cs.cornell.edu/courses/cs4780/2018fa/lectures/lecturenote02_kNN.html">lecture notes on k-nearest neighbors</a>
+  — including the elegant proof that 1-NN error is at most twice the optimal error, and a sharp treatment
+  of the curse of dimensionality.</li>
+<li><a href="http://vision.stanford.edu/teaching/cs231n-demos/knn/">Stanford's interactive KNN demo</a> — drag points,
+  change <span class="arithmatex">\(K\)</span> and the metric, watch the boundary respond. Ten minutes here cements Section 5.</li>
+<li>scikit-learn's <a href="https://scikit-learn.org/stable/modules/neighbors.html">Nearest Neighbors guide</a> —
+  brute force vs. KD-tree vs. ball tree, with practical guidance on when each wins.</li>
+<li>Scott Fortmann-Roe, <a href="http://scott.fortmann-roe.com/docs/BiasVariance.html">Understanding the Bias-Variance Tradeoff</a>
+  — the classic essay, with KNN as its running example.</li>
+</ul>
+<h3 id="glossary">Glossary</h3>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Instance-based (lazy) learning</strong></td>
+<td>Store the training data; do all computation at prediction time</td>
+</tr>
+<tr>
+<td><strong>Rote learning</strong></td>
+<td>Predict only on exact match — the failure that motivates "nearest"</td>
+</tr>
+<tr>
+<td><strong>Distance metric</strong></td>
+<td>Function satisfying non-negativity, identity, symmetry, triangle inequality</td>
+</tr>
+<tr>
+<td><strong>Euclidean / Manhattan / Minkowski</strong></td>
+<td>Straight-line / city-block / <span class="arithmatex">\(p\)</span>-parameterized family containing both</td>
+</tr>
+<tr>
+<td><strong>Mahalanobis distance</strong></td>
+<td>Covariance-aware distance from a point to a distribution</td>
+</tr>
+<tr>
+<td><strong>K (n_neighbors)</strong></td>
+<td>Neighborhood size; the bias-variance dial</td>
+</tr>
+<tr>
+<td><strong>Majority vote / averaging</strong></td>
+<td>KNN's prediction rule for classification / regression</td>
+</tr>
+<tr>
+<td><strong>Voronoi diagram</strong></td>
+<td>Partition of space into nearest-point cells; the 1-NN boundary map</td>
+</tr>
+<tr>
+<td><strong>Distance-weighted KNN</strong></td>
+<td>Votes weighted by <span class="arithmatex">\(1/d\)</span>; closer neighbors count more</td>
+</tr>
+<tr>
+<td><strong>Curse of dimensionality</strong></td>
+<td>In high dimensions all points become nearly equidistant; distance loses meaning</td>
+</tr>
+<tr>
+<td><strong>Extrapolation failure</strong></td>
+<td>KNN predictions go flat outside the training range</td>
+</tr>
+<tr>
+<td><strong>KD-tree</strong></td>
+<td>Median-split axis-aligned tree; ~<span class="arithmatex">\(O(\log n)\)</span> queries in low dimensions</td>
+</tr>
+<tr>
+<td><strong>Ball tree</strong></td>
+<td>Nested-hypersphere tree pruned by the triangle inequality; survives higher dimensions</td>
+</tr>
+<tr>
+<td><strong>Brute-force search</strong></td>
+<td>Distance to every stored point: <span class="arithmatex">\(O(nd)\)</span> per query</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../08_evaluation_metrics/" class="btn btn-neutral float-left" title="Evaluation Metrics"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../10_time_series_foundations/" class="btn btn-neutral float-right" title="Time Series Foundations">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright &copy; 2026 - Aayush Raj Regmi</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../08_evaluation_metrics/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../10_time_series_foundations/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../javascripts/mathjax.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

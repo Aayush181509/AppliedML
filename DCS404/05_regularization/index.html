@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Regularization - DCS 404</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Regularization";
+        var mkdocs_page_input_path = "DCS404/05_regularization.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> DCS 404
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Welcome</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../InstallationGuide/">Installation Guide</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Machine Learning and AI</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../01_introduction_to_machine_learning/">Introduction to Machine Learning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02_ml_workflow/">ML Workflow</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../03_regression/">Regression</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04_gradient_descent/">Gradient Descent</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Regularization</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-work-through-this">How to work through this</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#learning-objectives">Learning objectives</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#1-the-crime-scene-revisited">1. The crime scene, revisited</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-the-idea-charge-rent-on-coefficients">2. The idea: charge rent on coefficients</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-ridge-regression-the-l2-penalty">3. Ridge regression: the L2 penalty</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-lasso-regression-the-l1-penalty">4. Lasso regression: the L1 penalty</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-why-l1-zeroes-and-l2-doesnt-the-picture">5. Why L1 zeroes and L2 doesn't: the picture</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-choosing-lambda-the-u-curve-returns">6. Choosing \(\lambda\): the U-curve returns</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-the-finale-lasso-reads-the-student-data">7. The finale: lasso reads the student data</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#8-your-turn">8. Your turn</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#9-if-you-remember-nothing-else">9. If you remember nothing else</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#10-further-reading-and-glossary">10. Further reading and glossary</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#further-reading">Further reading</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#glossary">Glossary</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../06_logistic_regression/">Classification & Logistic Regression</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07_decision_trees/">Decision Trees</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../08_evaluation_metrics/">Evaluation Metrics</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../09_knn/">K-Nearest Neighbors</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Time Series Analysis</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../10_time_series_foundations/">Time Series Foundations</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../11_exponential_smoothing/">Exponential Smoothing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../12_arima_models/">ARIMA and SARIMA Models</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Final Project</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../project/00_final_project/">Project Work</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">DCS 404</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Machine Learning and AI</li>
+      <li class="breadcrumb-item active">Regularization</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="regularization-buying-simplicity-with-a-penalty">Regularization: Buying Simplicity with a Penalty</h1>
+<p><strong>DCS 404 · Data Science and Machine Learning</strong></p>
+<hr />
+<p>Two modules ago, we watched a degree-14 polynomial thread itself through every noisy data point and then fail
+spectacularly on data it hadn't seen. Our only remedy at the time was blunt: <em>use a smaller model</em>. Pick
+degree 4 instead of 14. Turn the complexity dial down and hope you stopped at the right notch.</p>
+<p>Today we learn a far more elegant remedy — one that lets you <em>keep</em> the big flexible model and teach it
+restraint instead. The idea is almost mischievous in its simplicity: we change the cost function. Instead of
+rewarding the model purely for fitting the training data, we charge it <em>rent</em> on its coefficients. Want a huge
+wild coefficient? Fine — but it has to buy enough extra accuracy to cover its own cost. This is
+<strong>regularization</strong>, and it is everywhere: it's in essentially every serious linear model in production, it's
+the "weight decay" inside modern neural network training, and one version of it will even do automatic feature
+selection for us — deciding, on its own, which columns of the dataset matter.</p>
+<p>Everything we've built so far converges here. The overfitting diagnosis from the Regression module tells us
+<em>what</em> goes wrong; the cost-function machinery from the Gradient Descent module tells us <em>where</em> to intervene;
+and feature scaling — of all things — turns out to be a precondition for doing it fairly. Let's collect the
+payoff.</p>
+<h2 id="how-to-work-through-this">How to work through this</h2>
+<p>The usual rhythm: run every code cell (<code>Shift + Enter</code>), study the output, <em>then</em> read the commentary. Cells
+build on each other, so if something errors, run from the top.</p>
+<p>This module deliberately reuses old friends. The noisy sine-wave dataset is regenerated with <em>exactly the same
+recipe</em> as in the Regression module, so the overfit you'll see in Section 1 is the very one we diagnosed
+there. The student dataset from the ML Workflow module returns in Section 7 for a real-data finale. Nothing
+new to download; everything runs offline from the <code>data/</code> folder.</p>
+<p>One naming trap to flag before we start: mathematics books write the regularization strength as <span class="arithmatex">\(\lambda\)</span>
+(lambda), but scikit-learn calls the same knob <code>alpha</code> — the <em>same letter</em> we used for the learning rate in
+Gradient Descent, for a completely unrelated concept. In this notebook: <span class="arithmatex">\(\lambda\)</span> in the maths, <code>alpha</code> in the
+code, and they mean the same thing. The learning rate makes no appearance today.</p>
+<h2 id="learning-objectives">Learning objectives</h2>
+<p>After completing this module you will be able to:</p>
+<ul>
+<li>Explain the connection between overfitting and extreme coefficient values.</li>
+<li>Write down the regularized cost function <span class="arithmatex">\(J = \text{SSE} + \lambda \cdot \text{penalty}\)</span> and explain the
+  role of <span class="arithmatex">\(\lambda\)</span> as a complexity dial.</li>
+<li>Fit and interpret <strong>Ridge regression</strong> (L2 penalty) and describe how it shrinks coefficients.</li>
+<li>Fit and interpret <strong>Lasso regression</strong> (L1 penalty) and explain why it produces exactly-zero coefficients,
+  making it a feature selector.</li>
+<li>Explain geometrically why L1 zeroes coefficients while L2 only shrinks them.</li>
+<li>Explain why features must be standardised before regularizing.</li>
+<li>Choose the regularization strength with a validation curve, and describe how cross-validated estimators
+  (<code>RidgeCV</code>, <code>LassoCV</code>) automate the choice.</li>
+<li>Apply lasso to a real dataset and read off which features it selected.</li>
+</ul>
+<h2 id="setup">Setup</h2>
+<p>Run this once. Libraries, the usual plotting style, and the student dataset (which we'll need at the end).</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span><span class="p">,</span> <span class="n">Ridge</span><span class="p">,</span> <span class="n">Lasso</span><span class="p">,</span> <span class="n">LassoCV</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">PolynomialFeatures</span><span class="p">,</span> <span class="n">StandardScaler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_pipeline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">mean_squared_error</span>
+
+<span class="c1"># A consistent look for every plot in this notebook</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+    <span class="s2">&quot;figure.figsize&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">),</span>
+    <span class="s2">&quot;figure.dpi&quot;</span><span class="p">:</span> <span class="mi">110</span><span class="p">,</span>
+    <span class="s2">&quot;axes.grid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">&quot;grid.alpha&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="s2">&quot;axes.spines.top&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;axes.spines.right&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;font.size&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_palette</span><span class="p">(</span><span class="s2">&quot;deep&quot;</span><span class="p">)</span>
+<span class="n">RANDOM_STATE</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># Load the student dataset (used in Section 7). Semicolon-separated, as always.</span>
+<span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data/student-mat.csv&quot;</span><span class="p">),</span>
+                  <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;notebooks/data/student-mat.csv&quot;</span><span class="p">),</span>
+                  <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;resources/dataset/student-mat.csv&quot;</span><span class="p">)]:</span>
+    <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">students</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded student dataset from: </span><span class="si">{</span><span class="n">candidate</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">break</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;Could not find student-mat.csv. Expected it in a data/ folder next to the notebook.&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape: </span><span class="si">{</span><span class="n">students</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> students, </span><span class="si">{</span><span class="n">students</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> columns&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Loaded student dataset from: data/student-mat.csv
+Shape: 395 students, 33 columns
+</code></pre></div>
+<hr />
+<h2 id="1-the-crime-scene-revisited">1. The crime scene, revisited</h2>
+<p>Let's rebuild the exact overfit from the Regression module: fifteen noisy points from a sine curve, and a
+degree-14 polynomial with enough parameters to pass through every one of them.</p>
+<p>One pipeline note before we run it. We chain three steps with scikit-learn's <code>make_pipeline</code>:
+<code>PolynomialFeatures</code> manufactures <span class="arithmatex">\(x, x^2, \dots, x^{14}\)</span>, then <code>StandardScaler</code> standardises those columns —
+the very trick from the Gradient Descent module, needed here because <span class="arithmatex">\(x^{14}\)</span> lives on an absurdly larger
+scale than <span class="arithmatex">\(x\)</span> — and finally <code>LinearRegression</code> fits. A pipeline just glues the steps into one object with one
+<code>.fit()</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="n">X_FROM</span><span class="p">,</span> <span class="n">X_TO</span><span class="p">,</span> <span class="n">N_POINTS</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">X_FROM</span><span class="p">,</span> <span class="n">X_TO</span><span class="p">,</span> <span class="n">N_POINTS</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">N_POINTS</span><span class="p">)</span>   <span class="c1"># same recipe as the Regression module</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">X_FROM</span><span class="p">,</span> <span class="n">X_TO</span><span class="p">,</span> <span class="mi">300</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>   <span class="c1"># a fine grid for drawing prediction curves</span>
+
+<span class="n">overfit</span> <span class="o">=</span> <span class="n">make_pipeline</span><span class="p">(</span><span class="n">PolynomialFeatures</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="n">include_bias</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">StandardScaler</span><span class="p">(),</span> <span class="n">LinearRegression</span><span class="p">())</span>
+<span class="n">overfit</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:blue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;observations&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">grid</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;true curve: $</span><span class="se">\\</span><span class="s2">sin(x)$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">overfit</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">grid</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:green&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;degree-14 fit&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Our old enemy: the degree-14 overfit&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../05_regularization_files/05_regularization_6_0.png" /></p>
+<p>There it is, wiggling through every point exactly as we left it. But this time, instead of just <em>looking</em> at
+the pathology, let's do the autopsy. The model is still a linear regression — fourteen features, fourteen
+coefficients plus an intercept. What values did those coefficients take?</p>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">degree</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">14</span><span class="p">]:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">make_pipeline</span><span class="p">(</span><span class="n">PolynomialFeatures</span><span class="p">(</span><span class="n">degree</span><span class="p">,</span> <span class="n">include_bias</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">StandardScaler</span><span class="p">(),</span> <span class="n">LinearRegression</span><span class="p">())</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">coefs</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">named_steps</span><span class="p">[</span><span class="s2">&quot;linearregression&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">coef_</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;degree </span><span class="si">{</span><span class="n">degree</span><span class="si">:</span><span class="s2">&gt;2</span><span class="si">}</span><span class="s2">:  largest |coefficient| = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">coefs</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">&gt;12,.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>degree  1:  largest |coefficient| =          0.3
+degree  4:  largest |coefficient| =         53.0
+degree 14:  largest |coefficient| = 665,435,905.3
+</code></pre></div>
+<p>This is the clue that unlocks the whole module. The honest degree-4 model works with coefficients no bigger
+than a few dozen. The overfit degree-14 model needs coefficients in the <em>hundreds of millions</em> — enormous
+positive terms delicately cancelling enormous negative terms, a house of cards engineered to pass near every
+noisy point. That's what those frantic wiggles are made of: gigantic coefficients balanced against each other.</p>
+<p>So here's the insight: <strong>overfitting has a signature, and the signature is extreme coefficients.</strong> A model
+telling the truth about a smooth underlying pattern doesn't need a coefficient of six hundred million. Which
+suggests a wonderfully devious fix — what if we made big coefficients <em>expensive</em>?</p>
+<hr />
+<h2 id="2-the-idea-charge-rent-on-coefficients">2. The idea: charge rent on coefficients</h2>
+<p>Recall the cost function that every model so far has minimised — the sum of squared errors. Now we add a
+second term:</p>
+<div class="arithmatex">\[J(\boldsymbol\beta) = \underbrace{\sum_{i=1}^{n}(y_i - \hat{y}_i)^2}_{\text{fit the data}}
+\; + \; \lambda \cdot \underbrace{\text{penalty}(\boldsymbol\beta)}_{\text{stay simple}}\]</div>
+<p>The penalty is some measure of how <em>big</em> the coefficients are (two specific choices coming in the next two
+sections). The optimiser — whether closed-form or gradient descent — now has to serve two masters at once: fit
+the training points <em>and</em> keep the coefficients small. A wild coefficient is only worth having if the accuracy
+it buys outweighs the penalty it incurs. Rent, due at every fit.</p>
+<p>The new hyperparameter <span class="arithmatex">\(\lambda \geq 0\)</span> sets the rent level, and its two extremes are worth internalising
+before we compute anything:</p>
+<ul>
+<li><strong><span class="arithmatex">\(\lambda = 0\)</span></strong>: rent is free, the penalty vanishes, and we're back to ordinary least squares —
+  wiggles and all.</li>
+<li><strong><span class="arithmatex">\(\lambda \to \infty\)</span></strong>: rent is ruinous; every coefficient gets crushed toward zero and the model
+  flattens toward a horizontal line at <span class="arithmatex">\(\bar{y}\)</span> — maximal underfitting.</li>
+</ul>
+<p>Somewhere between those extremes lives a sweet spot: enough penalty to kill the noise-chasing wiggles, not so
+much that the real pattern is crushed too. Notice what this gives us that "pick a lower degree" never could:
+degree is a <em>coarse</em> dial with a handful of integer settings, but <span class="arithmatex">\(\lambda\)</span> is a <em>continuous</em> dial. We can
+tune model complexity as finely as we like — without changing the model's form at all.</p>
+<p>Two housekeeping notes, then we fit. First, the intercept <span class="arithmatex">\(\beta_0\)</span> is traditionally <em>not</em> penalised — it just
+sets the overall level of the predictions, and there's nothing "complex" about a model sitting at the right
+height (scikit-learn follows this convention automatically). Second, the penalty compares coefficient sizes
+against each other, and that comparison is only fair if the features share a scale — a coefficient on
+<span class="arithmatex">\(x^{14}\)</span>-units is not comparable to one on <span class="arithmatex">\(x\)</span>-units. <strong>Standardise before you regularize.</strong> Feature scaling,
+which last module made gradient descent <em>faster</em>, here decides whether the penalty is even <em>meaningful</em>. Our
+pipelines already handle it.</p>
+<hr />
+<h2 id="3-ridge-regression-the-l2-penalty">3. Ridge regression: the L2 penalty</h2>
+<p>The first classic choice of penalty is the sum of <em>squared</em> coefficients:</p>
+<div class="arithmatex">\[J(\boldsymbol\beta) = \sum_{i=1}^{n}(y_i - \hat{y}_i)^2 + \lambda \sum_{j=1}^{d}\beta_j^2\]</div>
+<p>This is <strong>Ridge regression</strong>, also called <strong>L2 regularization</strong> (the sum of squares is the squared "L2 norm"
+of the coefficient vector). Squaring means the penalty grows <em>quadratically</em>: doubling a coefficient
+quadruples its rent, so truly enormous coefficients — exactly the degree-14 house of cards — get punished
+ferociously.</p>
+<p>Ridge keeps the two luxuries of ordinary least squares. There's still a closed-form solution — the normal
+equation gains a <span class="arithmatex">\(\lambda\)</span> on its diagonal,
+<span class="arithmatex">\(\hat{\boldsymbol\beta} = (\mathbf{X}^\top\mathbf{X} + \lambda\mathbf{I})^{-1}\mathbf{X}^\top\mathbf{y}\)</span> — and
+if you'd rather walk than teleport, the gradient just gains one extra term: <span class="arithmatex">\(2\lambda\boldsymbol\beta\)</span>. Look
+closely at what that does inside the gradient descent update — at every step, each coefficient gets nudged
+back toward zero by an amount proportional to its own size. Deep learning calls this exact mechanism <strong>weight
+decay</strong>, and it's running inside virtually every neural network trained today. Same idea, fancier model.</p>
+<p>Enough theory — let's turn the dial. Same fifteen points, same degree-14 features, four settings of
+<span class="arithmatex">\(\lambda\)</span>:</p>
+<div class="highlight"><pre><span></span><code><span class="n">lambdas</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">lam</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">lambdas</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">lam</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">reg</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span>          <span class="c1"># ridge with zero penalty IS ordinary least squares</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">reg</span> <span class="o">=</span> <span class="n">Ridge</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="n">lam</span><span class="p">)</span>            <span class="c1"># sklearn calls lambda &quot;alpha&quot;</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">make_pipeline</span><span class="p">(</span><span class="n">PolynomialFeatures</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="n">include_bias</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">StandardScaler</span><span class="p">(),</span> <span class="n">reg</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">largest</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">named_steps</span><span class="p">[</span><span class="n">reg</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span><span class="o">.</span><span class="n">coef_</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:blue&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">grid</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">grid</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:green&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;$</span><span class="se">\\</span><span class="s2">lambda = </span><span class="si">{</span><span class="n">lam</span><span class="si">}</span><span class="s2">$</span><span class="se">\n</span><span class="s2">largest $|</span><span class="se">\\</span><span class="s2">beta|$ = </span><span class="si">{</span><span class="n">largest</span><span class="si">:</span><span class="s2">,.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;The same degree-14 model, at four rent levels&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../05_regularization_files/05_regularization_12_0.png" /></p>
+<p>Read the panels left to right — it's the whole module in one figure:</p>
+<ul>
+<li><strong><span class="arithmatex">\(\lambda = 0\)</span></strong>: free rent, the full overfit, coefficients in the hundreds of millions.</li>
+<li><strong><span class="arithmatex">\(\lambda = 0.01\)</span></strong>: a <em>whisper</em> of penalty and the house of cards collapses — the huge cancelling
+  coefficients can't pay even token rent, and the curve relaxes into a shape hugging the true sine wave. Look
+  at the coefficient readout: <em>eight orders of magnitude</em> smaller.</li>
+<li><strong><span class="arithmatex">\(\lambda = 1\)</span></strong>: firmer rent, and now clearly too much of it — the wave itself is being taxed away,
+  leaving only a gentle drift through the data.</li>
+<li><strong><span class="arithmatex">\(\lambda = 1000\)</span></strong>: ruinous rent. The model has been taxed into a near-horizontal line through the mean.
+  We've regularized our way straight into underfitting.</li>
+</ul>
+<p>Same fourteen degrees of freedom in every panel. What changed is not the model's <em>capacity</em> but its <em>budget</em> —
+and that's the philosophical shift of this module: complexity isn't what a model <em>could</em> do, it's what it can
+<em>afford</em> to do.</p>
+<hr />
+<h2 id="4-lasso-regression-the-l1-penalty">4. Lasso regression: the L1 penalty</h2>
+<p>The second classic penalty looks almost identical — swap the squares for absolute values:</p>
+<div class="arithmatex">\[J(\boldsymbol\beta) = \sum_{i=1}^{n}(y_i - \hat{y}_i)^2 + \lambda \sum_{j=1}^{d}|\beta_j|\]</div>
+<p>This is <strong>Lasso regression</strong> (<strong>L1 regularization</strong>). One character of algebra changed; the behaviour changes
+in a way nobody would guess from the formula. Ridge <em>shrinks</em> coefficients — smoothly, proportionally, and
+never quite to zero; a coefficient at 0.001 is paying almost no L2 rent, so there's no pressure to finish the
+job. But under L1, the rent per unit stays the <em>same</em> all the way down — the last millimetre to zero saves as
+much rent as any other millimetre. So for any feature whose contribution can't cover that flat rate, the
+optimum is <em>exactly</em> zero. Not small. Zero.</p>
+<p>A zeroed coefficient means the feature is simply <em>gone</em> from the model. Lasso doesn't just discourage
+complexity — it performs <strong>automatic feature selection</strong>, deciding which columns of your dataset earn their
+keep. Watch it work on our fourteen polynomial features:</p>
+<div class="highlight"><pre><span></span><code><span class="n">ridge_model</span> <span class="o">=</span> <span class="n">make_pipeline</span><span class="p">(</span><span class="n">PolynomialFeatures</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="n">include_bias</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">StandardScaler</span><span class="p">(),</span> <span class="n">Ridge</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.01</span><span class="p">))</span>
+<span class="n">lasso_model</span> <span class="o">=</span> <span class="n">make_pipeline</span><span class="p">(</span><span class="n">PolynomialFeatures</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="n">include_bias</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">StandardScaler</span><span class="p">(),</span>
+                            <span class="n">Lasso</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">100_000</span><span class="p">))</span>
+<span class="n">ridge_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">lasso_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="n">coefs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">&quot;ridge (λ=0.01)&quot;</span><span class="p">:</span> <span class="n">ridge_model</span><span class="o">.</span><span class="n">named_steps</span><span class="p">[</span><span class="s2">&quot;ridge&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">coef_</span><span class="p">,</span>
+    <span class="s2">&quot;lasso (λ=0.001)&quot;</span><span class="p">:</span> <span class="n">lasso_model</span><span class="o">.</span><span class="n">named_steps</span><span class="p">[</span><span class="s2">&quot;lasso&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">coef_</span><span class="p">,</span>
+<span class="p">},</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;x^</span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">15</span><span class="p">)])</span>
+
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">coefs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">kept</span> <span class="o">=</span> <span class="p">(</span><span class="n">col</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">kept</span><span class="si">}</span><span class="s2"> of 14 coefficients non-zero&quot;</span><span class="p">)</span>
+
+<span class="n">coefs</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>ridge (λ=0.01): 14 of 14 coefficients non-zero
+lasso (λ=0.001): 5 of 14 coefficients non-zero
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>ridge (λ=0.01)</th>
+      <th>lasso (λ=0.001)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>x^1</th>
+      <td>0.574</td>
+      <td>1.866</td>
+    </tr>
+    <tr>
+      <th>x^2</th>
+      <td>-4.332</td>
+      <td>-8.138</td>
+    </tr>
+    <tr>
+      <th>x^3</th>
+      <td>1.392</td>
+      <td>0.000</td>
+    </tr>
+    <tr>
+      <th>x^4</th>
+      <td>3.201</td>
+      <td>12.217</td>
+    </tr>
+    <tr>
+      <th>x^5</th>
+      <td>2.387</td>
+      <td>0.000</td>
+    </tr>
+    <tr>
+      <th>x^6</th>
+      <td>0.781</td>
+      <td>-0.000</td>
+    </tr>
+    <tr>
+      <th>x^7</th>
+      <td>-0.652</td>
+      <td>-0.000</td>
+    </tr>
+    <tr>
+      <th>x^8</th>
+      <td>-1.549</td>
+      <td>-8.733</td>
+    </tr>
+    <tr>
+      <th>x^9</th>
+      <td>-1.856</td>
+      <td>-0.000</td>
+    </tr>
+    <tr>
+      <th>x^10</th>
+      <td>-1.655</td>
+      <td>-0.000</td>
+    </tr>
+    <tr>
+      <th>x^11</th>
+      <td>-1.069</td>
+      <td>-0.000</td>
+    </tr>
+    <tr>
+      <th>x^12</th>
+      <td>-0.225</td>
+      <td>0.000</td>
+    </tr>
+    <tr>
+      <th>x^13</th>
+      <td>0.772</td>
+      <td>0.000</td>
+    </tr>
+    <tr>
+      <th>x^14</th>
+      <td>1.835</td>
+      <td>2.422</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><span></span><code><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:blue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;observations&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">grid</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;true curve&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">ridge_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">grid</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:green&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;ridge ($</span><span class="se">\\</span><span class="s2">lambda=0.01$)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">lasso_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">grid</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:orange&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;lasso ($</span><span class="se">\\</span><span class="s2">lambda=0.001$)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Ridge shrinks everything; lasso fires most of the team&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../05_regularization_files/05_regularization_16_0.png" /></p>
+<p>Study the coefficient table before the plot. Ridge kept all fourteen features on the payroll, every one
+shrunk to modest size. Lasso looked at the same fourteen candidates and <em>fired nine of them</em> — exact zeros,
+struck off the model — keeping only the five polynomial terms that genuinely earn their rent. Yet both
+prediction curves trace a perfectly respectable sine-ish shape. Lasso is telling us something true: you don't
+<em>need</em> fourteen polynomial terms to describe this data. A few suffice.</p>
+<p>That's the practical division of labour. <strong>Ridge</strong> when you believe many features each contribute a little and
+you want them all tamed. <strong>Lasso</strong> when you suspect most features are irrelevant and want the model to say so
+out loud. (And if you want both behaviours at once, <strong>Elastic Net</strong> blends the two penalties — it's one import
+away as <code>sklearn.linear_model.ElasticNet</code>.)</p>
+<p>But <em>why</em> does the absolute value produce exact zeros while the square never does? The formula-level answer —
+flat rent versus vanishing rent near zero — is correct but abstract. There's a picture that makes it click.</p>
+<hr />
+<h2 id="5-why-l1-zeroes-and-l2-doesnt-the-picture">5. Why L1 zeroes and L2 doesn't: the picture</h2>
+<p>There's an equivalent way to think about the penalty: instead of "SSE plus rent", imagine minimising the SSE
+subject to a <em>budget</em> — the coefficients must live inside a region of limited total size. For L2 the region is
+a <strong>circle</strong> (<span class="arithmatex">\(\beta_1^2 + \beta_2^2 \leq\)</span> budget); for L1 it's a <strong>diamond</strong>
+(<span class="arithmatex">\(|\beta_1| + |\beta_2| \leq\)</span> budget), with sharp corners sitting exactly <em>on the axes</em> — and on an axis, one
+coefficient is exactly zero.</p>
+<p>The unregularized optimum (the OLS solution) usually lies outside the budget region, and the constrained
+solution is the point where the SSE's elliptical contours first kiss the region's boundary:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Elliptical SSE contours around an (arbitrary) OLS optimum, plus each budget region</span>
+<span class="n">b1</span><span class="p">,</span> <span class="n">b2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">400</span><span class="p">))</span>
+<span class="n">sse</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">b1</span> <span class="o">-</span> <span class="mf">1.9</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="mf">3.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">b2</span> <span class="o">-</span> <span class="mf">1.1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>         <span class="c1"># a stretched bowl, minimum at (1.9, 1.1)</span>
+
+<span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">),</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">shape</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;L2 (ridge): circle&quot;</span><span class="p">,</span> <span class="s2">&quot;L1 (lasso): diamond&quot;</span><span class="p">]):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">sse</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">3.2</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">],</span> <span class="n">colors</span><span class="o">=</span><span class="s2">&quot;tab:green&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="mf">1.9</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:green&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="s2">&quot;OLS optimum&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.9</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">),</span> <span class="n">textcoords</span><span class="o">=</span><span class="s2">&quot;offset points&quot;</span><span class="p">,</span> <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">shape</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;L2&quot;</span><span class="p">):</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:blue&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="mf">0.88</span><span class="p">,</span> <span class="mf">0.47</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:red&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>   <span class="c1"># roughly where contours kiss the circle</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="s2">&quot;solution: both</span><span class="se">\n</span><span class="s2">coefficients survive&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.88</span><span class="p">,</span> <span class="mf">0.47</span><span class="p">),</span>
+                    <span class="n">textcoords</span><span class="o">=</span><span class="s2">&quot;offset points&quot;</span><span class="p">,</span> <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">120</span><span class="p">,</span> <span class="o">-</span><span class="mi">35</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:blue&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:red&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>          <span class="c1"># the contours hit the corner</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="s2">&quot;solution: a corner!</span><span class="se">\n</span><span class="s2">$</span><span class="se">\\</span><span class="s2">beta_2$ is exactly 0&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                    <span class="n">textcoords</span><span class="o">=</span><span class="s2">&quot;offset points&quot;</span><span class="p">,</span> <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">130</span><span class="p">,</span> <span class="o">-</span><span class="mi">40</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;$</span><span class="se">\\</span><span class="s2">beta_1$&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;$</span><span class="se">\\</span><span class="s2">beta_2$&quot;</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Minimise SSE (green contours) while staying inside the blue budget region&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../05_regularization_files/05_regularization_19_0.png" /></p>
+<p>The green ellipses are contour lines of the SSE — rings of equal training error spreading out from the OLS
+optimum, like altitude lines on a map of last module's loss bowl viewed from above. The best coefficients we
+can afford sit where the smallest possible ellipse touches the blue region.</p>
+<p>Against the <strong>circle</strong>, that first touch can happen anywhere on the smooth boundary — and generically it lands
+at some diagonal point where <em>both</em> coefficients are non-zero, just modest. Against the <strong>diamond</strong>, the
+expanding ellipses are overwhelmingly likely to strike a <em>corner</em> first — the corners poke outward, they're
+the "closest approaches" of the region — and every corner has a coefficient pinned at exactly zero. Scale this
+picture up from 2 coefficients to 14 (or 14,000) and the corners multiply combinatorially: high-dimensional
+diamonds are almost <em>all</em> corners and edges. That's why lasso solutions are sparse and ridge solutions never
+are: not a quirk of the optimiser, but the geometry of absolute values.</p>
+<hr />
+<h2 id="6-choosing-lambda-the-u-curve-returns">6. Choosing <span class="arithmatex">\(\lambda\)</span>: the U-curve returns</h2>
+<p>So how much rent is the <em>right</em> rent? We already own the answer, because we've solved this exact problem shape
+once before. In the Regression module, "how much complexity?" meant <em>which polynomial degree</em>, and the answer
+was: measure held-out error and find the bottom of the U. Now the complexity dial is <span class="arithmatex">\(\lambda\)</span> — pointing the
+opposite way, since <em>more</em> <span class="arithmatex">\(\lambda\)</span> means <em>less</em> complexity — but the method is identical. Split the data,
+sweep the dial, watch both errors:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Xr_train</span><span class="p">,</span> <span class="n">Xr_test</span><span class="p">,</span> <span class="n">yr_train</span><span class="p">,</span> <span class="n">yr_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+
+<span class="n">lambda_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+<span class="n">records</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">lam</span> <span class="ow">in</span> <span class="n">lambda_grid</span><span class="p">:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">make_pipeline</span><span class="p">(</span><span class="n">PolynomialFeatures</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="n">include_bias</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">StandardScaler</span><span class="p">(),</span> <span class="n">Ridge</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="n">lam</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Xr_train</span><span class="p">,</span> <span class="n">yr_train</span><span class="p">)</span>
+    <span class="n">records</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+        <span class="s2">&quot;lambda&quot;</span><span class="p">:</span> <span class="n">lam</span><span class="p">,</span>
+        <span class="s2">&quot;train RMSE&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">yr_train</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">Xr_train</span><span class="p">))),</span>
+        <span class="s2">&quot;test RMSE&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">yr_test</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">Xr_test</span><span class="p">))),</span>
+    <span class="p">})</span>
+
+<span class="n">curve</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">records</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;lambda&quot;</span><span class="p">)</span>
+<span class="n">best_lambda</span> <span class="o">=</span> <span class="n">curve</span><span class="p">[</span><span class="s2">&quot;test RMSE&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">idxmin</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">curve</span><span class="p">[</span><span class="s2">&quot;train RMSE&quot;</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;train RMSE&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">curve</span><span class="p">[</span><span class="s2">&quot;test RMSE&quot;</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;test RMSE&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">best_lambda</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;best test error: $</span><span class="se">\\</span><span class="s2">lambda </span><span class="se">\\</span><span class="s2">approx$ </span><span class="si">{</span><span class="n">best_lambda</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;$</span><span class="se">\\</span><span class="s2">lambda$ (log scale) — more regularization $</span><span class="se">\\</span><span class="s2">rightarrow$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;RMSE&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;The U-curve again — the dial is now $</span><span class="se">\\</span><span class="s2">lambda$, not degree&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../05_regularization_files/05_regularization_22_0.png" /></p>
+<p>Same story, new dial. At the far left (<span class="arithmatex">\(\lambda \approx 0\)</span>) the penalty is negligible: training error is
+superb and test error is dreadful — overfitting. At the far right the model is taxed toward a flat line and
+both errors drift upward — underfitting (gently, here: for a wave that only spans <span class="arithmatex">\(\pm 1\)</span>, even a flat line
+isn't catastrophically wrong, but the trend is unmistakable). Test error bottoms out in between, and notice
+how <em>wide</em> and forgiving that valley is on the log scale: getting <span class="arithmatex">\(\lambda\)</span> within an order of magnitude of optimal captures most of the
+benefit. This is why practitioners sweep <span class="arithmatex">\(\lambda\)</span> on a log grid (0.001, 0.01, 0.1, ...), never a linear one.</p>
+<p>One honest caveat: with only fifteen points, our single train/test split makes this curve a bit lucky-or-
+unlucky — a different split would move the bottom of the U around. The industrial-strength fix is
+<strong>cross-validation</strong>: rotate which slice of the data is held out, average the errors, and trust the average.
+It's important enough to get its own treatment in a later module; for now, know that scikit-learn packages the
+whole sweep-and-cross-validate routine into drop-in estimators —
+<a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.RidgeCV.html"><code>RidgeCV</code></a> and
+<a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoCV.html"><code>LassoCV</code></a> — which tune
+<span class="arithmatex">\(\lambda\)</span> for you as part of <code>.fit()</code>. We'll use one right now.</p>
+<hr />
+<h2 id="7-the-finale-lasso-reads-the-student-data">7. The finale: lasso reads the student data</h2>
+<p>Synthetic sine waves are for building intuition; the real test of a feature selector is a dataset with
+genuinely competing features. Enter, one last time, the student performance data. We'll take every numeric
+feature — fifteen of them, from study time to alcohol consumption — standardise, and ask <code>LassoCV</code> to predict
+the final grade <code>G3</code> while choosing <span class="arithmatex">\(\lambda\)</span> by cross-validation. The question we're really asking: <em>out of
+everything we know about a student, what does the model decide it actually needs?</em></p>
+<div class="highlight"><pre><span></span><code><span class="n">numeric</span> <span class="o">=</span> <span class="n">students</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="s2">&quot;number&quot;</span><span class="p">)</span>
+<span class="n">X_stu</span> <span class="o">=</span> <span class="n">numeric</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">&quot;G3&quot;</span><span class="p">)</span>
+<span class="n">y_stu</span> <span class="o">=</span> <span class="n">numeric</span><span class="p">[</span><span class="s2">&quot;G3&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">X_stu</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> numeric features: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">X_stu</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">Xs_train</span><span class="p">,</span> <span class="n">Xs_test</span><span class="p">,</span> <span class="n">ys_train</span><span class="p">,</span> <span class="n">ys_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">X_stu</span><span class="p">,</span> <span class="n">y_stu</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+
+<span class="n">lasso_cv</span> <span class="o">=</span> <span class="n">make_pipeline</span><span class="p">(</span><span class="n">StandardScaler</span><span class="p">(),</span> <span class="n">LassoCV</span><span class="p">(</span><span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">))</span>
+<span class="n">lasso_cv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Xs_train</span><span class="p">,</span> <span class="n">ys_train</span><span class="p">)</span>
+
+<span class="n">chosen</span> <span class="o">=</span> <span class="n">lasso_cv</span><span class="o">.</span><span class="n">named_steps</span><span class="p">[</span><span class="s2">&quot;lassocv&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">lambda chosen by cross-validation: </span><span class="si">{</span><span class="n">chosen</span><span class="o">.</span><span class="n">alpha_</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;features kept: </span><span class="si">{</span><span class="p">(</span><span class="n">chosen</span><span class="o">.</span><span class="n">coef_</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">X_stu</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>15 numeric features: [&#39;age&#39;, &#39;Medu&#39;, &#39;Fedu&#39;, &#39;traveltime&#39;, &#39;studytime&#39;, &#39;failures&#39;, &#39;famrel&#39;, &#39;freetime&#39;, &#39;goout&#39;, &#39;Dalc&#39;, &#39;Walc&#39;, &#39;health&#39;, &#39;absences&#39;, &#39;G1&#39;, &#39;G2&#39;]
+
+lambda chosen by cross-validation: 0.0697
+features kept: 9 of 15
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">coef_table</span> <span class="o">=</span> <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">chosen</span><span class="o">.</span><span class="n">coef_</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">X_stu</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+
+<span class="n">coef_table</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:blue&quot;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;standardised coefficient&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Lasso&#39;s verdict: six features are pinned at exactly zero&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">coef_table</span><span class="p">[</span><span class="n">coef_table</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../05_regularization_files/05_regularization_26_0.png" /></p>
+<div class="highlight"><pre><span></span><code>Fedu       -0.027
+Walc        0.035
+health      0.070
+failures   -0.114
+famrel      0.128
+age        -0.214
+G1          0.290
+absences    0.302
+G2          3.640
+dtype: float64
+</code></pre></div>
+<p>Read the bar chart from the bottom up — it's a ranked verdict on the whole dataset. Six features have
+vanished entirely: <code>Medu</code>, <code>traveltime</code>, <code>studytime</code>, <code>freetime</code>, <code>goout</code>, and <code>Dalc</code> sit at <em>exact</em> zero —
+bars of no width, struck from the model. What survives is dominated overwhelmingly by <code>G2</code> — the
+second-period grade, with a coefficient more than ten times any other — which we already knew from the ML
+Workflow module was doing most of the predictive work. <code>absences</code>, <code>G1</code>, and a few others cling on with small
+coefficients.</p>
+<p>Two cautions before we get carried away. First, "fired" means <em>redundant for prediction given the others</em>, not
+<em>irrelevant in life</em>: <code>G1</code> carries real information, but with <code>G2</code> already in the room it adds almost nothing
+— our old multicollinearity lesson wearing a new coat. Second, a lasso coefficient is still a correlation-
+world object, not a causal one — the model isn't saying failing fewer classes <em>causes</em> higher grades, only
+that it helps predict them.</p>
+<p>Does the pruning cost us accuracy? Let's compare against plain, keep-everything linear regression:</p>
+<div class="highlight"><pre><span></span><code><span class="n">ols_pipe</span> <span class="o">=</span> <span class="n">make_pipeline</span><span class="p">(</span><span class="n">StandardScaler</span><span class="p">(),</span> <span class="n">LinearRegression</span><span class="p">())</span>
+<span class="n">ols_pipe</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Xs_train</span><span class="p">,</span> <span class="n">ys_train</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;OLS, all 15 features&quot;</span><span class="p">,</span> <span class="n">ols_pipe</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;LassoCV&quot;</span><span class="p">,</span> <span class="n">lasso_cv</span><span class="p">)]:</span>
+    <span class="n">rmse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">ys_test</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">Xs_test</span><span class="p">)))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">&lt;22</span><span class="si">}</span><span class="s2"> test RMSE = </span><span class="si">{</span><span class="n">rmse</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>OLS, all 15 features   test RMSE = 2.308
+LassoCV                test RMSE = 2.309
+</code></pre></div>
+<p>Essentially the same test error, from a model that threw most of its inputs away. That's the quiet
+superpower of regularization on real data: it doesn't just prevent overfitting — it buys you <em>simpler,
+cheaper, more explainable</em> models at no accuracy cost. A school deploying the lasso model needs nine fields
+instead of thirty-two, and in truth mostly one; a stakeholder asking "what drives the prediction?" gets an
+answer that fits in a sentence.</p>
+<p>And when does regularization go from "nice to have" to "load-bearing"? Whenever the feature count is large
+relative to the data — hundreds of features, thousands of engineered polynomial terms, or (the extreme case)
+more features than samples, where OLS doesn't even have a unique solution but ridge and lasso happily do.
+In modern practice you'll meet very few unregularized linear models in the wild.</p>
+<hr />
+<h2 id="8-your-turn">8. Your turn</h2>
+<p>Add cells below each exercise. Exercises 2 and 5 are the ones that consolidate the big ideas.</p>
+<p><strong>Exercise 1 — Ridge reads the students.</strong>
+Repeat Section 7 with <code>RidgeCV</code> (import it from <code>sklearn.linear_model</code>) in place of <code>LassoCV</code>. Compare the
+coefficient bar charts side by side. Does ridge agree with lasso about which features matter <em>most</em>? What does
+it do with the features lasso fired?</p>
+<p><strong>Exercise 2 — Break the tie to scaling.</strong>
+In Section 7, remove the <code>StandardScaler</code> step from the lasso pipeline and refit. Which features get kept
+now? Look at the raw value ranges of those features (<code>X_stu.describe()</code>) and explain what went wrong — why is
+the penalty unfair without scaling?</p>
+<p><strong>Exercise 3 — The ruinous-rent limit.</strong>
+We claimed that as <span class="arithmatex">\(\lambda \to \infty\)</span> the model flattens to a horizontal line at <span class="arithmatex">\(\bar{y}\)</span>. Verify it: fit
+Ridge with <code>alpha=1e9</code> on the sine data, predict over the grid, and compare against <code>y.mean()</code>. Why the mean,
+and not zero? (Hint: which coefficient never pays rent?)</p>
+<p><strong>Exercise 4 — Noise moves the dial.</strong>
+Regenerate the sine data with noise <code>scale=0.8</code> (double) and rerun the validation curve of Section 6. Which
+way does the best <span class="arithmatex">\(\lambda\)</span> move? Explain in one sentence using the rent metaphor.</p>
+<p><strong>Exercise 5 — The full sweep.</strong>
+Combine everything: on the sine data, plot test RMSE against <span class="arithmatex">\(\lambda\)</span> for <em>both</em> ridge and lasso on the same
+axes. Which achieves the lower minimum here? Then repeat the plot's <em>idea</em> on the student data (ridge vs lasso
+test RMSE at their CV-chosen <span class="arithmatex">\(\lambda\)</span>'s). Is there a meaningful difference — and if not, what would make you
+still prefer one over the other in a report to the school?</p>
+<hr />
+<h2 id="9-if-you-remember-nothing-else">9. If you remember nothing else</h2>
+<ol>
+<li>
+<p>Overfitting has a signature: extreme coefficients, delicately cancelling, engineered to chase noise. Our
+   degree-14 model needed coefficients in the hundreds of millions to wiggle through fifteen points.</p>
+</li>
+<li>
+<p>Regularization changes the cost function: <span class="arithmatex">\(J = \text{SSE} + \lambda \cdot \text{penalty}\)</span>. Fit the data,
+   <em>and</em> pay rent on your coefficients. <span class="arithmatex">\(\lambda\)</span> is a continuous complexity dial: 0 recovers OLS, <span class="arithmatex">\(\infty\)</span>
+   flattens the model into underfitting; tune it on held-out error, on a log grid.</p>
+</li>
+<li>
+<p><strong>Ridge (L2)</strong> penalises <span class="arithmatex">\(\sum \beta_j^2\)</span>: shrinks all coefficients smoothly, never exactly to zero. Its
+   gradient-descent form — nudge every weight toward zero at each step — is deep learning's "weight decay".</p>
+</li>
+<li>
+<p><strong>Lasso (L1)</strong> penalises <span class="arithmatex">\(\sum |\beta_j|\)</span>: drives unhelpful coefficients <em>exactly</em> to zero, performing
+   automatic feature selection. Geometrically: elliptical error contours hit the corners of the L1 diamond,
+   and corners live on the axes.</p>
+</li>
+<li>
+<p>Standardise before you regularize — the penalty compares coefficient sizes, and that's only fair on a
+   shared scale. The intercept is never penalised.</p>
+</li>
+<li>
+<p>Choosing <span class="arithmatex">\(\lambda\)</span> is the degree-choosing problem in new clothes: the same U-curve, found the same way,
+   ideally with cross-validation (<code>RidgeCV</code>, <code>LassoCV</code> automate it).</p>
+</li>
+<li>
+<p>On real data, lasso matched keep-everything OLS on the student test set while zeroing six features and
+   leaning almost entirely on one — regularization buys simplicity and explainability, often at zero accuracy
+   cost.</p>
+</li>
+<li>
+<p>Rule of thumb: many features, engineered features, or few samples per feature → regularize. In practice:
+   almost always regularize.</p>
+</li>
+</ol>
+<hr />
+<h2 id="10-further-reading-and-glossary">10. Further reading and glossary</h2>
+<h3 id="further-reading">Further reading</h3>
+<ul>
+<li><em>An Introduction to Statistical Learning</em>, <a href="https://www.statlearning.com/">Chapter 6</a> — shrinkage methods:
+  ridge, lasso, and the budget-region picture in full statistical dress.</li>
+<li>scikit-learn's guide to <a href="https://scikit-learn.org/stable/modules/linear_model.html">linear models</a> — Ridge,
+  Lasso, ElasticNet and their CV variants, with practical notes.</li>
+<li>The scikit-learn example on <a href="https://scikit-learn.org/stable/auto_examples/linear_model/plot_lasso_coordinate_descent_path.html">lasso and elastic net paths</a>
+  — watch every coefficient's journey to zero as <span class="arithmatex">\(\lambda\)</span> grows.</li>
+<li>Robert Tibshirani's original 1996 paper, <a href="https://webdoc.sub.gwdg.de/ebook/serien/e/CIS/12290.pdf">Regression Shrinkage and Selection via the Lasso</a>
+  — surprisingly readable, and a nice example of what a landmark methods paper looks like.</li>
+</ul>
+<h3 id="glossary">Glossary</h3>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regularization</td>
+<td>Adding a coefficient-size penalty to the cost function to discourage overfitting.</td>
+</tr>
+<tr>
+<td>Penalty term</td>
+<td>The <span class="arithmatex">\(\lambda \cdot \text{penalty}(\boldsymbol\beta)\)</span> addition to the SSE — the "rent".</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\lambda\)</span> / <code>alpha</code></td>
+<td>Regularization strength; sklearn's name for <span class="arithmatex">\(\lambda\)</span> is <code>alpha</code> (unrelated to the learning rate).</td>
+</tr>
+<tr>
+<td>Ridge regression</td>
+<td>Linear regression with an L2 penalty <span class="arithmatex">\(\sum \beta_j^2\)</span>.</td>
+</tr>
+<tr>
+<td>Lasso regression</td>
+<td>Linear regression with an L1 penalty $\sum</td>
+</tr>
+<tr>
+<td>L1 / L2 norm</td>
+<td>Sum of absolute values / square root of sum of squares of a vector's entries.</td>
+</tr>
+<tr>
+<td>Shrinkage</td>
+<td>Pulling coefficient estimates toward zero — what all regularizers do.</td>
+</tr>
+<tr>
+<td>Sparsity</td>
+<td>Many coefficients exactly zero; the hallmark of L1 solutions.</td>
+</tr>
+<tr>
+<td>Feature selection</td>
+<td>Choosing which features enter the model; lasso does it automatically.</td>
+</tr>
+<tr>
+<td>Weight decay</td>
+<td>Deep learning's name for L2 regularization inside gradient-based training.</td>
+</tr>
+<tr>
+<td>Elastic Net</td>
+<td>A blend of L1 and L2 penalties, controlled by a mixing ratio.</td>
+</tr>
+<tr>
+<td>Validation curve</td>
+<td>Train/test error plotted against a hyperparameter — how we find the U's bottom.</td>
+</tr>
+<tr>
+<td>Cross-validation</td>
+<td>Averaging held-out error over rotating splits for a more reliable estimate.</td>
+</tr>
+<tr>
+<td><code>RidgeCV</code> / <code>LassoCV</code></td>
+<td>Estimators that tune <span class="arithmatex">\(\lambda\)</span> by cross-validation during <code>.fit()</code>.</td>
+</tr>
+<tr>
+<td>Intercept exemption</td>
+<td>The convention that <span class="arithmatex">\(\beta_0\)</span> is never penalised.</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../04_gradient_descent/" class="btn btn-neutral float-left" title="Gradient Descent"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../06_logistic_regression/" class="btn btn-neutral float-right" title="Classification & Logistic Regression">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright &copy; 2026 - Aayush Raj Regmi</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../04_gradient_descent/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../06_logistic_regression/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../javascripts/mathjax.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

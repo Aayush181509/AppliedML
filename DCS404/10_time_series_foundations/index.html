@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Time Series Foundations - DCS 404</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Time Series Foundations";
+        var mkdocs_page_input_path = "DCS404/10_time_series_foundations.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> DCS 404
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Welcome</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../InstallationGuide/">Installation Guide</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Machine Learning and AI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../01_introduction_to_machine_learning/">Introduction to Machine Learning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02_ml_workflow/">ML Workflow</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../03_regression/">Regression</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04_gradient_descent/">Gradient Descent</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../05_regularization/">Regularization</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../06_logistic_regression/">Classification & Logistic Regression</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07_decision_trees/">Decision Trees</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../08_evaluation_metrics/">Evaluation Metrics</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../09_knn/">K-Nearest Neighbors</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Time Series Analysis</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Time Series Foundations</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-work-through-this">How to work through this</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#learning-objectives">Learning objectives</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#1-what-breaks-when-order-matters">1. What breaks when order matters</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-time-series-in-pandas">2. Time series in pandas</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#selecting-by-time">Selecting by time</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#shift-moving-the-past-into-the-present">shift — moving the past into the present</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#resample-changing-the-time-granularity">resample — changing the time granularity</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#rolling-the-moving-window">rolling — the moving window</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-the-four-components">3. The four components</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#additive-or-multiplicative">Additive or multiplicative?</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-decomposition">4. Decomposition</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#stl-the-modern-alternative">STL: the modern alternative</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-stationarity">5. Stationarity</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#the-augmented-dickey-fuller-test">The Augmented Dickey-Fuller test</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#a-second-opinion-kpss">A second opinion: KPSS</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-autocorrelation-the-acf-and-pacf">6. Autocorrelation: the ACF and PACF</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-splitting-time-and-four-baselines-you-must-beat">7. Splitting time, and four baselines you must beat</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#splitting-without-cheating">Splitting without cheating</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#the-four-baselines">The four baselines</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#8-measuring-forecast-error">8. Measuring forecast error</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#9-your-turn">9. Your turn</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#10-if-you-remember-nothing-else">10. If you remember nothing else</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#11-further-reading-and-glossary">11. Further reading and glossary</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#further-reading">Further reading</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#glossary">Glossary</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../11_exponential_smoothing/">Exponential Smoothing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../12_arima_models/">ARIMA and SARIMA Models</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Final Project</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../project/00_final_project/">Project Work</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">DCS 404</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Time Series Analysis</li>
+      <li class="breadcrumb-item active">Time Series Foundations</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="time-series-foundations-when-order-matters">Time Series Foundations: When Order Matters</h1>
+<p><strong>DCS 404 · Data Science and Machine Learning</strong></p>
+<hr />
+<p>Every dataset in this course so far has shared a quiet assumption. When we split the diabetes data with
+<code>train_test_split(..., shuffle=True)</code>, we were saying something specific: <em>the rows are interchangeable</em>.
+Patient 340 tells us nothing about patient 341 that patient 12 doesn't also tell us. Rows are independent
+draws from one fixed distribution — <strong>i.i.d.</strong>, in the jargon — and shuffling them destroys nothing,
+because there was no order to destroy.</p>
+<p>Now consider monthly airline passenger counts from 1949 to 1960. Shuffle <em>those</em> rows and you have
+vandalised the data. The whole point is that December 1959 comes after November 1959, that summers are
+busier than winters, that the airline industry grew over the decade. The order <strong>is</strong> the signal.</p>
+<p>A <strong>time series</strong> is a sequence of observations indexed by time, where that indexing carries information.
+This one change — dropping independence — invalidates a surprising amount of what we have built. Random
+train/test splits leak the future into the past. Cross-validation folds become time machines. Even
+"compute the mean" becomes ambiguous, because the mean may be <em>moving</em>. In exchange, we gain a genuinely
+new capability: <strong>forecasting</strong>, the business of saying something about observations that do not exist yet.</p>
+<p>This module builds the vocabulary and the diagnostic toolkit. We will not fit a single ARIMA model here —
+that is the next two modules. Instead we learn to <em>look</em> at a series properly: decompose it into the
+forces that generated it, test whether it is stable enough to model, read its autocorrelation fingerprint,
+and establish the honest baselines that any sophisticated model must beat. Skip this module and every
+model in the next two will be a black box you cannot debug.</p>
+<h2 id="how-to-work-through-this">How to work through this</h2>
+<p>The usual rhythm: run every code cell (<code>Shift + Enter</code>), study the output, <em>then</em> read the commentary.
+Cells build on each other, so if something errors, run from the top.</p>
+<p>The module is in three acts:</p>
+<ol>
+<li><strong>Sections 1–3</strong> are about <em>seeing</em>: what makes a series a series, how pandas handles time, and the
+   four components (trend, seasonality, cycle, noise) that combine to make the shape you see.</li>
+<li><strong>Sections 4–6</strong> are the diagnostic toolkit: decomposition, <strong>stationarity</strong> and the transformations
+   that buy it, and the <strong>ACF/PACF</strong> correlogram — the single most important plot in time series.</li>
+<li><strong>Sections 7–8</strong> close the loop: how to split time series data without cheating, the four <strong>baseline
+   forecasts</strong>, and the error metrics that tell you whether anything fancier was worth it.</li>
+</ol>
+<p>Our running dataset is the classic <strong>Air Passengers</strong> series (144 monthly totals, 1949–1960) — small
+enough to read row by row, and it contains every phenomenon we need to name.</p>
+<h2 id="learning-objectives">Learning objectives</h2>
+<p>After completing this module you will be able to:</p>
+<ul>
+<li>Explain why <strong>i.i.d.-based tooling</strong> (shuffled splits, k-fold CV) is invalid for temporal data, and
+  what replaces it.</li>
+<li>Manipulate time series in pandas using a <strong>DatetimeIndex</strong>, <code>asfreq</code>, <code>resample</code>, <code>shift</code>, and
+  <code>rolling</code>.</li>
+<li>Identify the <strong>components</strong> of a series — trend, seasonality, cyclical, irregular — and distinguish
+  <strong>additive</strong> from <strong>multiplicative</strong> composition.</li>
+<li>Decompose a series with <code>seasonal_decompose</code> and <strong>STL</strong>, and interpret each panel.</li>
+<li>Define <strong>stationarity</strong>, test for it with the <strong>ADF</strong> and <strong>KPSS</strong> tests, and induce it via <strong>log
+  transforms</strong> and <strong>differencing</strong>.</li>
+<li>Read an <strong>ACF</strong> and <strong>PACF</strong> plot, recognise <strong>white noise</strong>, and use the correlogram to detect trend
+  and seasonality.</li>
+<li>Produce <strong>naive, seasonal naive, mean, and drift</strong> forecasts, and evaluate them with <strong>MAE, RMSE,
+  MAPE</strong> and <strong>MASE</strong>.</li>
+</ul>
+<h2 id="setup">Setup</h2>
+<p>Run this once. Libraries, plotting style, and the Air Passengers series loaded with a proper monthly
+<code>DatetimeIndex</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">statsmodels.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.tsa.seasonal</span><span class="w"> </span><span class="kn">import</span> <span class="n">seasonal_decompose</span><span class="p">,</span> <span class="n">STL</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.tsa.stattools</span><span class="w"> </span><span class="kn">import</span> <span class="n">adfuller</span><span class="p">,</span> <span class="n">kpss</span><span class="p">,</span> <span class="n">acf</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.graphics.tsaplots</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_acf</span><span class="p">,</span> <span class="n">plot_pacf</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>   <span class="c1"># statsmodels is chatty about test-statistic interpolation</span>
+
+<span class="c1"># A consistent look for every plot in this notebook</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+    <span class="s2">&quot;figure.figsize&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+    <span class="s2">&quot;figure.dpi&quot;</span><span class="p">:</span> <span class="mi">110</span><span class="p">,</span>
+    <span class="s2">&quot;axes.grid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">&quot;grid.alpha&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="s2">&quot;axes.spines.top&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;axes.spines.right&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;font.size&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_palette</span><span class="p">(</span><span class="s2">&quot;deep&quot;</span><span class="p">)</span>
+<span class="n">RANDOM_STATE</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">load_csv</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;data/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;notebooks/data/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)]:</span>
+        <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> from: </span><span class="si">{</span><span class="n">candidate</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Air Passengers: monthly totals (thousands), Jan 1949 - Dec 1960</span>
+<span class="n">air</span> <span class="o">=</span> <span class="n">load_csv</span><span class="p">(</span><span class="s2">&quot;air_passengers.csv&quot;</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Month&quot;</span><span class="p">],</span> <span class="n">index_col</span><span class="o">=</span><span class="s2">&quot;Month&quot;</span><span class="p">)</span>
+<span class="n">air</span> <span class="o">=</span> <span class="n">air</span><span class="o">.</span><span class="n">asfreq</span><span class="p">(</span><span class="s2">&quot;MS&quot;</span><span class="p">)</span>                     <span class="c1"># MS = month start; declares the sampling frequency</span>
+<span class="n">passengers</span> <span class="o">=</span> <span class="n">air</span><span class="p">[</span><span class="s2">&quot;Passengers&quot;</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">passengers</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">passengers</span><span class="p">)</span><span class="si">}</span><span class="s2"> observations from </span><span class="si">{</span><span class="n">passengers</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">%b %Y</span><span class="si">}</span><span class="s2"> &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;to </span><span class="si">{</span><span class="n">passengers</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">%b %Y</span><span class="si">}</span><span class="s2">, frequency = </span><span class="si">{</span><span class="n">passengers</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">freqstr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Loaded air_passengers.csv from: data/air_passengers.csv
+Month
+1949-01-01    112
+1949-02-01    118
+1949-03-01    132
+1949-04-01    129
+1949-05-01    121
+Freq: MS, Name: Passengers, dtype: int64
+
+144 observations from Jan 1949 to Dec 1960, frequency = MS
+</code></pre></div>
+<hr />
+<h2 id="1-what-breaks-when-order-matters">1. What breaks when order matters</h2>
+<p>Let us make the danger concrete rather than abstract. Here is the series, and here is what happens if we
+treat it like every other dataset in this course.</p>
+<div class="highlight"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">passengers</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">passengers</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C0&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;The data as recorded&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Passengers (thousands)&quot;</span><span class="p">)</span>
+
+<span class="n">shuffled</span> <span class="o">=</span> <span class="n">passengers</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">frac</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">passengers</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">shuffled</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C3&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;The same values, shuffled&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">:</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Shuffling is lossless for i.i.d. data and catastrophic here&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.02</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean, std, min, max are identical: </span><span class="si">{</span><span class="n">shuffled</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> vs </span><span class="si">{</span><span class="n">passengers</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../10_time_series_foundations_files/10_time_series_foundations_6_0.png" /></p>
+<div class="highlight"><pre><span></span><code>Mean, std, min, max are identical: 280.3 vs 280.3
+</code></pre></div>
+<p>Both panels contain <em>exactly the same 144 numbers</em>. Every summary statistic you learned in the first weeks
+of this course — mean, variance, quantiles, the whole histogram — is identical between them. Yet the left
+panel is forecastable and the right panel is noise. <strong>All of the information destroyed by shuffling lived
+in the ordering</strong>, and none of our i.i.d. tooling can see it.</p>
+<p>Three concrete consequences follow, and they will govern everything in these three modules:</p>
+<ol>
+<li>
+<p><strong>Random train/test splits leak the future.</strong> If a randomly chosen test point sits at March 1955, the
+   model trains on April 1955 — it has literally seen the future it is being asked to predict. Test scores
+   come back beautiful and mean nothing. The split must be <strong>chronological</strong>: train on the past, test on
+   the most recent block.</p>
+</li>
+<li>
+<p><strong>K-fold cross-validation is invalid</strong> for the same reason. Its replacement is <strong>rolling-origin</strong>
+   (or "walk-forward") validation, where the training window only ever grows forwards in time.</p>
+</li>
+<li>
+<p><strong>Observations are correlated with their own past.</strong> This is not a nuisance to be cleaned away — it is
+   the <em>resource</em>. Everything we forecast, we forecast because the past leaves fingerprints on the
+   present. Section 6 is about reading those fingerprints.</p>
+</li>
+</ol>
+<hr />
+<h2 id="2-time-series-in-pandas">2. Time series in pandas</h2>
+<p>Before the statistics, the mechanics. A time series in pandas is a <code>Series</code> whose index is a
+<code>DatetimeIndex</code> — and once that is true, a large amount of temporal machinery unlocks. The important
+extra step is declaring the <strong>frequency</strong>, which we did with <code>asfreq("MS")</code> in the setup cell. A series
+that knows it is monthly can tell you what "one lag ago" means; one that doesn't, can't.</p>
+<p>Four operations carry most of the work.</p>
+<h3 id="selecting-by-time">Selecting by time</h3>
+<p>You can slice with strings, and pandas does the parsing.</p>
+<div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Whole year 1950:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">passengers</span><span class="p">[</span><span class="s2">&quot;1950&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">A date range (partial-string slicing is inclusive on both ends):&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">passengers</span><span class="p">[</span><span class="s2">&quot;1959-10&quot;</span><span class="p">:</span><span class="s2">&quot;1960-02&quot;</span><span class="p">])</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Whole year 1950:
+[115 126 141 135 125 149 170 170 158 133 114 140]
+
+A date range (partial-string slicing is inclusive on both ends):
+Month
+1959-10-01    407
+1959-11-01    362
+1959-12-01    405
+1960-01-01    417
+1960-02-01    391
+Freq: MS, Name: Passengers, dtype: int64
+</code></pre></div>
+<h3 id="shift-moving-the-past-into-the-present"><code>shift</code> — moving the past into the present</h3>
+<p><code>shift(k)</code> slides the series forward by <code>k</code> steps, which lines up each observation with the value from
+<span class="arithmatex">\(k\)</span> periods earlier. This is how <em>lag features</em> are built, and it is the mechanical heart of every
+autoregressive model in Module 12.</p>
+<div class="highlight"><pre><span></span><code><span class="n">lags</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">&quot;y_t&quot;</span><span class="p">:</span>     <span class="n">passengers</span><span class="p">,</span>
+    <span class="s2">&quot;y_{t-1}&quot;</span><span class="p">:</span> <span class="n">passengers</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>      <span class="c1"># last month</span>
+    <span class="s2">&quot;y_{t-12}&quot;</span><span class="p">:</span> <span class="n">passengers</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="mi">12</span><span class="p">),</span>    <span class="c1"># same month last year</span>
+<span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lags</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">14</span><span class="p">))</span>
+
+<span class="c1"># Correlation of the series with its own past</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Correlation with 1-month lag:  </span><span class="si">{</span><span class="n">lags</span><span class="p">[</span><span class="s1">&#39;y_t&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="n">lags</span><span class="p">[</span><span class="s1">&#39;y_{t-1}&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Correlation with 12-month lag: </span><span class="si">{</span><span class="n">lags</span><span class="p">[</span><span class="s1">&#39;y_t&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="n">lags</span><span class="p">[</span><span class="s1">&#39;y_{t-12}&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>            y_t  y_{t-1}  y_{t-12}
+Month                             
+1949-01-01  112      NaN       NaN
+1949-02-01  118    112.0       NaN
+1949-03-01  132    118.0       NaN
+1949-04-01  129    132.0       NaN
+1949-05-01  121    129.0       NaN
+1949-06-01  135    121.0       NaN
+1949-07-01  148    135.0       NaN
+1949-08-01  148    148.0       NaN
+1949-09-01  136    148.0       NaN
+1949-10-01  119    136.0       NaN
+1949-11-01  104    119.0       NaN
+1949-12-01  118    104.0       NaN
+1950-01-01  115    118.0     112.0
+1950-02-01  126    115.0     118.0
+
+Correlation with 1-month lag:  0.960
+Correlation with 12-month lag: 0.991
+</code></pre></div>
+<p>Both correlations are enormous — 0.96 and 0.99. Note that the <em>12-month</em> lag is the stronger of the two:
+this month resembles the same month last year even more than it resembles last month. That is seasonality
+showing up as a number. In an i.i.d. dataset a feature correlating 0.99
+with the target would be a triumph; here it is simply what time series <em>are</em>. This self-correlation is
+called <strong>autocorrelation</strong> and Section 6 measures it properly.</p>
+<h3 id="resample-changing-the-time-granularity"><code>resample</code> — changing the time granularity</h3>
+<p>Resampling is a <code>groupby</code> over time. Going to a <em>coarser</em> frequency (monthly → yearly) requires an
+aggregation; going <em>finer</em> requires an interpolation rule.</p>
+<div class="highlight"><pre><span></span><code><span class="n">yearly</span> <span class="o">=</span> <span class="n">passengers</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="s2">&quot;YE&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>          <span class="c1"># YE = year end</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Annual totals:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">yearly</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Growth 1949 -&gt; 1960: </span><span class="si">{</span><span class="n">yearly</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">yearly</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">x&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Annual totals:
+Month
+1949-12-31    1520
+1950-12-31    1676
+1951-12-31    2042
+1952-12-31    2364
+1953-12-31    2700
+1954-12-31    2867
+1955-12-31    3408
+1956-12-31    3939
+1957-12-31    4421
+1958-12-31    4572
+1959-12-31    5140
+1960-12-31    5714
+Freq: YE-DEC
+
+Growth 1949 -&gt; 1960: 3.76x
+</code></pre></div>
+<h3 id="rolling-the-moving-window"><code>rolling</code> — the moving window</h3>
+<p>A rolling window computes a statistic over the last <span class="arithmatex">\(w\)</span> observations, sliding forward one step at a time.
+A rolling <em>mean</em> is the simplest smoother in existence and our first look at the trend.</p>
+<div class="highlight"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">passengers</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C0&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.45</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Observed&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">passengers</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C3&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;12-month rolling mean (trend)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">passengers</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">std</span><span class="p">(),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C2&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;12-month rolling std (spread)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;A 12-month window averages one full seasonal cycle away&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Passengers (thousands)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../10_time_series_foundations_files/10_time_series_foundations_15_0.png" /></p>
+<p>Two readings from this one plot, and both matter later:</p>
+<ul>
+<li>The red curve — the rolling mean — climbs steadily. That is the <strong>trend</strong>, and the fact that the
+  average level changes over time already tells us the series is <em>not</em> stationary (Section 5).</li>
+<li>The green curve — the rolling standard deviation — also climbs. The series is not just drifting
+  upwards, it is getting <strong>noisier in absolute terms</strong> as it grows. That specific pattern is the
+  signature of <em>multiplicative</em> structure, which is the subject of the next section.</li>
+</ul>
+<p>Note the choice of <code>window=12</code>. Averaging over exactly one full seasonal cycle causes the seasonal
+ups and downs to cancel, leaving the trend behind. This trick is precisely how classical decomposition
+works.</p>
+<hr />
+<h2 id="3-the-four-components">3. The four components</h2>
+<p>The classical view is that any time series is a superposition of four forces. Separating them is the
+first analytical move you make, because different components need different treatment.</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Symbol</th>
+<th>What it is</th>
+<th>Air Passengers example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Trend</strong></td>
+<td><span class="arithmatex">\(T_t\)</span></td>
+<td>Long-run increase or decrease in the level</td>
+<td>Air travel roughly tripled over the decade</td>
+</tr>
+<tr>
+<td><strong>Seasonality</strong></td>
+<td><span class="arithmatex">\(S_t\)</span></td>
+<td>A pattern of <strong>fixed, known period</strong></td>
+<td>Summer peaks every single year</td>
+</tr>
+<tr>
+<td><strong>Cyclical</strong></td>
+<td><span class="arithmatex">\(C_t\)</span></td>
+<td>Rises and falls of <strong>no fixed period</strong>, usually multi-year</td>
+<td>Business cycles, recessions</td>
+</tr>
+<tr>
+<td><strong>Irregular</strong></td>
+<td><span class="arithmatex">\(e_t\)</span></td>
+<td>What is left: unpredictable noise</td>
+<td>Strikes, weather, measurement error</td>
+</tr>
+</tbody>
+</table>
+<p>The distinction between <strong>seasonal</strong> and <strong>cyclical</strong> trips up nearly everyone, so state it precisely:
+seasonality has a <em>fixed and known</em> period (12 months, 7 days, 24 hours) and is tied to the calendar; a
+cycle has <em>variable</em> duration and unknown timing. Christmas is seasonal; a recession is cyclical. Because
+cycles are so hard to pin down, most practical modelling folds <span class="arithmatex">\(C_t\)</span> into the trend and speaks of three
+components — <strong>trend, seasonality, residual</strong> — which is what <code>seasonal_decompose</code> reports.</p>
+<h3 id="additive-or-multiplicative">Additive or multiplicative?</h3>
+<p>How do the components combine? There are two candidate models:</p>
+<div class="arithmatex">\[\text{Additive:}\quad y_t = T_t + S_t + e_t \qquad\qquad \text{Multiplicative:}\quad y_t = T_t \times S_t \times e_t\]</div>
+<p>In the <strong>additive</strong> case the seasonal swing is a <em>constant number of units</em> — the December bump is
+<span class="arithmatex">\(+40{,}000\)</span> passengers whether the airline is small or large. In the <strong>multiplicative</strong> case the swing is
+a <em>constant percentage</em> — December is always <span class="arithmatex">\(+25\%\)</span> above trend, so the absolute bump grows as the
+airline grows.</p>
+<p>The diagnostic is visual, and it is the one you saw in the rolling-std plot: <strong>if the seasonal
+oscillations widen as the level rises, the series is multiplicative.</strong></p>
+<div class="highlight"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">passengers</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C0&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Air Passengers: fan shape -&gt; multiplicative&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Passengers (thousands)&quot;</span><span class="p">)</span>
+
+<span class="c1"># The same series with the growth removed, for contrast</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">passengers</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C2&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;After log: constant-width swings -&gt; additive&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;log(Passengers)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../10_time_series_foundations_files/10_time_series_foundations_18_0.png" /></p>
+<p>The left panel fans outwards: the 1949 seasonal wobble is a few thousand passengers, the 1960 wobble is
+over a hundred thousand. The right panel — the same data on a log scale — has swings of near-constant
+height.</p>
+<p>That is not a coincidence, it is algebra. Taking logs turns products into sums:</p>
+<div class="arithmatex">\[\log(T_t \times S_t \times e_t) = \log T_t + \log S_t + \log e_t\]</div>
+<p><strong>A multiplicative series becomes additive under a log transform.</strong> This is the single most useful
+transformation in time series work, and we will lean on it repeatedly: rather than build multiplicative
+machinery, take logs, use the simpler additive machinery, and exponentiate the forecast back at the end.</p>
+<hr />
+<h2 id="4-decomposition">4. Decomposition</h2>
+<p>Decomposition estimates the components and hands them back as separate series. The classical algorithm is
+exactly the trick from Section 2:</p>
+<ol>
+<li>Estimate the <strong>trend</strong> with a centred moving average of one full season's width.</li>
+<li><strong>Detrend</strong> the series (subtract, or divide, depending on the model).</li>
+<li>Estimate the <strong>seasonal</strong> component by averaging the detrended values for each period position — every
+   January together, every February together — then centre them.</li>
+<li>The <strong>residual</strong> is whatever remains.</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="n">result</span> <span class="o">=</span> <span class="n">seasonal_decompose</span><span class="p">(</span><span class="n">passengers</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;multiplicative&quot;</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Multiplicative decomposition of Air Passengers&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.00</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../10_time_series_foundations_files/10_time_series_foundations_21_0.png" /></p>
+<p>Read the four panels top to bottom:</p>
+<ul>
+<li><strong>Observed</strong> — the raw series.</li>
+<li><strong>Trend</strong> — a smooth, almost linear climb. Note it is <em>missing six months at each end</em>: a centred
+  12-month window cannot be computed for the first and last half-window.</li>
+<li><strong>Seasonal</strong> — a perfectly repeating shape. Because this is a multiplicative decomposition the values
+  are <em>multipliers around 1.0</em>, so 1.25 means "25% above trend".</li>
+<li><strong>Residual</strong> — what neither trend nor seasonality explains. <strong>This panel is the diagnostic</strong>: if it
+  still has visible structure, your model has missed something.</li>
+</ul>
+<p>Let us read the seasonal factors as numbers, because they are directly interpretable.</p>
+<div class="highlight"><pre><span></span><code><span class="n">seasonal_factors</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">seasonal</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">seasonal</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">month</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">seasonal_factors</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Jan&quot;</span><span class="p">,</span> <span class="s2">&quot;Feb&quot;</span><span class="p">,</span> <span class="s2">&quot;Mar&quot;</span><span class="p">,</span> <span class="s2">&quot;Apr&quot;</span><span class="p">,</span> <span class="s2">&quot;May&quot;</span><span class="p">,</span> <span class="s2">&quot;Jun&quot;</span><span class="p">,</span>
+                          <span class="s2">&quot;Jul&quot;</span><span class="p">,</span> <span class="s2">&quot;Aug&quot;</span><span class="p">,</span> <span class="s2">&quot;Sep&quot;</span><span class="p">,</span> <span class="s2">&quot;Oct&quot;</span><span class="p">,</span> <span class="s2">&quot;Nov&quot;</span><span class="p">,</span> <span class="s2">&quot;Dec&quot;</span><span class="p">]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;C3&quot;</span> <span class="k">if</span> <span class="n">v</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;C0&quot;</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">seasonal_factors</span><span class="p">]</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">seasonal_factors</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">seasonal_factors</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Seasonal factors: deviation from the trend&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Multiplier - 1&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">v</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">+.0%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Busiest month:  July      (</span><span class="si">{</span><span class="n">seasonal_factors</span><span class="p">[</span><span class="s1">&#39;Jul&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">seasonal_factors</span><span class="p">[</span><span class="s1">&#39;Jul&#39;</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="si">:</span><span class="s2">+.1%</span><span class="si">}</span><span class="s2"> vs trend)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Quietest month: November  (</span><span class="si">{</span><span class="n">seasonal_factors</span><span class="p">[</span><span class="s1">&#39;Nov&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">seasonal_factors</span><span class="p">[</span><span class="s1">&#39;Nov&#39;</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="si">:</span><span class="s2">+.1%</span><span class="si">}</span><span class="s2"> vs trend)&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../10_time_series_foundations_files/10_time_series_foundations_23_0.png" /></p>
+<div class="highlight"><pre><span></span><code>Busiest month:  July      (1.227 -&gt; +22.7% vs trend)
+Quietest month: November  (0.801 -&gt; -19.9% vs trend)
+</code></pre></div>
+<p>July and August run about 22–23% above trend, November about 20% below — a summer-holiday pattern that
+anyone who has flown will find unsurprising. That is exactly the point: <strong>a good decomposition should
+produce components you can explain to a domain expert in plain language.</strong> If the seasonal panel is
+inexplicable, suspect the period is wrong.</p>
+<h3 id="stl-the-modern-alternative">STL: the modern alternative</h3>
+<p>Classical decomposition has real weaknesses — it loses data at both ends, it forces the seasonal shape
+to be <em>identical</em> every year, and outliers contaminate the trend. <strong>STL</strong> (Seasonal-Trend decomposition
+using LOESS) fixes all three: it uses local regression, keeps every observation, and lets the seasonal
+pattern evolve slowly.</p>
+<div class="highlight"><pre><span></span><code><span class="n">stl</span> <span class="o">=</span> <span class="n">STL</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">passengers</span><span class="p">),</span> <span class="n">period</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">robust</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">stl</span><span class="o">.</span><span class="n">trend</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C3&quot;</span><span class="p">);</span>    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Trend&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">stl</span><span class="o">.</span><span class="n">seasonal</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C0&quot;</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Seasonal&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">stl</span><span class="o">.</span><span class="n">resid</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C2&quot;</span><span class="p">);</span>    <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Residual&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;STL decomposition of log(Air Passengers)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Residual std: </span><span class="si">{</span><span class="n">stl</span><span class="o">.</span><span class="n">resid</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> (on the log scale, so ~</span><span class="si">{</span><span class="n">stl</span><span class="o">.</span><span class="n">resid</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2"> of level)&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../10_time_series_foundations_files/10_time_series_foundations_25_0.png" /></p>
+<div class="highlight"><pre><span></span><code>Residual std: 0.0265 (on the log scale, so ~2.7% of level)
+</code></pre></div>
+<p>We ran STL on the <strong>log</strong> of the series — the trick from Section 3 — which is why an additive method
+handles this multiplicative data correctly. Look closely at the seasonal panel: the amplitude is <em>not</em>
+quite constant, it grows subtly across the decade. Classical decomposition is incapable of representing
+that; STL shows it to you.</p>
+<p><code>robust=True</code> down-weights outliers so a single strange month cannot bend the trend. Use it by default
+on real data.</p>
+<hr />
+<h2 id="5-stationarity">5. Stationarity</h2>
+<p>Here is the most important concept in the module, and the prerequisite for everything in Module 12.</p>
+<p>A series is <strong>stationary</strong> if its statistical properties do not depend on <em>when</em> you look at it.
+Formally, for <strong>weak</strong> (or covariance) stationarity we require three things:</p>
+<ol>
+<li><strong>Constant mean:</strong> <span class="arithmatex">\(\mathbb{E}[y_t] = \mu\)</span> for all <span class="arithmatex">\(t\)</span> — no trend.</li>
+<li><strong>Constant variance:</strong> <span class="arithmatex">\(\mathrm{Var}(y_t) = \sigma^2\)</span> for all <span class="arithmatex">\(t\)</span> — no change in volatility.</li>
+<li><strong>Covariance depends only on the gap:</strong> <span class="arithmatex">\(\mathrm{Cov}(y_t, y_{t+k}) = \gamma_k\)</span>, a function of the lag
+   <span class="arithmatex">\(k\)</span> alone, not of <span class="arithmatex">\(t\)</span> — the relationship between neighbours is the same in 1949 and 1960.</li>
+</ol>
+<p>Why insist on this? Because <strong>forecasting is the assumption that the future behaves like the past.</strong> If a
+series' behaviour keeps changing, then the pattern the model learned from 1949–1957 need not hold in 1960,
+and there is nothing to extrapolate. Stationarity is the formal statement that the pattern is stable
+enough to be worth learning. Every model in the ARIMA family requires it — the "I" in ARIMA exists
+precisely to manufacture it.</p>
+<p>Air Passengers fails all three conditions: the mean climbs, the variance grows, and the seasonal
+structure means the correlation with a neighbouring month depends on <em>which</em> month. Let us confirm that
+with a test rather than an eyeball.</p>
+<h3 id="the-augmented-dickey-fuller-test">The Augmented Dickey-Fuller test</h3>
+<p>The <strong>ADF test</strong> checks for a <em>unit root</em> — the technical condition that makes a series wander without
+returning to a fixed level. Its hypotheses are worth memorising, because the direction surprises people:</p>
+<ul>
+<li><span class="arithmatex">\(H_0\)</span>: the series <strong>has a unit root</strong> → it is <strong>non-stationary</strong>.</li>
+<li><span class="arithmatex">\(H_1\)</span>: the series is <strong>stationary</strong>.</li>
+</ul>
+<p>So a <strong>small p-value (&lt; 0.05) means stationary</strong>. A large p-value means you failed to reject
+non-stationarity.</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">adf_report</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run the ADF test and print a verdict.&quot;&quot;&quot;</span>
+    <span class="n">stat</span><span class="p">,</span> <span class="n">pvalue</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">crit</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">adfuller</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">dropna</span><span class="p">())</span>
+    <span class="n">verdict</span> <span class="o">=</span> <span class="s2">&quot;STATIONARY&quot;</span> <span class="k">if</span> <span class="n">pvalue</span> <span class="o">&lt;</span> <span class="mf">0.05</span> <span class="k">else</span> <span class="s2">&quot;NON-STATIONARY&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">:</span><span class="s2">&lt;34</span><span class="si">}</span><span class="s2"> ADF = </span><span class="si">{</span><span class="n">stat</span><span class="si">:</span><span class="s2">&gt;7.3f</span><span class="si">}</span><span class="s2">   p = </span><span class="si">{</span><span class="n">pvalue</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">   -&gt; </span><span class="si">{</span><span class="n">verdict</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pvalue</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Augmented Dickey-Fuller  (H0 = non-stationary, so p &lt; 0.05 means stationary)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">adf_report</span><span class="p">(</span><span class="n">passengers</span><span class="p">,</span>                          <span class="s2">&quot;Raw series&quot;</span><span class="p">)</span>
+<span class="n">adf_report</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">passengers</span><span class="p">),</span>                  <span class="s2">&quot;log(y)&quot;</span><span class="p">)</span>
+<span class="n">adf_report</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">passengers</span><span class="p">)</span><span class="o">.</span><span class="n">diff</span><span class="p">(),</span>           <span class="s2">&quot;log(y), 1st difference&quot;</span><span class="p">)</span>
+<span class="n">adf_report</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">passengers</span><span class="p">)</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="mi">12</span><span class="p">),</span>  <span class="s2">&quot;log(y), 1st + seasonal difference&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Augmented Dickey-Fuller  (H0 = non-stationary, so p &lt; 0.05 means stationary)
+
+Raw series                         ADF =   0.815   p = 0.9919   -&gt; NON-STATIONARY
+log(y)                             ADF =  -1.717   p = 0.4224   -&gt; NON-STATIONARY
+log(y), 1st difference             ADF =  -2.717   p = 0.0711   -&gt; NON-STATIONARY
+log(y), 1st + seasonal difference  ADF =  -4.443   p = 0.0002   -&gt; STATIONARY
+
+
+
+
+
+np.float64(0.0002485912311384116)
+</code></pre></div>
+<p>That output is the whole story of how you prepare a series for modelling, in four lines.</p>
+<ul>
+<li><strong>Raw series</strong>: p = 0.99. Wildly non-stationary, as expected.</li>
+<li><strong>After log</strong>: still p ≈ 0.42. The log fixed the growing <em>variance</em> but did nothing about the growing
+  <em>mean</em> — logs stabilise spread, not level.</li>
+<li><strong>After first differencing</strong>: p ≈ 0.07. Big improvement, borderline. <strong>Differencing</strong> means modelling
+  the <em>change</em> rather than the level: <span class="arithmatex">\(\nabla y_t = y_t - y_{t-1}\)</span>. A series with a linear trend has
+  differences with no trend at all.</li>
+<li><strong>After also seasonal differencing</strong>: p = 0.0002. Comfortably stationary. <strong>Seasonal differencing</strong>,
+  <span class="arithmatex">\(\nabla_{12} y_t = y_t - y_{t-12}\)</span>, subtracts the same month last year, annihilating a fixed annual
+  pattern.</li>
+</ul>
+<p>The number of differences needed has a name and will become a model parameter: <span class="arithmatex">\(d\)</span> for ordinary
+differencing, <span class="arithmatex">\(D\)</span> for seasonal. Air Passengers is a <span class="arithmatex">\(d=1, D=1\)</span> series — which, as you will see in Module
+12, is exactly the famous "airline model".</p>
+<div class="highlight"><pre><span></span><code><span class="n">transforms</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Raw&quot;</span><span class="p">:</span>                        <span class="n">passengers</span><span class="p">,</span>
+    <span class="s2">&quot;log(y)&quot;</span><span class="p">:</span>                     <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">passengers</span><span class="p">),</span>
+    <span class="s2">&quot;diff(log(y))&quot;</span><span class="p">:</span>               <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">passengers</span><span class="p">)</span><span class="o">.</span><span class="n">diff</span><span class="p">(),</span>
+    <span class="s2">&quot;diff(log(y)) then diff_12&quot;</span><span class="p">:</span>  <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">passengers</span><span class="p">)</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="mi">12</span><span class="p">),</span>
+<span class="p">}</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">transforms</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C0&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;diff&quot;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C3&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Walking a series to stationarity, one transform at a time&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../10_time_series_foundations_files/10_time_series_foundations_30_0.png" /></p>
+<p>The final panel is what stationary data <em>looks like</em>: fluctuating around a fixed horizontal level, with
+roughly constant spread and no drift. Compare it to the top panel. We have thrown away the trend and the
+season — but we have not lost them, we have <em>recorded</em> them as the transformations applied, and we invert
+those transformations to put the forecast back on the original scale.</p>
+<h3 id="a-second-opinion-kpss">A second opinion: KPSS</h3>
+<p>The ADF test has low power — it is reluctant to reject <span class="arithmatex">\(H_0\)</span>, so it can call a stationary series
+non-stationary. The <strong>KPSS</strong> test is built with the <em>opposite</em> null hypothesis, which makes it an
+excellent cross-check:</p>
+<ul>
+<li>ADF: <span class="arithmatex">\(H_0\)</span> = non-stationary. KPSS: <span class="arithmatex">\(H_0\)</span> = <strong>stationary</strong>.</li>
+<li>So for KPSS, a <strong>large</strong> p-value (&gt; 0.05) supports stationarity.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">stationarity_check</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="n">adf_p</span> <span class="o">=</span> <span class="n">adfuller</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">dropna</span><span class="p">())[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">kpss_p</span> <span class="o">=</span> <span class="n">kpss</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">dropna</span><span class="p">(),</span> <span class="n">regression</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="n">nlags</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">agree</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;stationary&quot;</span>     <span class="k">if</span> <span class="n">adf_p</span> <span class="o">&lt;</span> <span class="mf">0.05</span> <span class="ow">and</span> <span class="n">kpss_p</span> <span class="o">&gt;</span> <span class="mf">0.05</span> <span class="k">else</span>
+             <span class="s2">&quot;NON-stationary&quot;</span> <span class="k">if</span> <span class="n">adf_p</span> <span class="o">&gt;</span> <span class="mf">0.05</span> <span class="ow">and</span> <span class="n">kpss_p</span> <span class="o">&lt;</span> <span class="mf">0.05</span> <span class="k">else</span>
+             <span class="s2">&quot;AMBIGUOUS - tests disagree&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">:</span><span class="s2">&lt;32</span><span class="si">}</span><span class="s2"> ADF p=</span><span class="si">{</span><span class="n">adf_p</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">  KPSS p=</span><span class="si">{</span><span class="n">kpss_p</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">  -&gt; </span><span class="si">{</span><span class="n">agree</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Both tests agreeing is the result you want</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">stationarity_check</span><span class="p">(</span><span class="n">passengers</span><span class="p">,</span>                         <span class="s2">&quot;Raw series&quot;</span><span class="p">)</span>
+<span class="n">stationarity_check</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">passengers</span><span class="p">)</span><span class="o">.</span><span class="n">diff</span><span class="p">(),</span>          <span class="s2">&quot;diff(log(y))&quot;</span><span class="p">)</span>
+<span class="n">stationarity_check</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">passengers</span><span class="p">)</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="mi">12</span><span class="p">),</span> <span class="s2">&quot;diff(log(y)) + seasonal diff&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Both tests agreeing is the result you want
+
+Raw series                       ADF p=0.9919  KPSS p=0.0100  -&gt; NON-stationary
+diff(log(y))                     ADF p=0.0711  KPSS p=0.1000  -&gt; AMBIGUOUS - tests disagree
+diff(log(y)) + seasonal diff     ADF p=0.0002  KPSS p=0.1000  -&gt; stationary
+</code></pre></div>
+<p>When the two tests disagree, the honest answer is "the evidence is weak" — usually a sign of a
+<em>trend-stationary</em> series (stationary around a deterministic trend) rather than a <em>difference-stationary</em>
+one. In practice: difference once more and see if both tests settle. But do not over-difference — each
+difference costs an observation and injects extra noise, and an over-differenced series has a
+tell-tale ACF that we will meet next.</p>
+<hr />
+<h2 id="6-autocorrelation-the-acf-and-pacf">6. Autocorrelation: the ACF and PACF</h2>
+<p>If you can only read one plot in time series analysis, read this one.</p>
+<p><strong>Autocorrelation</strong> is the correlation of a series with a lagged copy of itself. At lag <span class="arithmatex">\(k\)</span>:</p>
+<div class="arithmatex">\[r_k = \frac{\sum_{t=k+1}^{n} (y_t - \bar{y})(y_{t-k} - \bar{y})}{\sum_{t=1}^{n} (y_t - \bar{y})^2}\]</div>
+<p>Plotting <span class="arithmatex">\(r_k\)</span> against <span class="arithmatex">\(k\)</span> gives the <strong>ACF plot</strong> (or <em>correlogram</em>), and its shape is a fingerprint of
+the structure inside the series.</p>
+<p>The <strong>partial</strong> autocorrelation, PACF, asks a subtly different question: the correlation between <span class="arithmatex">\(y_t\)</span>
+and <span class="arithmatex">\(y_{t-k}\)</span> <strong>after removing the effect of the lags in between</strong>. The distinction matters enormously.
+If Monday influences Tuesday and Tuesday influences Wednesday, then Monday and Wednesday will be
+correlated <em>even with no direct link</em>. The ACF reports that indirect correlation; the PACF strips it out
+and reports only the direct one.</p>
+<blockquote>
+<p><strong>ACF: total correlation at lag <span class="arithmatex">\(k\)</span>, direct and indirect. PACF: direct correlation only.</strong></p>
+</blockquote>
+<p>Start with the reference case — a series with <em>no</em> structure at all.</p>
+<div class="highlight"><pre><span></span><code><span class="n">white_noise</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">200</span><span class="p">))</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mf">3.4</span><span class="p">))</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">white_noise</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C0&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;White noise&quot;</span><span class="p">)</span>
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">white_noise</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;ACF&quot;</span><span class="p">)</span>
+<span class="n">plot_pacf</span><span class="p">(</span><span class="n">white_noise</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;PACF&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;ywm&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../10_time_series_foundations_files/10_time_series_foundations_35_0.png" /></p>
+<p><strong>White noise</strong> — independent draws with constant mean and variance — is the only series that is
+<em>completely unforecastable</em>, and it is the benchmark for everything else. Its ACF is essentially zero at
+every lag beyond zero (lag 0 is always exactly 1: a series correlates perfectly with itself).</p>
+<p>The shaded blue band is the <strong>95% confidence region</strong>, roughly <span class="arithmatex">\(\pm 1.96/\sqrt{n}\)</span>. Spikes inside it are
+indistinguishable from zero. A couple of the thirty spikes poke outside — expected, since a 95% band
+misses 1 in 20 by construction. <strong>Do not chase isolated spikes; look for patterns.</strong></p>
+<p>This gives us the sharpest possible statement of what modelling is for:</p>
+<blockquote>
+<p><strong>Goal: extract structure until the residuals are white noise.</strong> Any structure left in the residuals is
+forecastable signal you failed to capture.</p>
+</blockquote>
+<p>Now the real series.</p>
+<div class="highlight"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">6.5</span><span class="p">))</span>
+
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">passengers</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;ACF - raw series&quot;</span><span class="p">)</span>
+<span class="n">plot_pacf</span><span class="p">(</span><span class="n">passengers</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;PACF - raw series&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;ywm&quot;</span><span class="p">)</span>
+
+<span class="n">stationary</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">passengers</span><span class="p">)</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">stationary</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;ACF - after differencing&quot;</span><span class="p">)</span>
+<span class="n">plot_pacf</span><span class="p">(</span><span class="n">stationary</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;PACF - after differencing&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;ywm&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../10_time_series_foundations_files/10_time_series_foundations_37_0.png" /></p>
+<p>Compare the top and bottom rows — this contrast is the single most useful diagnostic skill in the module.</p>
+<p><strong>Top row (raw series).</strong> The ACF decays <em>very</em> slowly, staying far outside the confidence band past lag
+40. That slow linear decay is the unmistakable <strong>signature of a trend</strong>: because the series is drifting,
+every observation is above average at the same time as its neighbours, so everything correlates with
+everything. Superimposed on the decay is a ripple peaking at lags 12, 24, 36 — the <strong>signature of
+seasonality</strong> with period 12. The PACF, meanwhile, shows one huge spike at lag 1 and little after: nearly
+all of that impressive-looking correlation is <em>indirect</em>, inherited through lag 1.</p>
+<p><strong>Bottom row (differenced series).</strong> The forest of significant spikes is gone. What remains are a few
+isolated, interpretable spikes — notably at lag 1 and lag 12. These are the residual structure that an
+ARIMA model will capture, and in Module 12 you will read exactly these two spikes off the plot to choose
+the model orders. For now, the lesson is simpler:</p>
+<table>
+<thead>
+<tr>
+<th>What you see in the ACF</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Slow, near-linear decay</td>
+<td>Trend — the series needs differencing</td>
+</tr>
+<tr>
+<td>Spikes at <span class="arithmatex">\(k, 2k, 3k, \dots\)</span></td>
+<td>Seasonality with period <span class="arithmatex">\(k\)</span></td>
+</tr>
+<tr>
+<td>Everything inside the band</td>
+<td>White noise — nothing left to model</td>
+</tr>
+<tr>
+<td>One large negative spike at lag 1</td>
+<td>Possible <strong>over</strong>-differencing</td>
+</tr>
+<tr>
+<td>A few significant spikes near lag 0</td>
+<td>Short-memory structure: the AR/MA models of Module 12</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="c1"># A quick numerical confirmation of what the eye reported</span>
+<span class="n">acf_raw</span> <span class="o">=</span> <span class="n">acf</span><span class="p">(</span><span class="n">passengers</span><span class="p">,</span> <span class="n">nlags</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
+<span class="n">acf_diff</span> <span class="o">=</span> <span class="n">acf</span><span class="p">(</span><span class="n">stationary</span><span class="p">,</span> <span class="n">nlags</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;lag    ACF(raw)   ACF(differenced)&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">24</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">:</span><span class="s2">&gt;3</span><span class="si">}</span><span class="s2">    </span><span class="si">{</span><span class="n">acf_raw</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;7.3f</span><span class="si">}</span><span class="s2">   </span><span class="si">{</span><span class="n">acf_diff</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;10.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">band</span> <span class="o">=</span> <span class="mf">1.96</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">stationary</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">95% band for the differenced series: +/-</span><span class="si">{</span><span class="n">band</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Significant lags remaining: &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="p">[</span><span class="n">k</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">25</span><span class="p">)</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">abs</span><span class="p">(</span><span class="n">acf_diff</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">band</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>lag    ACF(raw)   ACF(differenced)
+  1      0.948       -0.341
+  2      0.876        0.105
+  6      0.682        0.031
+ 11      0.743        0.064
+ 12      0.760       -0.387
+ 13      0.713        0.152
+ 24      0.532       -0.018
+
+95% band for the differenced series: +/-0.171
+Significant lags remaining: [1, 3, 9, 12, 23]
+</code></pre></div>
+<hr />
+<h2 id="7-splitting-time-and-four-baselines-you-must-beat">7. Splitting time, and four baselines you must beat</h2>
+<h3 id="splitting-without-cheating">Splitting without cheating</h3>
+<p>The rule is absolute: <strong>the test set is the most recent block, and the model never sees it.</strong> No
+shuffling, no random selection.</p>
+<div class="highlight"><pre><span></span><code><span class="n">TEST_MONTHS</span> <span class="o">=</span> <span class="mi">24</span>                       <span class="c1"># hold out the final two years</span>
+<span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">passengers</span><span class="p">[:</span><span class="o">-</span><span class="n">TEST_MONTHS</span><span class="p">],</span> <span class="n">passengers</span><span class="p">[</span><span class="o">-</span><span class="n">TEST_MONTHS</span><span class="p">:]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C0&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Train (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">train</span><span class="p">)</span><span class="si">}</span><span class="s2"> months)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C3&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Test (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">test</span><span class="p">)</span><span class="si">}</span><span class="s2"> months)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Chronological split: train on the past, test on the future&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Passengers (thousands)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Train: </span><span class="si">{</span><span class="n">train</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">%b %Y</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">train</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">%b %Y</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Test:  </span><span class="si">{</span><span class="n">test</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">%b %Y</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">test</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">%b %Y</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../10_time_series_foundations_files/10_time_series_foundations_41_0.png" /></p>
+<div class="highlight"><pre><span></span><code>Train: Jan 1949 to Dec 1958
+Test:  Jan 1959 to Dec 1960
+</code></pre></div>
+<p>Choose the test length to match the <strong>forecast horizon you actually care about</strong>. If the business needs
+a 12-month-ahead forecast, testing on 12 months answers the real question; testing on 3 months flatters
+the model, because forecast error grows with horizon.</p>
+<p>For model <em>selection</em> — comparing candidates — the more rigorous approach is <strong>rolling-origin
+cross-validation</strong>: forecast from origin <span class="arithmatex">\(t\)</span>, then <span class="arithmatex">\(t+1\)</span>, then <span class="arithmatex">\(t+2\)</span>, each time training only on data up
+to that origin, and average the errors. scikit-learn's <code>TimeSeriesSplit</code> implements exactly this.</p>
+<h3 id="the-four-baselines">The four baselines</h3>
+<p>Before any sophisticated model, you need to know what "trivially easy" scores. These four are the
+standard benchmarks, and a model that cannot beat them is not worth deploying.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Forecast <span class="arithmatex">\(\hat{y}_{T+h}\)</span></th>
+<th>Idea</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Mean</strong></td>
+<td><span class="arithmatex">\(\bar{y}\)</span></td>
+<td>Everything reverts to the historical average</td>
+</tr>
+<tr>
+<td><strong>Naive</strong></td>
+<td><span class="arithmatex">\(y_T\)</span></td>
+<td>Tomorrow equals today</td>
+</tr>
+<tr>
+<td><strong>Seasonal naive</strong></td>
+<td><span class="arithmatex">\(y_{T+h-m}\)</span></td>
+<td>This July equals last July</td>
+</tr>
+<tr>
+<td><strong>Drift</strong></td>
+<td><span class="arithmatex">\(y_T + h \cdot \frac{y_T - y_1}{T-1}\)</span></td>
+<td>Naive plus the average historical slope</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="n">h</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+<span class="n">m</span> <span class="o">=</span> <span class="mi">12</span>                                            <span class="c1"># seasonal period</span>
+<span class="n">idx</span> <span class="o">=</span> <span class="n">test</span><span class="o">.</span><span class="n">index</span>
+
+<span class="n">forecasts</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Mean&quot;</span><span class="p">:</span>           <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">index</span><span class="o">=</span><span class="n">idx</span><span class="p">),</span>
+    <span class="s2">&quot;Naive&quot;</span><span class="p">:</span>          <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="n">idx</span><span class="p">),</span>
+    <span class="s2">&quot;Seasonal naive&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="n">m</span><span class="p">:]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="o">%</span> <span class="n">m</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="n">idx</span><span class="p">),</span>
+    <span class="s2">&quot;Drift&quot;</span><span class="p">:</span>          <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">h</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                                <span class="o">*</span> <span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">train</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">idx</span><span class="p">),</span>
+<span class="p">}</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">train</span><span class="p">[</span><span class="o">-</span><span class="mi">48</span><span class="p">:],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C0&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Train&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Actual&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">fc</span><span class="p">),</span> <span class="n">style</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">forecasts</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="p">[</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;--&quot;</span><span class="p">]):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fc</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="n">style</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.8</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Four baseline forecasts for the final two years&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Passengers (thousands)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">ncol</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../10_time_series_foundations_files/10_time_series_foundations_43_0.png" /></p>
+<p>The picture is decisive. <strong>Mean</strong> is hopeless — it ignores the trend entirely and forecasts a level the
+series left behind years ago. <strong>Naive</strong> is a flat line at the last observed value; it at least starts in
+the right neighbourhood, but knows nothing of seasonality. <strong>Drift</strong> continues the average historical
+slope, which captures the growth but none of the annual pattern. <strong>Seasonal naive</strong> is the only one whose
+forecast has the right <em>shape</em>, because it simply replays the last twelve months.</p>
+<p>For any seasonal series, <strong>seasonal naive is the baseline to beat</strong> — and it is a genuinely tough one.</p>
+<hr />
+<h2 id="8-measuring-forecast-error">8. Measuring forecast error</h2>
+<p>Which of those four is best? "It looks better" is not an answer. Let <span class="arithmatex">\(e_t = y_t - \hat{y}_t\)</span> be the
+forecast error at time <span class="arithmatex">\(t\)</span>.</p>
+<div class="arithmatex">\[\text{MAE} = \frac{1}{h}\sum |e_t| \qquad \text{RMSE} = \sqrt{\frac{1}{h}\sum e_t^2} \qquad
+\text{MAPE} = \frac{100}{h}\sum \left|\frac{e_t}{y_t}\right| \qquad
+\text{MASE} = \frac{\text{MAE}}{\text{MAE}_{\text{seasonal naive, in-sample}}}\]</div>
+<p>You met MAE and RMSE in the Evaluation Metrics module and they behave identically here: both are in the
+units of the data, and RMSE punishes large errors harder because of the square. Two are new and specific
+to forecasting.</p>
+<p><strong>MAPE</strong> expresses error as a <em>percentage</em>, which makes it comparable across series measured in different
+units — the reason it dominates business reporting. It has two real flaws: it explodes when <span class="arithmatex">\(y_t\)</span> is near
+zero, and it is asymmetric, penalising over-forecasts more heavily than under-forecasts.</p>
+<p><strong>MASE</strong> fixes the comparability problem properly by dividing by the error a <em>seasonal naive</em> model makes
+on the training data. This makes the interpretation beautifully direct:</p>
+<blockquote>
+<p><strong>MASE compares your errors to seasonal naive's, on a unit-free scale. Lower is better, and 1 is the
+reference point.</strong> (The output below shows why that reference point needs care — read the commentary
+after the table.)</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">mase</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">12</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mean Absolute Scaled Error: MAE relative to in-sample seasonal-naive MAE.&quot;&quot;&quot;</span>
+    <span class="n">naive_mae</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y_train</span><span class="p">[</span><span class="n">m</span><span class="p">:]</span><span class="o">.</span><span class="n">values</span> <span class="o">-</span> <span class="n">y_train</span><span class="p">[:</span><span class="o">-</span><span class="n">m</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y_true</span> <span class="o">-</span> <span class="n">y_pred</span><span class="p">))</span> <span class="o">/</span> <span class="n">naive_mae</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">12</span><span class="p">):</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">y_true</span> <span class="o">-</span> <span class="n">y_pred</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;MAE&quot;</span><span class="p">:</span>  <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">e</span><span class="p">)),</span>
+        <span class="s2">&quot;RMSE&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">e</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)),</span>
+        <span class="s2">&quot;MAPE&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">e</span> <span class="o">/</span> <span class="n">y_true</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="s2">&quot;MASE&quot;</span><span class="p">:</span> <span class="n">mase</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">m</span><span class="p">),</span>
+    <span class="p">}</span>
+
+<span class="n">scores</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="n">name</span><span class="p">:</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">fc</span><span class="p">,</span> <span class="n">train</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">fc</span> <span class="ow">in</span> <span class="n">forecasts</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span><span class="o">.</span><span class="n">T</span>
+<span class="n">scores</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;MASE&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">scores</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>                   MAE    RMSE   MAPE  MASE
+Seasonal naive   71.25   76.99  15.52  2.49
+Drift            91.62  115.70  18.41  3.21
+Naive           115.25  137.33  23.58  4.03
+Mean            206.34  219.44  44.23  7.22
+</code></pre></div>
+<p>Seasonal naive wins on every metric — MAE of 71 thousand passengers, MAPE of 16%, and it is roughly three
+times better than the mean baseline. This row is the target: <strong>everything you build in Modules 11 and 12
+will be measured against it.</strong></p>
+<p>The MASE column deserves a careful reading, because a value of 2.49 looks alarming next to the "MASE &lt; 1
+is good" rule. There is no contradiction — the denominator and numerator are measured on <em>different
+tasks</em>. The denominator is how well seasonal naive does <strong>one season ahead, inside the training data</strong>
+(MAE ≈ 28.6); the numerator is how well it does <strong>up to 24 months ahead, on data it has never seen</strong>
+(MAE ≈ 71.3). Forecasting two years into a growing series is genuinely about 2.5 times harder than
+predicting the next season in-sample. So MASE &gt; 1 here does <em>not</em> mean the method is broken; it means the
+test task is harder than the reference task. The rule of thumb applies cleanly when you compare <em>two
+models on the same test set</em> — and there, lower is still better.</p>
+<p>One more diagnostic, and it is the one people skip: <strong>look at the residuals of your forecast, not just
+the score.</strong></p>
+<div class="highlight"><pre><span></span><code><span class="n">best</span> <span class="o">=</span> <span class="n">forecasts</span><span class="p">[</span><span class="s2">&quot;Seasonal naive&quot;</span><span class="p">]</span>
+<span class="n">resid</span> <span class="o">=</span> <span class="n">test</span> <span class="o">-</span> <span class="n">best</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mf">3.4</span><span class="p">))</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">resid</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C3&quot;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Residuals over time&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">resid</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C0&quot;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Residual distribution&quot;</span><span class="p">)</span>
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">resid</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Residual ACF&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean residual: </span><span class="si">{</span><span class="n">resid</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">+.1f</span><span class="si">}</span><span class="s2">  &lt;- systematic bias if far from 0&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../10_time_series_foundations_files/10_time_series_foundations_48_0.png" /></p>
+<div class="highlight"><pre><span></span><code>Mean residual: +71.2  &lt;- systematic bias if far from 0
+</code></pre></div>
+<p>The mean residual is <span class="arithmatex">\(+71\)</span> thousand passengers — strongly positive, and note that it is essentially equal
+to the MAE, which means <strong>almost every single residual is positive</strong>. Seasonal naive
+<strong>systematically under-forecasts</strong>. That is exactly what we should expect: replaying last year ignores
+the fact that the series grows every year, so every forecast lands low by roughly one year's growth.</p>
+<p>This is the payoff of residual diagnostics over a single score. The number told us seasonal naive was
+best; the residuals told us <em>how it fails</em> — a missing trend — and therefore what to fix. A method that
+combines seasonal replay <strong>with</strong> a trend would beat it. That method is Holt-Winters, and it is the first
+thing you will build in Module 11.</p>
+<hr />
+<h2 id="9-your-turn">9. Your turn</h2>
+<p>Add cells below each exercise. Exercises 4 and 5 consolidate the big ideas.</p>
+<p><strong>Exercise 1 — A different series, the same reading.</strong>
+Load the sunspot data with <code>sm.datasets.sunspots.load_pandas().data</code> (annual sunspot counts, 1700–2008)
+and plot it with its ACF. Sunspots have a famous ~11-year rhythm. Is that <strong>seasonal</strong> or <strong>cyclical</strong>
+by the Section 3 definition — and what in the ACF plot supports your answer?</p>
+<p><strong>Exercise 2 — Does the decomposition model matter?</strong>
+Rerun <code>seasonal_decompose</code> on Air Passengers with <code>model="additive"</code>. Plot the residual panels of the
+additive and multiplicative versions side by side. Which residual looks more like white noise, and how
+does the <em>shape</em> of the additive residual reveal that the wrong model was chosen?</p>
+<p><strong>Exercise 3 — How much differencing is too much?</strong>
+Take <code>np.log(passengers)</code> and difference it once, twice, and three times. For each, report the ADF
+p-value, the <strong>standard deviation</strong> of the result, and the lag-1 autocorrelation. The variance should
+reach a minimum and then <em>increase</em> — find where, and explain why that identifies over-differencing.</p>
+<p><strong>Exercise 4 — Build a fifth baseline.</strong>
+Seasonal naive fails because it ignores growth (Section 8). Implement <strong>seasonal naive with drift</strong>:
+take the seasonal-naive forecast and add the average annual increase estimated from the training data.
+Score it with <code>evaluate()</code> and add it to the table. Does it beat seasonal naive, and is its mean
+residual closer to zero?</p>
+<p><strong>Exercise 5 — Honest validation.</strong>
+The Section 7 split gives <em>one</em> estimate of error from <em>one</em> origin. Use
+<code>sklearn.model_selection.TimeSeriesSplit(n_splits=5)</code> to run rolling-origin validation of the four
+baselines, and report mean ± std of MASE across folds. Does the ranking from Section 8 survive? What does
+the spread across folds tell you that a single split cannot?</p>
+<hr />
+<h2 id="10-if-you-remember-nothing-else">10. If you remember nothing else</h2>
+<ol>
+<li>
+<p><strong>Order is the signal.</strong> Time series data violates the i.i.d. assumption that every earlier module
+   relied on. Shuffled splits and k-fold CV leak the future and must be replaced by chronological splits
+   and rolling-origin validation.</p>
+</li>
+<li>
+<p><strong>Every series is trend + seasonality + cycle + noise.</strong> Seasonality has a <em>fixed, known</em> period
+   (tied to the calendar); a cycle does not. If the seasonal swings widen as the level rises the
+   composition is <strong>multiplicative</strong> — and <span class="arithmatex">\(\log\)</span> turns multiplicative into additive, which is why the
+   log transform is the most useful single move in this field.</p>
+</li>
+<li>
+<p><strong>Decompose before you model, and read the residual panel.</strong> <code>seasonal_decompose</code> is the classical
+   recipe (moving-average trend, averaged seasonal profile); <strong>STL</strong> is the robust modern version that
+   keeps all observations and lets the seasonal shape evolve. Structure left in the residual is structure
+   your model missed.</p>
+</li>
+<li>
+<p><strong>Stationarity is the licence to forecast.</strong> Constant mean, constant variance, lag-only covariance —
+   the formal way of saying "the past is a fair guide to the future". Confirm with <strong>ADF</strong> (<span class="arithmatex">\(H_0\)</span> =
+   non-stationary, so want p &lt; 0.05) <em>and</em> <strong>KPSS</strong> (<span class="arithmatex">\(H_0\)</span> = stationary, so want p &gt; 0.05). Logs
+   stabilise variance; <strong>differencing</strong> removes trend; <strong>seasonal differencing</strong> removes season.</p>
+</li>
+<li>
+<p><strong>The ACF/PACF plot is the fingerprint.</strong> ACF = total correlation at lag <span class="arithmatex">\(k\)</span>; PACF = direct
+   correlation with the intervening lags removed. Slow decay means trend, spikes at multiples of <span class="arithmatex">\(m\)</span>
+   mean seasonality, everything inside the band means white noise. The goal of modelling is residuals
+   that look like that last case.</p>
+</li>
+<li>
+<p><strong>Beat the baseline or go home.</strong> Mean, naive, seasonal naive and drift cost nothing to compute. For
+   seasonal data, seasonal naive is a hard benchmark. <strong>MASE</strong> scores against it on a unit-free scale;
+   just remember its denominator is <em>in-sample one-season-ahead</em> error, so compare models to each other
+   on the same test set rather than reading the value 1 as a magic threshold. And always inspect the
+   <strong>residuals</strong>, not just the score — the score ranked our baselines, the residuals told us <em>why</em> the
+   winner fails (a missing trend), which is what tells you what to build next.</p>
+</li>
+</ol>
+<hr />
+<h2 id="11-further-reading-and-glossary">11. Further reading and glossary</h2>
+<h3 id="further-reading">Further reading</h3>
+<ul>
+<li>Hyndman &amp; Athanasopoulos, <a href="https://otexts.com/fpp3/"><em>Forecasting: Principles and Practice</em></a> — free
+  online and the standard reference for this entire section of the course. Chapters 2 (graphics),
+  3 (decomposition) and 5 (the toolbox) cover this module, and MASE is their invention.</li>
+<li><a href="https://www.statsmodels.org/stable/tsa.html">statsmodels time series analysis guide</a> — the API
+  reference for everything we imported, with worked examples.</li>
+<li>Rob Hyndman, <a href="https://robjhyndman.com/hyndsight/tscv/">Why every statistician should know about cross-validation</a>
+  — a short, sharp piece on why time series validation must roll forward.</li>
+<li>Cleveland et al., <a href="https://www.wessa.net/download/stl.pdf">STL: A Seasonal-Trend Decomposition Procedure Based on Loess</a>
+  — the original 1990 paper, unusually readable for a methods paper.</li>
+<li><a href="https://pandas.pydata.org/docs/user_guide/timeseries.html">Pandas time series documentation</a> — the
+  full catalogue of offset aliases, resampling rules and window functions.</li>
+</ul>
+<h3 id="glossary">Glossary</h3>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Time series</strong></td>
+<td>Observations indexed by time, where the ordering carries information</td>
+</tr>
+<tr>
+<td><strong>Trend (<span class="arithmatex">\(T_t\)</span>)</strong></td>
+<td>Long-run movement in the level of the series</td>
+</tr>
+<tr>
+<td><strong>Seasonality (<span class="arithmatex">\(S_t\)</span>)</strong></td>
+<td>Repeating pattern of fixed, known period <span class="arithmatex">\(m\)</span></td>
+</tr>
+<tr>
+<td><strong>Cyclical (<span class="arithmatex">\(C_t\)</span>)</strong></td>
+<td>Rises and falls of no fixed period, usually multi-year</td>
+</tr>
+<tr>
+<td><strong>Irregular (<span class="arithmatex">\(e_t\)</span>)</strong></td>
+<td>Unexplained residual variation</td>
+</tr>
+<tr>
+<td><strong>Additive / multiplicative</strong></td>
+<td>Components combine by <span class="arithmatex">\(+\)</span> (constant swings) or <span class="arithmatex">\(\times\)</span> (proportional swings)</td>
+</tr>
+<tr>
+<td><strong>Decomposition</strong></td>
+<td>Splitting a series into trend, seasonal and residual components</td>
+</tr>
+<tr>
+<td><strong>STL</strong></td>
+<td>Seasonal-Trend decomposition using LOESS; robust, keeps all observations</td>
+</tr>
+<tr>
+<td><strong>Stationarity</strong></td>
+<td>Constant mean and variance; covariance depends only on the lag</td>
+</tr>
+<tr>
+<td><strong>Unit root</strong></td>
+<td>The condition making a series wander without reverting; what ADF tests for</td>
+</tr>
+<tr>
+<td><strong>ADF test</strong></td>
+<td><span class="arithmatex">\(H_0\)</span> = non-stationary; p &lt; 0.05 supports stationarity</td>
+</tr>
+<tr>
+<td><strong>KPSS test</strong></td>
+<td><span class="arithmatex">\(H_0\)</span> = stationary; p &gt; 0.05 supports stationarity</td>
+</tr>
+<tr>
+<td><strong>Differencing (<span class="arithmatex">\(\nabla y_t\)</span>)</strong></td>
+<td><span class="arithmatex">\(y_t - y_{t-1}\)</span>; removes trend. Seasonal: <span class="arithmatex">\(y_t - y_{t-m}\)</span></td>
+</tr>
+<tr>
+<td><strong>Autocorrelation (ACF)</strong></td>
+<td>Correlation of the series with a lagged copy of itself</td>
+</tr>
+<tr>
+<td><strong>Partial autocorrelation (PACF)</strong></td>
+<td>Same, with the effect of intervening lags removed</td>
+</tr>
+<tr>
+<td><strong>Correlogram</strong></td>
+<td>The ACF plot, with its <span class="arithmatex">\(\pm 1.96/\sqrt{n}\)</span> significance band</td>
+</tr>
+<tr>
+<td><strong>White noise</strong></td>
+<td>Uncorrelated, constant-mean, constant-variance series; unforecastable</td>
+</tr>
+<tr>
+<td><strong>Lag</strong></td>
+<td>The gap <span class="arithmatex">\(k\)</span> between an observation and an earlier one</td>
+</tr>
+<tr>
+<td><strong>Naive / seasonal naive</strong></td>
+<td>Forecast the last value / the value one season ago</td>
+</tr>
+<tr>
+<td><strong>Drift</strong></td>
+<td>Naive plus the average historical slope</td>
+</tr>
+<tr>
+<td><strong>MAPE</strong></td>
+<td>Mean absolute percentage error; unit-free but unstable near zero</td>
+</tr>
+<tr>
+<td><strong>MASE</strong></td>
+<td>MAE scaled by in-sample seasonal-naive MAE; unit-free, so comparable across series</td>
+</tr>
+<tr>
+<td><strong>Rolling-origin CV</strong></td>
+<td>Validation where the training window only grows forwards in time</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../09_knn/" class="btn btn-neutral float-left" title="K-Nearest Neighbors"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../11_exponential_smoothing/" class="btn btn-neutral float-right" title="Exponential Smoothing">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright &copy; 2026 - Aayush Raj Regmi</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../09_knn/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../11_exponential_smoothing/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../javascripts/mathjax.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Project Work - DCS 404</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Project Work";
+        var mkdocs_page_input_path = "DCS404/project/00_final_project.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> DCS 404
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">Welcome</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../InstallationGuide/">Installation Guide</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Machine Learning and AI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../01_introduction_to_machine_learning/">Introduction to Machine Learning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../02_ml_workflow/">ML Workflow</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../03_regression/">Regression</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../04_gradient_descent/">Gradient Descent</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../05_regularization/">Regularization</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../06_logistic_regression/">Classification & Logistic Regression</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../07_decision_trees/">Decision Trees</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../08_evaluation_metrics/">Evaluation Metrics</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../09_knn/">K-Nearest Neighbors</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Time Series Analysis</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../10_time_series_foundations/">Time Series Foundations</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../11_exponential_smoothing/">Exponential Smoothing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../12_arima_models/">ARIMA and SARIMA Models</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Final Project</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Project Work</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#building-an-end-to-end-machine-learning-application">Building an End-to-End Machine Learning Application</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#objective">Objective</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#project-tracks">Project Tracks</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#sample-project-ideas-by-domain">Sample Project Ideas by Domain</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#where-to-find-data">Where to Find Data</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#general-repositories">General repositories</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#domain-specific">Domain-specific</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#nepal-and-regional-data">Nepal and regional data</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#collecting-your-own-data">Collecting your own data</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#three-rules">Three rules</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#core-requirements">Core Requirements</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#project-structure">Project Structure</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#adjust-the-structure-to-your-track">Adjust the structure to your track</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#alternative-structures-you-may-explore">Alternative structures you may explore</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#timeline-and-deliverables-weeks-48">Timeline and Deliverables (Weeks 4–8)</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#week-4-group-formation-topic-and-problem-formulation">Week 4: Group Formation, Topic and Problem Formulation</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#week-5-data-understanding-and-preparation">Week 5: Data Understanding and Preparation</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#week-6-baseline-and-modeling">Week 6: Baseline and Modeling</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#week-7-evaluation-code-structuring-and-application">Week 7: Evaluation, Code Structuring and Application</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#week-8-final-presentation-and-submission">Week 8: Final Presentation and Submission</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#final-report-structure-46-pages">Final Report Structure (4–6 pages)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#evaluation-criteria">Evaluation Criteria</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#recommended-tools">Recommended Tools</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#getting-started">Getting Started</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#academic-integrity">Academic Integrity</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">DCS 404</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Final Project</li>
+      <li class="breadcrumb-item active">Project Work</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="dcs-404-machine-learning-and-artificial-intelligence-course-project">DCS 404 Machine Learning and Artificial Intelligence — Course Project</h1>
+<h2 id="building-an-end-to-end-machine-learning-application">Building an End-to-End Machine Learning Application</h2>
+<hr />
+<h3 id="objective">Objective</h3>
+<p>Students will apply the machine learning workflow to a real-world problem in a domain of their interest
+(e.g. Healthcare, Finance, Sports, Education, Media, Entertainment, Agriculture). The project focuses on:</p>
+<ul>
+<li>Framing a real problem as a well-defined ML problem.</li>
+<li>Collecting, cleaning and exploring data.</li>
+<li>Building, comparing and evaluating models against a baseline.</li>
+<li>Structuring the work as a proper project rather than a single notebook.</li>
+<li>Delivering a simple working application with a live demo.</li>
+</ul>
+<p><strong>Keep it small and finished.</strong> A logistic regression behind a working Streamlit page scores higher than
+an ambitious model with no application around it.</p>
+<hr />
+<h3 id="project-tracks">Project Tracks</h3>
+<p>Pick <strong>one track</strong>. Both are equally acceptable and marked to the same total. Your track decides what
+your weekly deliverables look like — see the timeline below.</p>
+<p>These are the two families covered in depth in this course. Other project types (time series
+forecasting, reinforcement learning) are only allowed <strong>with your teacher's prior approval</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Track</th>
+<th>Example Projects</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A. Supervised Learning</strong></td>
+<td>Student dropout risk, loan default prediction, house price estimation, disease risk, match outcome prediction</td>
+</tr>
+<tr>
+<td><strong>B. Unsupervised / Recommender</strong></td>
+<td>Customer segmentation, movie or music recommender, anomaly detection in transactions</td>
+</tr>
+</tbody>
+</table>
+<p>Each track has a different notion of "data", "baseline" and "good result":</p>
+<table>
+<thead>
+<tr>
+<th>Track</th>
+<th>Your data is…</th>
+<th>Your baseline is…</th>
+<th>You are judged on…</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A. Supervised</strong></td>
+<td>A labelled table</td>
+<td>Majority class / mean prediction</td>
+<td>Metric on a held-out test set (accuracy, F1, RMSE…)</td>
+</tr>
+<tr>
+<td><strong>B. Unsupervised</strong></td>
+<td>An unlabelled table or user–item matrix</td>
+<td>Random or most-popular recommendations</td>
+<td>Interpretable clusters, or offline ranking metrics (precision@10, hit-rate)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="sample-project-ideas-by-domain">Sample Project Ideas by Domain</h3>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Project Idea</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Healthcare</td>
+<td>Predict hospital readmission or appointment no-shows</td>
+</tr>
+<tr>
+<td>Finance</td>
+<td>Loan default prediction or credit risk scoring</td>
+</tr>
+<tr>
+<td>Education</td>
+<td>Predict student performance or dropout risk from attendance data</td>
+</tr>
+<tr>
+<td>Sports</td>
+<td>Predict match outcomes or player performance</td>
+</tr>
+<tr>
+<td>Media / Entertainment</td>
+<td>Movie recommendation system or review sentiment classifier</td>
+</tr>
+<tr>
+<td>Agriculture</td>
+<td>Crop yield prediction from weather data</td>
+</tr>
+<tr>
+<td>Transport</td>
+<td>Predict trip demand, or cluster travel patterns into rider segments</td>
+</tr>
+<tr>
+<td>Retail / E-Commerce</td>
+<td>Customer segmentation, or a product recommendation system</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="where-to-find-data">Where to Find Data</h3>
+<h4 id="general-repositories">General repositories</h4>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://www.kaggle.com/datasets">Kaggle Datasets</a></td>
+<td>The widest catalogue, with notebooks showing what others did. Always check the <strong>Licence</strong> tab</td>
+</tr>
+<tr>
+<td><a href="https://archive.ics.uci.edu/">UCI Machine Learning Repository</a></td>
+<td>Small, clean, classic tabular datasets — ideal for a first supervised project</td>
+</tr>
+<tr>
+<td><a href="https://datasetsearch.research.google.com/">Google Dataset Search</a></td>
+<td>Search engine across thousands of data portals</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/datasets">Hugging Face Datasets</a></td>
+<td>Text, image, audio and a growing set of tabular data</td>
+</tr>
+<tr>
+<td><a href="https://data.world/datasets/open-data">data.world</a></td>
+<td>Community-curated open datasets across many domains</td>
+</tr>
+<tr>
+<td><a href="https://github.com/awesomedata/awesome-public-datasets">Awesome Public Datasets</a></td>
+<td>A large, well-organized GitHub list, grouped by domain</td>
+</tr>
+<tr>
+<td><a href="https://scikit-learn.org/stable/datasets.html">scikit-learn built-in datasets</a></td>
+<td>Useful for practice, but <strong>too small and over-used for a project on its own</strong></td>
+</tr>
+</tbody>
+</table>
+<h4 id="domain-specific">Domain-specific</h4>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Health</td>
+<td><a href="https://www.who.int/data/gho">WHO Global Health Observatory</a>, <a href="https://data.cdc.gov/">CDC Data</a>, <a href="https://physionet.org/">MIMIC (clinical, requires registration)</a></td>
+</tr>
+<tr>
+<td>Finance &amp; Economics</td>
+<td><a href="https://data.worldbank.org/">World Bank Open Data</a>, <a href="https://www.imf.org/en/Data">IMF Data</a>, <a href="https://pypi.org/project/yfinance/">Yahoo Finance via <code>yfinance</code></a></td>
+</tr>
+<tr>
+<td>Recommenders</td>
+<td><a href="https://grouplens.org/datasets/movielens/">MovieLens</a> (the standard choice), <a href="https://amazon-reviews-2023.github.io/">Amazon Reviews</a>, <a href="https://github.com/zygmuntz/goodbooks-10k">Goodbooks-10k</a></td>
+</tr>
+<tr>
+<td>Sports</td>
+<td><a href="https://www.football-data.co.uk/data.php">football-data.co.uk</a>, <a href="https://www.kaggle.com/datasets?tags=13205-Sports">Kaggle sports datasets</a>, <a href="https://stats.espncricinfo.com/">ESPN cricinfo Statsguru</a></td>
+</tr>
+<tr>
+<td>Education</td>
+<td><a href="https://www.oecd.org/pisa/data/">PISA international assessments</a>, <a href="https://archive.ics.uci.edu/dataset/320/student+performance">UCI Student Performance</a></td>
+</tr>
+<tr>
+<td>Climate &amp; Agriculture</td>
+<td><a href="https://www.earthdata.nasa.gov/">NASA Earthdata</a>, <a href="https://www.fao.org/faostat/en/#data">FAOSTAT</a>, <a href="https://open-meteo.com/">Open-Meteo API</a></td>
+</tr>
+<tr>
+<td>Text / NLP</td>
+<td><a href="https://huggingface.co/datasets">Hugging Face</a>, <a href="https://www.kaggle.com/datasets?tags=13204-NLP">Kaggle NLP datasets</a></td>
+</tr>
+</tbody>
+</table>
+<h4 id="nepal-and-regional-data">Nepal and regional data</h4>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://opendatanepal.com/">Open Data Nepal</a></td>
+<td>Datasets on education, health, demographics and local government</td>
+</tr>
+<tr>
+<td><a href="https://censusnepal.cbs.gov.np/">National Statistics Office (CBS)</a></td>
+<td>Census and national survey data</td>
+</tr>
+<tr>
+<td><a href="https://www.nrb.org.np/">Nepal Rastra Bank</a></td>
+<td>Macroeconomic and banking statistics</td>
+</tr>
+<tr>
+<td><a href="https://data.humdata.org/group/npl">Humanitarian Data Exchange</a></td>
+<td>Nepal-specific humanitarian, health and infrastructure data</td>
+</tr>
+</tbody>
+</table>
+<h4 id="collecting-your-own-data">Collecting your own data</h4>
+<p>Perfectly acceptable, and often more interesting than a Kaggle download — a Google Forms survey, a
+scraper, or a public API (sports scores, weather, currency rates). If you scrape, respect the site's
+<code>robots.txt</code> and terms of service, and be gentle with request rates.</p>
+<h4 id="three-rules">Three rules</h4>
+<ol>
+<li><strong>Check the licence</strong> and cite the source in your README. If the licence forbids redistribution, link
+   to it instead of committing the file.</li>
+<li><strong>Freeze your data.</strong> Download once and work from that copy. A dataset that changes underneath you
+   makes every number in your report irreproducible. If you pull from an API, cache the response to CSV.</li>
+<li><strong>Keep the repository small.</strong> Commit files under ~50 MB; for anything larger, add the download
+   instructions to <code>data/README.md</code> and git-ignore the raw folder.</li>
+</ol>
+<hr />
+<h3 id="core-requirements">Core Requirements</h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Team Size</strong></td>
+<td>&lt;2 students</td>
+</tr>
+<tr>
+<td><strong>Language</strong></td>
+<td>Python (scikit-learn is sufficient — deep learning is optional and earns no extra marks by itself)</td>
+</tr>
+<tr>
+<td><strong>Dataset</strong></td>
+<td>Public dataset, API or scraped data. Source and licence must be documented</td>
+</tr>
+<tr>
+<td><strong>Workflow</strong></td>
+<td>Follow the ML workflow / CRISP-DM stages covered in Module 2</td>
+</tr>
+<tr>
+<td><strong>Code Structure</strong></td>
+<td>Organized repository (see below), not one long notebook. Cookiecutter Data Science is a good reference</td>
+</tr>
+<tr>
+<td><strong>Application</strong></td>
+<td>A simple app — Streamlit, Gradio, Flask or FastAPI — that loads the trained model and makes predictions</td>
+</tr>
+<tr>
+<td><strong>Containerization</strong></td>
+<td><code>Dockerfile</code> + <code>docker-compose.yml</code> (recommended, carries bonus marks)</td>
+</tr>
+<tr>
+<td><strong>Version Control</strong></td>
+<td>Git repository with regular commits throughout the project</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Not accepted:</strong> a notebook that only prints an accuracy score, or a copied tutorial (Titanic, iris,
+MNIST) with variable names changed. Well-known datasets are fine <em>if you ask a new question of them</em>.</p>
+<hr />
+<h3 id="project-structure">Project Structure</h3>
+<div class="highlight"><pre><span></span><code>your-project/
+├── README.md                 # problem, data source, results, how to run
+├── requirements.txt
+├── Dockerfile                # optional but recommended
+├── docker-compose.yml        # optional but recommended
+├── data/
+│   ├── raw/                  # original downloaded data
+│   └── processed/            # cleaned data used for training
+├── notebooks/
+│   ├── 01_eda.ipynb          # exploration and visualizations
+│   └── 02_modeling.ipynb     # model comparison and evaluation
+├── src/
+│   ├── data.py               # loading and cleaning
+│   ├── features.py           # preprocessing pipeline
+│   ├── train.py              # trains and saves the model
+│   └── predict.py            # loads the model and predicts
+├── models/
+│   └── model.joblib          # the trained model your app loads
+└── app/
+    └── app.py                # Streamlit / FastAPI entry point
+</code></pre></div>
+<p><strong>One rule that matters:</strong> notebooks are for exploring and showing; <code>src/</code> holds anything the app
+depends on. Never copy preprocessing code from a notebook into your app — import it from <code>src/</code>, or the
+two will drift apart and your app will predict nonsense.</p>
+<p>Save the <strong>entire pipeline</strong> (preprocessing + model) with <code>joblib</code>, not just the model. The scaler and
+encoder are part of the model.</p>
+<h4 id="adjust-the-structure-to-your-track">Adjust the structure to your track</h4>
+<table>
+<thead>
+<tr>
+<th>Track</th>
+<th>Changes to the layout above</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A. Supervised</strong></td>
+<td>Use it as-is</td>
+</tr>
+<tr>
+<td><strong>B. Unsupervised / Recommender</strong></td>
+<td><code>src/train.py</code> → <code>src/cluster.py</code> or <code>src/recommend.py</code>; save cluster centroids or the item–item similarity matrix in <code>models/</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="alternative-structures-you-may-explore">Alternative structures you may explore</h4>
+<p>You are free to use a standard template instead of the layout above — say which one you used in your
+README.</p>
+<table>
+<thead>
+<tr>
+<th>Template</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://cookiecutter-data-science.drivendata.org/">Cookiecutter Data Science</a></td>
+<td>The most widely used DS project template. Install with <code>pip install cookiecutter-data-science</code>, then run <code>ccds</code>. More folders than you need, but industry standard</td>
+</tr>
+<tr>
+<td><a href="https://kedro.org/">Kedro</a></td>
+<td>Framework built around reproducible data pipelines and config separation. Powerful, steeper learning curve</td>
+</tr>
+<tr>
+<td><a href="https://github.com/pyscaffold/pyscaffoldext-dsproject">PyScaffold + dsproject</a></td>
+<td>Generates a packaged, <code>pip install</code>-able project with testing and CI set up</td>
+</tr>
+<tr>
+<td>Your own</td>
+<td>Perfectly acceptable if it separates data, exploration, source code, models and the app — and you explain it</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="timeline-and-deliverables-weeks-48">Timeline and Deliverables (Weeks 4–8)</h3>
+<p>The project runs for five weeks. Weeks 4 and 8 are the same for both tracks; Weeks 5–7 are <strong>split by
+track</strong> — find your track's row in each week's table.</p>
+<hr />
+<h4 id="week-4-group-formation-topic-and-problem-formulation"><strong>Week 4: Group Formation, Topic and Problem Formulation</strong></h4>
+<p>Common to both tracks:</p>
+<ul>
+<li>Form groups (2–4 students) and choose your track and domain.</li>
+<li>Identify who would use your system and what decision or action it supports.</li>
+<li>Secure your dataset now — do not start Week 5 still looking for data.</li>
+</ul>
+<p>Your problem statement must answer these, according to your track:</p>
+<table>
+<thead>
+<tr>
+<th>Track</th>
+<th>Your problem statement defines…</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A. Supervised</strong></td>
+<td>Unit of observation (what is one row?), target variable, features available <em>at prediction time</em>, and the evaluation metric with a justification</td>
+</tr>
+<tr>
+<td><strong>B. Unsupervised</strong></td>
+<td>What you are grouping or recommending, the features or the user–item interaction data, and how you will judge whether the result is any good</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Deliverables (both tracks):</strong>
+- Idea presentation (3–5 slides): problem, track, data source, intended application.
+- Problem statement document (1 page).</p>
+<hr />
+<h4 id="week-5-data-understanding-and-preparation"><strong>Week 5: Data Understanding and Preparation</strong></h4>
+<table>
+<thead>
+<tr>
+<th>Track</th>
+<th>What you do</th>
+<th>Deliverable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A. Supervised</strong></td>
+<td>Descriptive statistics, distributions, correlations, class balance; handle missing values, outliers and duplicates; encoding and scaling inside a pipeline</td>
+<td>EDA notebook with visualizations and written insights, plus a cleaned dataset</td>
+</tr>
+<tr>
+<td><strong>B. Unsupervised</strong></td>
+<td>Same cleaning work; check feature scales (critical for distance-based methods); for recommenders, build the user–item matrix and report sparsity and long-tail statistics</td>
+<td>EDA notebook with visualizations, plus the prepared feature matrix or user–item matrix</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4 id="week-6-baseline-and-modeling"><strong>Week 6: Baseline and Modeling</strong></h4>
+<p>Everyone establishes a baseline first. <strong>You must beat it, and you must report it.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Track</th>
+<th>What you do</th>
+<th>Deliverable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A. Supervised</strong></td>
+<td>Baseline (majority class or mean), then train at least two model families; cross-validation for tuning</td>
+<td>Results table: baseline vs. models, on your chosen metric</td>
+</tr>
+<tr>
+<td><strong>B. Unsupervised</strong></td>
+<td>Clustering: sweep <em>k</em>, use elbow/silhouette to choose it. Recommender: build content-based or item-item collaborative filtering against a popularity baseline</td>
+<td>Results table (silhouette scores or precision@10 / hit-rate vs. baseline)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4 id="week-7-evaluation-code-structuring-and-application"><strong>Week 7: Evaluation, Code Structuring and Application</strong></h4>
+<p>Common to both tracks:</p>
+<ul>
+<li>Refactor notebook code into the <code>src/</code> structure — <code>python src/train.py</code> should run end to end and
+  save your model artifact to <code>models/</code>.</li>
+<li>Build a simple application that loads that artifact.</li>
+<li>Containerize with Docker and Docker Compose (recommended, bonus marks).</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Track</th>
+<th>Evaluation focus</th>
+<th>What the app does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A. Supervised</strong></td>
+<td>Confusion matrix or residual plots, per-class performance, error analysis: where does it fail?</td>
+<td>Takes feature inputs, returns a prediction <strong>with its probability</strong></td>
+</tr>
+<tr>
+<td><strong>B. Unsupervised</strong></td>
+<td>Interpret and <em>name</em> your clusters, or report offline ranking metrics on held-out interactions</td>
+<td>Shows a user's segment with its profile, or returns a top-10 ranked list with reasons</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Deliverables (both tracks):</strong> Organized repository, reproducible training script, saved model
+artifact, locally running application, evaluation results, and a report draft.</p>
+<hr />
+<h4 id="week-8-final-presentation-and-submission"><strong>Week 8: Final Presentation and Submission</strong></h4>
+<ul>
+<li>10-minute presentation: problem, data, modeling, <strong>live demo</strong>, limitations.</li>
+<li>Peer evaluation of at least two other projects.</li>
+</ul>
+<p><strong>Deliverables (both tracks):</strong> Final report (4–6 pages), presentation slides, GitHub repository link</p>
+<hr />
+<h3 id="final-report-structure-46-pages">Final Report Structure (4–6 pages)</h3>
+<ol>
+<li><strong>Problem Definition</strong> — the problem, who it is for, your track, and the success metric with justification.</li>
+<li><strong>Data</strong> — source, licence, size and key characteristics.</li>
+<li><strong>EDA and Preprocessing</strong> — key insights and the cleaning decisions you made, with reasons.</li>
+<li><strong>Modeling</strong> — baseline, models compared, tuning approach.</li>
+<li><strong>Results and Evaluation</strong> — metrics table, error analysis, what your model gets wrong.</li>
+<li><strong>Application</strong> — screenshots, how it works, how to run it.</li>
+<li><strong>Limitations and Reflection</strong> — what you would do differently, ethical considerations.</li>
+</ol>
+<hr />
+<h3 id="evaluation-criteria">Evaluation Criteria</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th style="text-align: right;">Weight</th>
+<th>Key Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Problem Definition and Dataset</strong></td>
+<td style="text-align: right;">10%</td>
+<td>Clear problem statement, appropriate target and metric, documented data source</td>
+</tr>
+<tr>
+<td><strong>EDA and Preprocessing</strong></td>
+<td style="text-align: right;">20%</td>
+<td>Meaningful insights, visualizations, correct handling of missing values, outliers and encoding</td>
+</tr>
+<tr>
+<td><strong>Modeling and Evaluation</strong></td>
+<td style="text-align: right;">30%</td>
+<td>Baseline established and beaten, ≥2 models or configurations compared, honest validation, appropriate metrics, error analysis</td>
+</tr>
+<tr>
+<td><strong>Code Structure and Reproducibility</strong></td>
+<td style="text-align: right;">10%</td>
+<td>Organized repository, working <code>train.py</code>, clear commit history</td>
+</tr>
+<tr>
+<td><strong>Application and Demo</strong></td>
+<td style="text-align: right;">20%</td>
+<td>Working app that loads the model and makes predictions; clear demonstration</td>
+</tr>
+<tr>
+<td><strong>Report and Presentation</strong></td>
+<td style="text-align: right;">10%</td>
+<td>Complete report, clear 10-minute presentation, honest discussion of limitations</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td style="text-align: right;"><strong>100%</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Bonus (up to 5%):</strong> Docker and Docker Compose setup that runs from a clean clone, a deployed public
+URL, model explainability in the app, or unit tests.</p>
+<hr />
+<h3 id="recommended-tools">Recommended Tools</h3>
+<table>
+<thead>
+<tr>
+<th>Purpose</th>
+<th>Recommended</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Data handling</td>
+<td>pandas, numpy</td>
+</tr>
+<tr>
+<td>Visualization</td>
+<td>matplotlib, seaborn</td>
+</tr>
+<tr>
+<td>Modeling</td>
+<td>scikit-learn</td>
+</tr>
+<tr>
+<td>Model saving</td>
+<td>joblib</td>
+</tr>
+<tr>
+<td>Application</td>
+<td>Streamlit (easiest), Gradio, FastAPI, Flask</td>
+</tr>
+<tr>
+<td>Containerization</td>
+<td>Docker, Docker Compose</td>
+</tr>
+<tr>
+<td>Version control</td>
+<td>Git, GitHub</td>
+</tr>
+<tr>
+<td>Datasets</td>
+<td>See the <strong>Where to Find Data</strong> section above</td>
+</tr>
+</tbody>
+</table>
+<h3 id="getting-started">Getting Started</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Create your repository and environment</span>
+git<span class="w"> </span>init<span class="w"> </span>my-project<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>my-project
+python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+pip<span class="w"> </span>install<span class="w"> </span>pandas<span class="w"> </span>numpy<span class="w"> </span>scikit-learn<span class="w"> </span>matplotlib<span class="w"> </span>seaborn<span class="w"> </span>streamlit<span class="w"> </span>joblib
+
+<span class="c1"># After training and saving your model</span>
+streamlit<span class="w"> </span>run<span class="w"> </span>app/app.py<span class="w">            </span><span class="c1"># open http://localhost:8501</span>
+
+<span class="c1"># If containerized</span>
+docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>--build
+</code></pre></div>
+<h3 id="academic-integrity">Academic Integrity</h3>
+<p>You may use libraries, documentation and AI tools as references, but you must be able to explain every
+line of your code and every modeling decision. Cite your data sources, and note in your report if you
+used an AI assistant and how.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../../12_arima_models/" class="btn btn-neutral float-left" title="ARIMA and SARIMA Models"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright &copy; 2026 - Aayush Raj Regmi</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../../12_arima_models/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="../../../javascripts/mathjax.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Evaluation Metrics - DCS 404</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Evaluation Metrics";
+        var mkdocs_page_input_path = "DCS404/08_evaluation_metrics.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> DCS 404
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Welcome</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../InstallationGuide/">Installation Guide</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Machine Learning and AI</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../01_introduction_to_machine_learning/">Introduction to Machine Learning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02_ml_workflow/">ML Workflow</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../03_regression/">Regression</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04_gradient_descent/">Gradient Descent</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../05_regularization/">Regularization</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../06_logistic_regression/">Classification & Logistic Regression</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07_decision_trees/">Decision Trees</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Evaluation Metrics</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-work-through-this">How to work through this</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#learning-objectives">Learning objectives</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#part-a-regression-metrics">Part A — Regression metrics</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#1-the-raw-material-residuals">1. The raw material: residuals</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-mae-mean-absolute-error">2. MAE — Mean Absolute Error</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#3-mse-mean-squared-error">3. MSE — Mean Squared Error</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#4-rmse-root-mean-squared-error">4. RMSE — Root Mean Squared Error</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#stress-test-one-bad-data-point">Stress test: one bad data point</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#5-r2-skill-relative-to-a-baseline">5. R² — skill, relative to a baseline</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#6-adjusted-r2-charging-rent-for-features">6. Adjusted R² — charging rent for features</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#7-mape-mean-absolute-percentage-error">7. MAPE — Mean Absolute Percentage Error</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#the-regression-scoreboard-complete">The regression scoreboard, complete</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#part-b-classification-metrics">Part B — Classification metrics</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#8-why-classification-scoring-is-harder">8. Why classification scoring is harder</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#9-the-confusion-matrix-and-its-children">9. The confusion matrix and its children</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#10-metrics-are-functions-of-the-threshold">10. Metrics are functions of the threshold</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#11-log-loss-grading-the-probabilities-themselves">11. Log loss — grading the probabilities themselves</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#multiclass-postscript">Multiclass postscript</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#12-choosing-a-metric-the-decision-tables">12. Choosing a metric: the decision tables</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#regression">Regression</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#classification">Classification</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#13-your-turn">13. Your turn</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#14-if-you-remember-nothing-else">14. If you remember nothing else</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#15-further-reading-and-glossary">15. Further reading and glossary</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#further-reading">Further reading</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#glossary">Glossary</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../09_knn/">K-Nearest Neighbors</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Time Series Analysis</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../10_time_series_foundations/">Time Series Foundations</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../11_exponential_smoothing/">Exponential Smoothing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../12_arima_models/">ARIMA and SARIMA Models</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Final Project</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../project/00_final_project/">Project Work</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">DCS 404</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Machine Learning and AI</li>
+      <li class="breadcrumb-item active">Evaluation Metrics</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="evaluation-metrics-keeping-score-honestly">Evaluation Metrics: Keeping Score Honestly</h1>
+<p><strong>DCS 404 · Data Science and Machine Learning</strong></p>
+<hr />
+<p>Every model we've built ended the same way: a number claiming to say how good it was. An RMSE here, an
+accuracy there, an AUC last module. We used those numbers on the way past, but we never stopped to
+interrogate them — and metrics <em>deserve</em> interrogation, because in machine learning <strong>the metric is the
+finish line</strong>. Whatever number you optimize and report, that is what your model becomes good at; if the
+number can be gamed, your model will learn to game it, and a model that games its metric is worse than
+useless — it's convincingly wrong.</p>
+<p>We've already caught metrics misbehaving twice: accuracy flattering a do-nothing classifier on imbalanced
+data (the accuracy paradox), and training error applauding a degree-14 polynomial that had memorized noise.
+This module makes the interrogation systematic. It is a <em>toolbox module</em>: one place that collects, derives,
+and stress-tests every score we use — so that when a metric moves, you know exactly what moved and whether
+to care.</p>
+<p>We take <strong>regression first</strong> — errors you can measure with a ruler — then <strong>classification</strong>, where every
+"score" is secretly a table of four numbers and the interesting choices begin.</p>
+<h2 id="how-to-work-through-this">How to work through this</h2>
+<p>The usual rhythm: run every code cell (<code>Shift + Enter</code>), study the output, <em>then</em> read the commentary.
+Cells build on each other, so if something errors, run from the top.</p>
+<p>The module is in two halves, plus verdicts:</p>
+<ol>
+<li><strong>Sections 1–7 (Regression):</strong> residuals as raw material, then the metric family tree — MAE, MSE, RMSE,
+   R², adjusted R², MAPE — each one derived, computed from scratch, checked against scikit-learn, and then
+   <em>stress-tested</em> until it shows its weakness.</li>
+<li><strong>Sections 8–11 (Classification):</strong> the confusion-matrix family consolidated from the last two modules,
+   then two genuinely new tools — threshold sweeps done live, and <strong>log loss</strong>, the metric that judges a
+   classifier's <em>probabilities</em> instead of its labels.</li>
+<li><strong>Section 12:</strong> two decision tables — given a problem, which metric do you reach for?</li>
+</ol>
+<p>Old friends return so the metrics land on familiar ground: the <strong>Advertising</strong> data from the Regression
+module and the <strong>diabetes</strong> data from the Logistic Regression module.</p>
+<h2 id="learning-objectives">Learning objectives</h2>
+<p>After completing this module you will be able to:</p>
+<ul>
+<li>Define, compute (from scratch and with scikit-learn), and interpret <strong>MAE</strong>, <strong>MSE</strong>, <strong>RMSE</strong>, <strong>R²</strong>,
+  <strong>adjusted R²</strong>, and <strong>MAPE</strong> for regression models.</li>
+<li>Explain why squaring errors makes RMSE <strong>outlier-sensitive</strong>, and choose between MAE and RMSE based on
+  what large errors cost in the domain.</li>
+<li>Interpret R² as <em>skill relative to a mean-predicting baseline</em>, explain when it is <strong>negative</strong>, and use
+  <strong>adjusted R²</strong> to expose the free lunch of adding junk features.</li>
+<li>Reconstruct the confusion-matrix metrics — <strong>accuracy, precision, recall, F1</strong> — and re-state the
+  accuracy paradox from first principles.</li>
+<li>Sweep a classification <strong>threshold</strong> and read precision/recall trade-off curves, PR curves, and
+  <strong>ROC/AUC</strong>.</li>
+<li>Evaluate <em>probability quality</em> with <strong>log loss</strong> and explain why an overconfident classifier can have
+  good accuracy and terrible log loss.</li>
+<li>Select an appropriate metric for a given regression or classification problem — and justify the choice
+  in terms of what errors cost.</li>
+</ul>
+<h2 id="setup">Setup</h2>
+<p>Run this once. Libraries, plotting style, and both datasets: Advertising (regression half) and diabetes
+(classification half).</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span><span class="p">,</span> <span class="n">LogisticRegression</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">DecisionTreeClassifier</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">StandardScaler</span><span class="p">,</span> <span class="n">PolynomialFeatures</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_pipeline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_iris</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">mean_absolute_error</span><span class="p">,</span> <span class="n">mean_squared_error</span><span class="p">,</span> <span class="n">r2_score</span><span class="p">,</span>
+                             <span class="n">mean_absolute_percentage_error</span><span class="p">,</span>
+                             <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">confusion_matrix</span><span class="p">,</span> <span class="n">ConfusionMatrixDisplay</span><span class="p">,</span>
+                             <span class="n">precision_score</span><span class="p">,</span> <span class="n">recall_score</span><span class="p">,</span> <span class="n">f1_score</span><span class="p">,</span> <span class="n">classification_report</span><span class="p">,</span>
+                             <span class="n">log_loss</span><span class="p">,</span> <span class="n">roc_auc_score</span><span class="p">,</span> <span class="n">RocCurveDisplay</span><span class="p">,</span> <span class="n">PrecisionRecallDisplay</span><span class="p">)</span>
+
+<span class="c1"># A consistent look for every plot in this notebook</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+    <span class="s2">&quot;figure.figsize&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">),</span>
+    <span class="s2">&quot;figure.dpi&quot;</span><span class="p">:</span> <span class="mi">110</span><span class="p">,</span>
+    <span class="s2">&quot;axes.grid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">&quot;grid.alpha&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="s2">&quot;axes.spines.top&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;axes.spines.right&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;font.size&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_palette</span><span class="p">(</span><span class="s2">&quot;deep&quot;</span><span class="p">)</span>
+<span class="n">RANDOM_STATE</span> <span class="o">=</span> <span class="mi">42</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">load_csv</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;data/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;notebooks/data/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)]:</span>
+        <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> from: </span><span class="si">{</span><span class="n">candidate</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">. Expected it in a data/ folder next to the notebook.&quot;</span><span class="p">)</span>
+
+<span class="n">ads</span> <span class="o">=</span> <span class="n">load_csv</span><span class="p">(</span><span class="s2">&quot;Advertising.csv&quot;</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>        <span class="c1"># regression half</span>
+<span class="n">diabetes</span> <span class="o">=</span> <span class="n">load_csv</span><span class="p">(</span><span class="s2">&quot;diabetes.csv&quot;</span><span class="p">)</span>                    <span class="c1"># classification half</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Advertising: </span><span class="si">{</span><span class="n">ads</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> markets   |   Diabetes: </span><span class="si">{</span><span class="n">diabetes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> patients&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Loaded Advertising.csv from: data/Advertising.csv
+Loaded diabetes.csv from: data/diabetes.csv
+Advertising: 200 markets   |   Diabetes: 768 patients
+</code></pre></div>
+<hr />
+<h2 id="part-a-regression-metrics">Part A — Regression metrics</h2>
+<h3 id="1-the-raw-material-residuals">1. The raw material: residuals</h3>
+<p>A regression metric is always some way of <em>summarizing the residuals</em> — the per-sample errors
+<span class="arithmatex">\(e_i = y_i - \hat{y}_i\)</span> — into a single number. Different summaries emphasize different things; that's the
+whole story of this half of the module.</p>
+<p>Our workhorse: the Advertising data (200 markets; TV, radio, newspaper budgets → sales), with the multiple
+regression from the Regression module refitted on a proper train/test split. All metrics will be computed
+on the <strong>test set</strong> — held-out data is the only place a metric means anything, as the overfit polynomial
+taught us.</p>
+<div class="highlight"><pre><span></span><code><span class="n">X_ads</span> <span class="o">=</span> <span class="n">ads</span><span class="p">[[</span><span class="s2">&quot;TV&quot;</span><span class="p">,</span> <span class="s2">&quot;radio&quot;</span><span class="p">,</span> <span class="s2">&quot;newspaper&quot;</span><span class="p">]]</span>
+<span class="n">y_ads</span> <span class="o">=</span> <span class="n">ads</span><span class="p">[</span><span class="s2">&quot;sales&quot;</span><span class="p">]</span>
+
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">X_ads</span><span class="p">,</span> <span class="n">y_ads</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+
+<span class="n">reg</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="n">y_pred</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+<span class="n">residuals</span> <span class="o">=</span> <span class="n">y_test</span> <span class="o">-</span> <span class="n">y_pred</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mf">4.2</span><span class="p">))</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="n">lims</span> <span class="o">=</span> <span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">y_test</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">y_test</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">max</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lims</span><span class="p">,</span> <span class="n">lims</span><span class="p">,</span> <span class="s2">&quot;k--&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;perfect predictions&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Actual sales&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Predicted sales&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Actual vs. predicted&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">residuals</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Residual  $y - </span><span class="se">\\</span><span class="s2">hat</span><span class="si">{y}</span><span class="s2">$  (thousands of units)&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Markets&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;The residuals — every metric summarizes these&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">residuals</span><span class="p">)</span><span class="si">}</span><span class="s2"> test residuals, e.g.: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">residuals</span><span class="o">.</span><span class="n">values</span><span class="p">[:</span><span class="mi">5</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../08_evaluation_metrics_files/08_evaluation_metrics_6_0.png" /></p>
+<div class="highlight"><pre><span></span><code>60 test residuals, e.g.: [ 0.33  1.21 -0.15 -3.59  2.5 ]
+</code></pre></div>
+<p>Sixty test residuals: mostly small, a few sizeable, signs in both directions. Now — how do we compress
+sixty numbers into one <em>fair</em> number? Not by simply averaging them: positive and negative errors would
+cancel, and a model that overshoots half the time and undershoots the other half by the same amount would
+score a perfect 0. Every metric below is a different answer to the cancellation problem — and each answer
+smuggles in an opinion about <em>which errors matter most</em>.</p>
+<hr />
+<h3 id="2-mae-mean-absolute-error">2. MAE — Mean Absolute Error</h3>
+<p>The most direct fix: kill the signs with an absolute value, then average.</p>
+<div class="arithmatex">\[\text{MAE} = \frac{1}{m} \sum_{i=1}^{m} \left| y_i - \hat{y}_i \right|\]</div>
+<div class="highlight"><pre><span></span><code><span class="n">mae_scratch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y_test</span> <span class="o">-</span> <span class="n">y_pred</span><span class="p">))</span>
+<span class="n">mae_sklearn</span> <span class="o">=</span> <span class="n">mean_absolute_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MAE (from scratch):   </span><span class="si">{</span><span class="n">mae_scratch</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MAE (scikit-learn):   </span><span class="si">{</span><span class="n">mae_sklearn</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>MAE (from scratch):   1.5117
+MAE (scikit-learn):   1.5117
+</code></pre></div>
+<p>MAE's superpower is that it <em>speaks the target's language</em>: sales are in thousands of units, so our
+predictions are off by about 1,500 units on a typical market — a sentence you can say to a stakeholder with
+no further translation. Every error counts <strong>in proportion to its size</strong>: a miss of 8 costs exactly twice
+a miss of 4. Robust, honest, interpretable.</p>
+<p>So why isn't MAE the end of the module? Two reasons. First, a modelling reason: the absolute value has a
+kink at zero — no smooth derivative — which is awkward for the calculus-driven optimization we've used all
+course. Second, an opinion you may not share: <em>is</em> a miss of 8 only twice as bad as a miss of 4? If your
+model steers deliveries, one market missed by 8,000 units might be a genuine crisis while two markets
+missed by 4,000 are shrugs. Sometimes big errors should count <em>more than proportionally</em> — which is
+exactly what squaring does.</p>
+<hr />
+<h3 id="3-mse-mean-squared-error">3. MSE — Mean Squared Error</h3>
+<p>Kill the signs by squaring instead:</p>
+<div class="arithmatex">\[\text{MSE} = \frac{1}{m} \sum_{i=1}^{m} \left( y_i - \hat{y}_i \right)^2\]</div>
+<p>This is an old friend wearing a metric's hat — it is (up to a constant) the <strong>cost function that least
+squares and gradient descent have been minimizing since the Regression module</strong>. Linear regression is
+literally the model that optimizes MSE on the training data; here we're using the same quantity as a
+<em>report card</em> on the test data.</p>
+<div class="highlight"><pre><span></span><code><span class="n">mse_scratch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">y_test</span> <span class="o">-</span> <span class="n">y_pred</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">mse_sklearn</span> <span class="o">=</span> <span class="n">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MSE (from scratch):   </span><span class="si">{</span><span class="n">mse_scratch</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MSE (scikit-learn):   </span><span class="si">{</span><span class="n">mse_sklearn</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>MSE (from scratch):   3.7968
+MSE (scikit-learn):   3.7968
+</code></pre></div>
+<p>Squaring does two things at once:</p>
+<ol>
+<li><strong>It punishes big errors disproportionately.</strong> A miss of 8 contributes 64; two misses of 4 contribute
+   only 32. The metric now <em>cares</em> about the worst cases — sometimes exactly what you want.</li>
+<li><strong>It wrecks the units.</strong> Our MSE is ≈ 3.8 <em>squared</em> thousands-of-units. Nobody thinks in squared
+   sales; you cannot put MSE in a sentence for a stakeholder.</li>
+</ol>
+<p>Point 1 is a feature or a bug depending on the domain. Point 2 is just a bug — and it has a one-character
+fix.</p>
+<hr />
+<h3 id="4-rmse-root-mean-squared-error">4. RMSE — Root Mean Squared Error</h3>
+<p>Take the square root and the units come back:</p>
+<div class="arithmatex">\[\text{RMSE} = \sqrt{\frac{1}{m} \sum_{i=1}^{m} \left( y_i - \hat{y}_i \right)^2}\]</div>
+<div class="highlight"><pre><span></span><code><span class="n">rmse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RMSE: </span><span class="si">{</span><span class="n">rmse</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">   (same units as sales again)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MAE:  </span><span class="si">{</span><span class="n">mae_sklearn</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RMSE / MAE ratio: </span><span class="si">{</span><span class="n">rmse</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">mae_sklearn</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>RMSE: 1.9485   (same units as sales again)
+MAE:  1.5117
+RMSE / MAE ratio: 1.29
+</code></pre></div>
+<p>RMSE is the industry's default regression metric: original units like MAE, big-error emphasis like MSE.
+Two reading rules:</p>
+<ul>
+<li><strong>RMSE ≥ MAE, always.</strong> They're equal only if every error has the same size.</li>
+<li><strong>The gap is a diagnostic.</strong> A ratio near 1 means errors are uniform; a large ratio means a few large
+  errors dominate the square. Ours (~1.3) says the errors are moderately spread — consistent with the
+  residual histogram in Section 1.</li>
+</ul>
+<p>But "big-error emphasis" has a dark side, and it deserves a live demonstration.</p>
+<h4 id="stress-test-one-bad-data-point">Stress test: one bad data point</h4>
+<p>Real datasets contain flukes — a data-entry typo, a market disrupted by a one-off event. Let's corrupt
+exactly <strong>one</strong> of our 60 test labels (add 40 to it, as if someone fat-fingered an extra digit) and watch
+what each metric does:</p>
+<div class="highlight"><pre><span></span><code><span class="n">y_corrupted</span> <span class="o">=</span> <span class="n">y_test</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">y_corrupted</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">40</span>          <span class="c1"># one fat-fingered label out of 60</span>
+
+<span class="n">comparison</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">&quot;clean data&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">mean_absolute_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">),</span>
+                   <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))],</span>
+    <span class="s2">&quot;1 outlier in 60&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">mean_absolute_error</span><span class="p">(</span><span class="n">y_corrupted</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">),</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">y_corrupted</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))],</span>
+<span class="p">},</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;MAE&quot;</span><span class="p">,</span> <span class="s2">&quot;RMSE&quot;</span><span class="p">])</span>
+<span class="n">comparison</span><span class="p">[</span><span class="s2">&quot;increase&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">comparison</span><span class="p">[</span><span class="s2">&quot;1 outlier in 60&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">comparison</span><span class="p">[</span><span class="s2">&quot;clean data&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+                          <span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:+.0%}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">)</span>
+<span class="n">comparison</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>clean data</th>
+      <th>1 outlier in 60</th>
+      <th>increase</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>MAE</th>
+      <td>1.512</td>
+      <td>2.178</td>
+      <td>+44%</td>
+    </tr>
+    <tr>
+      <th>RMSE</th>
+      <td>1.949</td>
+      <td>5.560</td>
+      <td>+185%</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>One corrupted label out of sixty and RMSE nearly <strong>triples</strong>, while MAE rises by well under half. Neither
+metric is "wrong" — they answer different questions:</p>
+<ul>
+<li><strong>MAE</strong> answers: <em>how large is the typical error?</em> Use it when large errors are no worse than their size
+  suggests — or when your data has outliers you don't want dictating the verdict.</li>
+<li><strong>RMSE</strong> answers: <em>how large are the errors, with the worst ones counted extra?</em> Use it when large
+  errors are disproportionately costly (energy load forecasting, inventory) — and your labels are clean.</li>
+</ul>
+<p>The general principle, worth engraving: <strong>an outlier-sensitive metric can't tell you whether the model is
+bad or one label is bad.</strong> If RMSE looks alarming, check the residuals before blaming the model.</p>
+<hr />
+<h3 id="5-r2-skill-relative-to-a-baseline">5. R² — skill, relative to a baseline</h3>
+<p>MAE and RMSE share a blind spot: they're <strong>scale-bound</strong>. Is RMSE = 1.9 good? For sales in the 1–27 range,
+probably; for temperatures in the 20–22 range, catastrophic. Without knowing the target's spread, the
+number floats free.</p>
+<p>R² fixes this by asking a sharper question: <strong>how much better is the model than the laziest possible
+competitor</strong> — a "model" that ignores the features and predicts the mean <span class="arithmatex">\(\bar{y}\)</span> for everyone?</p>
+<div class="arithmatex">\[R^2 = 1 - \frac{\text{SS}_{\text{res}}}{\text{SS}_{\text{tot}}}
+      = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y})^2}\]</div>
+<p>The denominator is the squared error <em>of the mean-predictor</em>; the numerator is the squared error <em>of our
+model</em>. Their ratio is "what fraction of the baseline's error we still make", and one-minus-that is the
+fraction we've eliminated — commonly read as <strong>the fraction of the target's variance the model explains</strong>.</p>
+<div class="highlight"><pre><span></span><code><span class="n">ss_res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">y_test</span> <span class="o">-</span> <span class="n">y_pred</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">ss_tot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">y_test</span> <span class="o">-</span> <span class="n">y_test</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">r2_scratch</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">ss_res</span> <span class="o">/</span> <span class="n">ss_tot</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;R² (from scratch):   </span><span class="si">{</span><span class="n">r2_scratch</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;R² (scikit-learn):   </span><span class="si">{</span><span class="n">r2_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;→ The model explains about </span><span class="si">{</span><span class="n">r2_scratch</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2"> of the variance in sales.&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>R² (from scratch):   0.8609
+R² (scikit-learn):   0.8609
+→ The model explains about 86% of the variance in sales.
+</code></pre></div>
+<p>The reading scale:</p>
+<ul>
+<li><span class="arithmatex">\(R^2 = 1\)</span> — perfect predictions (<span class="arithmatex">\(\text{SS}_{\text{res}} = 0\)</span>).</li>
+<li><span class="arithmatex">\(R^2 = 0\)</span> — no better than predicting the mean. The features bought you nothing.</li>
+<li><span class="arithmatex">\(R^2 &lt; 0\)</span> — <strong>worse than predicting the mean.</strong> Yes, this happens, and no, it's not a bug.</li>
+</ul>
+<p>That last line surprises everyone once. On <em>training</em> data (with an intercept) least squares can never do
+worse than the mean, so classroom R² lives in [0, 1]. But on <strong>test</strong> data there's no such guarantee — a
+badly overfit model can be genuinely worse than the laziest baseline. Let's manufacture both edge cases:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Edge case 1: the lazy baseline itself, evaluated on the test set</span>
+<span class="n">baseline_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y_test</span><span class="p">),</span> <span class="n">y_train</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;R² of predict-the-training-mean: </span><span class="si">{</span><span class="n">r2_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="w"> </span><span class="n">baseline_pred</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">   (≈ 0, as designed)&quot;</span><span class="p">)</span>
+
+<span class="c1"># Edge case 2: our old enemy — a degree-10 polynomial fitted to just 12 training markets</span>
+<span class="n">overfit</span> <span class="o">=</span> <span class="n">make_pipeline</span><span class="p">(</span><span class="n">PolynomialFeatures</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="n">StandardScaler</span><span class="p">(),</span> <span class="n">LinearRegression</span><span class="p">())</span>
+<span class="n">overfit</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">[[</span><span class="s2">&quot;TV&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="mi">12</span><span class="p">],</span> <span class="n">y_train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="mi">12</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;R² of an overfit degree-10 polynomial: </span><span class="si">{</span><span class="n">r2_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="w"> </span><span class="n">overfit</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">[[</span><span class="s1">&#39;TV&#39;</span><span class="p">]]))</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>R² of predict-the-training-mean: -0.0917   (≈ 0, as designed)
+R² of an overfit degree-10 polynomial: -27.10
+</code></pre></div>
+<p>The baseline scores ≈ 0 (slightly off because the <em>training</em> mean isn't exactly the test mean), and the
+overfit polynomial scores catastrophically negative — its wild swings between training points make it far
+worse than just guessing the average. <strong>A negative test R² is one of the loudest overfitting alarms in the
+toolbox.</strong></p>
+<p>Two cautions before we move on:</p>
+<ul>
+<li><strong>R² says nothing about absolute error.</strong> R² = 0.86 with RMSE = 1.9 might be simultaneously "excellent
+  variance explained" and "too imprecise for your use case". Report R² <em>with</em> MAE or RMSE, not instead.</li>
+<li><strong>On training data, R² only ever goes up as you add features</strong> — any feature, even garbage. That free
+  lunch is the next section's target.</li>
+</ul>
+<hr />
+<h3 id="6-adjusted-r2-charging-rent-for-features">6. Adjusted R² — charging rent for features</h3>
+<p>Watch the free lunch happen. We'll append columns of <strong>pure random noise</strong> to the Advertising features and
+refit. The noise contains no information about sales whatsoever — yet training R² will rise:</p>
+<div class="highlight"><pre><span></span><code><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">adjusted_r2</span><span class="p">(</span><span class="n">r2</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adjusted R²: n samples, p features.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">r2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="n">p</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">n_junk</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">60</span><span class="p">]:</span>
+    <span class="n">Xj_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">X_train</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X_train</span><span class="p">),</span> <span class="n">n_junk</span><span class="p">))]</span>
+    <span class="n">Xj_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">X_test</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X_test</span><span class="p">),</span> <span class="n">n_junk</span><span class="p">))]</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Xj_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+    <span class="n">r2_train</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">Xj_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+    <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+        <span class="s2">&quot;junk features added&quot;</span><span class="p">:</span> <span class="n">n_junk</span><span class="p">,</span>
+        <span class="s2">&quot;train R²&quot;</span><span class="p">:</span> <span class="n">r2_train</span><span class="p">,</span>
+        <span class="s2">&quot;train adjusted R²&quot;</span><span class="p">:</span> <span class="n">adjusted_r2</span><span class="p">(</span><span class="n">r2_train</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_train</span><span class="p">),</span> <span class="mi">3</span> <span class="o">+</span> <span class="n">n_junk</span><span class="p">),</span>
+        <span class="s2">&quot;test R²&quot;</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">Xj_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">),</span>
+    <span class="p">})</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;junk features added&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>train R²</th>
+      <th>train adjusted R²</th>
+      <th>test R²</th>
+    </tr>
+    <tr>
+      <th>junk features added</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.9055</td>
+      <td>0.9034</td>
+      <td>0.8609</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>0.9116</td>
+      <td>0.9062</td>
+      <td>0.8613</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>0.9158</td>
+      <td>0.8991</td>
+      <td>0.8412</td>
+    </tr>
+    <tr>
+      <th>60</th>
+      <td>0.9467</td>
+      <td>0.9025</td>
+      <td>0.8175</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>Read the three columns left to right:</p>
+<ul>
+<li><strong>Train R² rises monotonically</strong> — with 60 noise columns the model finds enough chance correlations to
+  "explain" several extra points of variance. Pure illusion.</li>
+<li><strong>Test R² falls</strong> — the noise-fitting is overfitting, and held-out data says so.</li>
+<li><strong>Adjusted R² falls too</strong> — and it saw <em>only training data</em>. That's its trick:</li>
+</ul>
+<div class="arithmatex">\[R^2_{\text{adj}} = 1 - \left(1 - R^2\right)\frac{n - 1}{n - p - 1}\]</div>
+<p>where <span class="arithmatex">\(n\)</span> is the number of samples and <span class="arithmatex">\(p\)</span> the number of features. Each extra feature shrinks the
+denominator <span class="arithmatex">\(n - p - 1\)</span>, inflating the penalty factor — so a new feature must improve R² by <em>more than
+chance would</em> to move adjusted R² upward. It's a leaner cousin of the Regularization module's idea: make
+complexity pay rent.</p>
+<p><strong>When to reach for it:</strong> comparing models with <em>different feature counts</em> on the same training data —
+classic statistics workflow. When you have a proper held-out set (our usual workflow), test-set metrics
+remain the gold standard; adjusted R² is the tool for when you can't afford one.</p>
+<hr />
+<h3 id="7-mape-mean-absolute-percentage-error">7. MAPE — Mean Absolute Percentage Error</h3>
+<p>One question none of the metrics above can answer: <em>is an error of 1.5 big?</em> It depends — 1,500 units
+missing from a 25,000-unit market is rounding error; from a 3,000-unit market it's half the business.
+MAPE rescales each error by the true value, making errors <strong>relative</strong>:</p>
+<div class="arithmatex">\[\text{MAPE} = \frac{1}{m} \sum_{i=1}^{m} \left| \frac{y_i - \hat{y}_i}{y_i} \right|\]</div>
+<div class="highlight"><pre><span></span><code><span class="n">mape_scratch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">((</span><span class="n">y_test</span> <span class="o">-</span> <span class="n">y_pred</span><span class="p">)</span> <span class="o">/</span> <span class="n">y_test</span><span class="p">))</span>
+<span class="n">mape_sklearn</span> <span class="o">=</span> <span class="n">mean_absolute_percentage_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MAPE (from scratch):   </span><span class="si">{</span><span class="n">mape_scratch</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MAPE (scikit-learn):   </span><span class="si">{</span><span class="n">mape_sklearn</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;→ Predictions are off by about </span><span class="si">{</span><span class="n">mape_sklearn</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2"> of each market&#39;s actual sales, on average.&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>MAPE (from scratch):   0.1630
+MAPE (scikit-learn):   0.1630
+→ Predictions are off by about 16% of each market&#39;s actual sales, on average.
+</code></pre></div>
+<p>Percentages travel well: you can compare a sales model against a temperature model, or this quarter's
+model against last year's, without unit gymnastics. That makes MAPE a favourite in forecasting.</p>
+<p>Its fine print is sharp, though:</p>
+<ul>
+<li><strong>Division by <span class="arithmatex">\(y_i\)</span> explodes near zero.</strong> One test sample with true value 0.01 can dominate the entire
+  metric — and a true zero is a division by zero. Never use MAPE for targets that touch zero (demand that
+  can be nil, account balances…).</li>
+<li><strong>It's asymmetric.</strong> Predicting 150 when truth is 100 scores 50%; predicting 100 when truth is 150
+  scores 33% — the <em>same absolute miss</em>, punished differently. MAPE systematically favours
+  <em>under</em>-prediction.</li>
+</ul>
+<h4 id="the-regression-scoreboard-complete">The regression scoreboard, complete</h4>
+<div class="highlight"><pre><span></span><code><span class="n">scoreboard</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">mean_absolute_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">),</span>
+              <span class="n">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">),</span>
+              <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)),</span>
+              <span class="n">r2_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">),</span>
+              <span class="n">adjusted_r2</span><span class="p">(</span><span class="n">r2_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_test</span><span class="p">),</span> <span class="mi">3</span><span class="p">),</span>
+              <span class="n">mean_absolute_percentage_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)],</span>
+<span class="p">},</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;MAE&quot;</span><span class="p">,</span> <span class="s2">&quot;MSE&quot;</span><span class="p">,</span> <span class="s2">&quot;RMSE&quot;</span><span class="p">,</span> <span class="s2">&quot;R²&quot;</span><span class="p">,</span> <span class="s2">&quot;adjusted R²&quot;</span><span class="p">,</span> <span class="s2">&quot;MAPE&quot;</span><span class="p">])</span>
+<span class="n">scoreboard</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>MAE</th>
+      <td>1.5117</td>
+    </tr>
+    <tr>
+      <th>MSE</th>
+      <td>3.7968</td>
+    </tr>
+    <tr>
+      <th>RMSE</th>
+      <td>1.9485</td>
+    </tr>
+    <tr>
+      <th>R²</th>
+      <td>0.8609</td>
+    </tr>
+    <tr>
+      <th>adjusted R²</th>
+      <td>0.8535</td>
+    </tr>
+    <tr>
+      <th>MAPE</th>
+      <td>0.1630</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>One model, six honest numbers, six different sentences about it. Which sentence you lead with is Section
+12's business. First — classification.</p>
+<hr />
+<h2 id="part-b-classification-metrics">Part B — Classification metrics</h2>
+<h3 id="8-why-classification-scoring-is-harder">8. Why classification scoring is harder</h3>
+<p>A regression error has a <em>size</em> — summarizing sizes is all Part A did. A classification error has no size;
+it has a <strong>type</strong>. Calling a diabetic patient healthy and calling a healthy patient diabetic are both
+"one error", but they are different <em>kinds</em> of wrong, with different costs. Any single number that forgets
+the distinction is hiding something — that was the moral of the last two modules, and now we assemble the
+whole toolbox in one place.</p>
+<p>Our workhorse: the diabetes data with last module's rematch models — logistic regression and a pruned
+decision tree. We'll score them side by side throughout.</p>
+<div class="highlight"><pre><span></span><code><span class="n">X_diab</span> <span class="o">=</span> <span class="n">diabetes</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">&quot;Outcome&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">y_diab</span> <span class="o">=</span> <span class="n">diabetes</span><span class="p">[</span><span class="s2">&quot;Outcome&quot;</span><span class="p">]</span>
+<span class="n">Xd_train</span><span class="p">,</span> <span class="n">Xd_test</span><span class="p">,</span> <span class="n">yd_train</span><span class="p">,</span> <span class="n">yd_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">X_diab</span><span class="p">,</span> <span class="n">y_diab</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+
+<span class="n">clf_logreg</span> <span class="o">=</span> <span class="n">make_pipeline</span><span class="p">(</span><span class="n">StandardScaler</span><span class="p">(),</span> <span class="n">LogisticRegression</span><span class="p">())</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Xd_train</span><span class="p">,</span> <span class="n">yd_train</span><span class="p">)</span>
+<span class="n">clf_tree</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">ccp_alpha</span><span class="o">=</span><span class="mf">0.005</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Xd_train</span><span class="p">,</span> <span class="n">yd_train</span><span class="p">)</span>
+
+<span class="n">yd_pred</span> <span class="o">=</span> <span class="n">clf_logreg</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">Xd_test</span><span class="p">)</span>          <span class="c1"># logistic regression is our main subject</span>
+<span class="n">proba</span> <span class="o">=</span> <span class="n">clf_logreg</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">Xd_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Logistic regression accuracy: </span><span class="si">{</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">yd_test</span><span class="p">,</span><span class="w"> </span><span class="n">yd_pred</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Decision tree accuracy:       </span><span class="si">{</span><span class="n">clf_tree</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">Xd_test</span><span class="p">,</span><span class="w"> </span><span class="n">yd_test</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Always-predict-healthy:       </span><span class="si">{</span><span class="p">(</span><span class="n">yd_test</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">   ← the baseline to beat&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Logistic regression accuracy: 0.736
+Decision tree accuracy:       0.723
+Always-predict-healthy:       0.654   ← the baseline to beat
+</code></pre></div>
+<p>There is the <strong>accuracy paradox</strong> in one screen: the do-nothing baseline scores 65% because two-thirds of
+patients are healthy, so our models' ≈73% is far less impressive than it sounds — and on a rarer disease
+the baseline would beat any honest model. Accuracy averages over error <em>types</em>; to see the types we open
+the confusion matrix.</p>
+<h3 id="9-the-confusion-matrix-and-its-children">9. The confusion matrix and its children</h3>
+<p>Everything in binary classification scoring is a ratio of the four cells (positive class = has diabetes):</p>
+<div align="center">
+<img src="../assets/confusion_matrix.png" width="380">
+
+*Figure 1 — TN, FP (Type I error), FN (Type II error), TP. Rows: actual; columns: predicted.*
+</div>
+
+<div class="highlight"><pre><span></span><code><span class="n">tn</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">tp</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">yd_test</span><span class="p">,</span> <span class="n">yd_pred</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TN=</span><span class="si">{</span><span class="n">tn</span><span class="si">}</span><span class="s2">  FP=</span><span class="si">{</span><span class="n">fp</span><span class="si">}</span><span class="s2">  FN=</span><span class="si">{</span><span class="n">fn</span><span class="si">}</span><span class="s2">  TP=</span><span class="si">{</span><span class="n">tp</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">ConfusionMatrixDisplay</span><span class="o">.</span><span class="n">from_estimator</span><span class="p">(</span><span class="n">clf_logreg</span><span class="p">,</span> <span class="n">Xd_test</span><span class="p">,</span> <span class="n">yd_test</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Blues&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Logistic regression — diabetes test set&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>TN=120  FP=31  FN=30  TP=50
+</code></pre></div>
+<p><img alt="png" src="../08_evaluation_metrics_files/08_evaluation_metrics_35_1.png" /></p>
+<p>The three ratios that matter, in one place (details in the Logistic Regression module, Section 9):</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Formula</th>
+<th>The question it answers</th>
+<th>Optimize it when…</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Accuracy</strong></td>
+<td><span class="arithmatex">\(\frac{TP+TN}{\text{all}}\)</span></td>
+<td>How often is the model right?</td>
+<td>classes balanced, both errors equal cost</td>
+</tr>
+<tr>
+<td><strong>Precision</strong></td>
+<td><span class="arithmatex">\(\frac{TP}{TP+FP}\)</span></td>
+<td>When it says <em>positive</em>, is it right?</td>
+<td>false alarms are expensive (spam filter)</td>
+</tr>
+<tr>
+<td><strong>Recall</strong></td>
+<td><span class="arithmatex">\(\frac{TP}{TP+FN}\)</span></td>
+<td>Of the real positives, how many found?</td>
+<td>misses are expensive (disease screening)</td>
+</tr>
+<tr>
+<td><strong>F1</strong></td>
+<td><span class="arithmatex">\(\frac{2 \cdot P \cdot R}{P + R}\)</span></td>
+<td>Balance of the two (harmonic mean)</td>
+<td>you need one number and classes are skewed</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Precision: </span><span class="si">{</span><span class="n">precision_score</span><span class="p">(</span><span class="n">yd_test</span><span class="p">,</span><span class="w"> </span><span class="n">yd_pred</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Recall:    </span><span class="si">{</span><span class="n">recall_score</span><span class="p">(</span><span class="n">yd_test</span><span class="p">,</span><span class="w"> </span><span class="n">yd_pred</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;F1 score:  </span><span class="si">{</span><span class="n">f1_score</span><span class="p">(</span><span class="n">yd_test</span><span class="p">,</span><span class="w"> </span><span class="n">yd_pred</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">classification_report</span><span class="p">(</span><span class="n">yd_test</span><span class="p">,</span> <span class="n">yd_pred</span><span class="p">,</span> <span class="n">target_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;healthy (0)&quot;</span><span class="p">,</span> <span class="s2">&quot;diabetic (1)&quot;</span><span class="p">]))</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Precision: 0.617
+Recall:    0.625
+F1 score:  0.621
+
+              precision    recall  f1-score   support
+
+ healthy (0)       0.80      0.79      0.80       151
+diabetic (1)       0.62      0.62      0.62        80
+
+    accuracy                           0.74       231
+   macro avg       0.71      0.71      0.71       231
+weighted avg       0.74      0.74      0.74       231
+</code></pre></div>
+<p>For a screening tool, that recall row is the headline: roughly a third of the true diabetics walk out
+undiagnosed. Which raises the question the next section answers live: those metrics were computed at the
+default 0.5 threshold — <em>what if we move it?</em></p>
+<h3 id="10-metrics-are-functions-of-the-threshold">10. Metrics are functions of the threshold</h3>
+<p><code>predict</code> is just <code>predict_proba</code> plus a cutoff. The cutoff is <strong>ours to choose</strong>, and every choice buys
+recall with precision or vice versa. In the Logistic Regression module this was an exercise; now let's
+sweep the whole dial and plot the trade-off:</p>
+<div class="highlight"><pre><span></span><code><span class="n">thresholds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="mi">90</span><span class="p">)</span>
+<span class="n">precisions</span><span class="p">,</span> <span class="n">recalls</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">thresholds</span><span class="p">:</span>
+    <span class="n">yt</span> <span class="o">=</span> <span class="p">(</span><span class="n">proba</span> <span class="o">&gt;=</span> <span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">precisions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">precision_score</span><span class="p">(</span><span class="n">yd_test</span><span class="p">,</span> <span class="n">yt</span><span class="p">,</span> <span class="n">zero_division</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">recalls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">recall_score</span><span class="p">(</span><span class="n">yd_test</span><span class="p">,</span> <span class="n">yt</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">thresholds</span><span class="p">,</span> <span class="n">precisions</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;precision&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">thresholds</span><span class="p">,</span> <span class="n">recalls</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;recall&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;default threshold&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Decision threshold&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Score&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Precision and recall vs. threshold — logistic regression&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">]:</span>
+    <span class="n">yt</span> <span class="o">=</span> <span class="p">(</span><span class="n">proba</span> <span class="o">&gt;=</span> <span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;threshold </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">:  precision=</span><span class="si">{</span><span class="n">precision_score</span><span class="p">(</span><span class="n">yd_test</span><span class="p">,</span><span class="w"> </span><span class="n">yt</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">  &quot;</span>
+          <span class="sa">f</span><span class="s2">&quot;recall=</span><span class="si">{</span><span class="n">recall_score</span><span class="p">(</span><span class="n">yd_test</span><span class="p">,</span><span class="w"> </span><span class="n">yt</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../08_evaluation_metrics_files/08_evaluation_metrics_39_0.png" /></p>
+<div class="highlight"><pre><span></span><code>threshold 0.3:  precision=0.54  recall=0.76
+threshold 0.5:  precision=0.62  recall=0.62
+threshold 0.7:  precision=0.75  recall=0.41
+</code></pre></div>
+<p>The scissors pattern: lower the threshold and recall climbs (flag more people → catch more diabetics)
+while precision sinks (more false alarms); raise it and they swap. <strong>No threshold is "correct"</strong> — a cheap
+follow-up test justifies 0.3; an invasive treatment justifies 0.7. The model supplies the menu; the domain
+picks the dish.</p>
+<p>Since each threshold yields one (precision, recall) or one (TPR, FPR) pair, sweeping the dial traces the
+two curves from the Decision Trees module — <strong>PR curve</strong> and <strong>ROC curve</strong>, with <strong>AUC</strong> condensing the
+latter into a single threshold-free number (1.0 perfect, 0.5 random). One cell, both curves, both models:</p>
+<div class="highlight"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">11.5</span><span class="p">,</span> <span class="mf">4.4</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">model</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[(</span><span class="n">clf_logreg</span><span class="p">,</span> <span class="s2">&quot;Logistic regression&quot;</span><span class="p">),</span> <span class="p">(</span><span class="n">clf_tree</span><span class="p">,</span> <span class="s2">&quot;Pruned decision tree&quot;</span><span class="p">)]:</span>
+    <span class="n">RocCurveDisplay</span><span class="o">.</span><span class="n">from_estimator</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">Xd_test</span><span class="p">,</span> <span class="n">yd_test</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">PrecisionRecallDisplay</span><span class="o">.</span><span class="n">from_estimator</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">Xd_test</span><span class="p">,</span> <span class="n">yd_test</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;k--&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;ROC curves&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Precision-recall curves&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">model</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[(</span><span class="n">clf_logreg</span><span class="p">,</span> <span class="s2">&quot;Logistic regression&quot;</span><span class="p">),</span> <span class="p">(</span><span class="n">clf_tree</span><span class="p">,</span> <span class="s2">&quot;Pruned tree&quot;</span><span class="p">)]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2"> AUC = </span><span class="si">{</span><span class="n">roc_auc_score</span><span class="p">(</span><span class="n">yd_test</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">Xd_test</span><span class="p">)[:,</span><span class="w"> </span><span class="mi">1</span><span class="p">])</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../08_evaluation_metrics_files/08_evaluation_metrics_41_0.png" /></p>
+<div class="highlight"><pre><span></span><code>Logistic regression  AUC = 0.798
+Pruned tree          AUC = 0.752
+</code></pre></div>
+<p>Use AUC to <em>compare models before committing to a threshold</em>; use the threshold sweep to <em>choose the
+operating point</em> once the domain costs are on the table. Two tools, two different moments in the workflow.</p>
+<h3 id="11-log-loss-grading-the-probabilities-themselves">11. Log loss — grading the probabilities themselves</h3>
+<p>One dimension remains unexamined. Accuracy &amp; co. judge the <em>labels</em>; AUC judges the <em>ranking</em>; but many
+applications consume the <strong>probability itself</strong> — a 90% diabetes risk and a 51% risk trigger very
+different clinical responses, even though both round to "positive". A model whose probabilities are
+<em>trustworthy</em> deserves credit; one that is confidently wrong deserves punishment.</p>
+<p>The metric for this is <strong>log loss</strong> — and you already know it by another name: it is exactly the <strong>binary
+cross-entropy</strong> that logistic regression <em>minimizes during training</em> (Logistic Regression module, Section 6),
+now repurposed as a report card:</p>
+<div class="arithmatex">\[\text{Log loss} = -\frac{1}{m} \sum_{i=1}^m \Big[ y_i \log \hat{p}_i + (1 - y_i)\log(1 - \hat{p}_i) \Big]\]</div>
+<p>Lower is better; 0 is perfection. The log makes confident mistakes catastrophic: predicting <span class="arithmatex">\(\hat{p} =
+0.99\)</span> for a healthy patient costs <span class="arithmatex">\(-\log(0.01) \approx 4.6\)</span>, while a humble 0.6 costs only 0.9. Watch it
+separate our two models — <em>and</em> a fully grown tree, which classifies decently but speaks only in
+certainties:</p>
+<div class="highlight"><pre><span></span><code><span class="n">tree_full</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Xd_train</span><span class="p">,</span> <span class="n">yd_train</span><span class="p">)</span>   <span class="c1"># unpruned</span>
+
+<span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;Logistic regression&quot;</span><span class="p">,</span> <span class="n">clf_logreg</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s2">&quot;Pruned tree&quot;</span><span class="p">,</span> <span class="n">clf_tree</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s2">&quot;Fully grown tree&quot;</span><span class="p">,</span> <span class="n">tree_full</span><span class="p">)]:</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">Xd_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                 <span class="s2">&quot;accuracy&quot;</span><span class="p">:</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">yd_test</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">Xd_test</span><span class="p">)),</span>
+                 <span class="s2">&quot;AUC&quot;</span><span class="p">:</span> <span class="n">roc_auc_score</span><span class="p">(</span><span class="n">yd_test</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span>
+                 <span class="s2">&quot;log loss&quot;</span><span class="p">:</span> <span class="n">log_loss</span><span class="p">(</span><span class="n">yd_test</span><span class="p">,</span> <span class="n">p</span><span class="p">)})</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;model&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>accuracy</th>
+      <th>AUC</th>
+      <th>log loss</th>
+    </tr>
+    <tr>
+      <th>model</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Logistic regression</th>
+      <td>0.736</td>
+      <td>0.798</td>
+      <td>0.523</td>
+    </tr>
+    <tr>
+      <th>Pruned tree</th>
+      <td>0.723</td>
+      <td>0.752</td>
+      <td>1.491</td>
+    </tr>
+    <tr>
+      <th>Fully grown tree</th>
+      <td>0.710</td>
+      <td>0.708</td>
+      <td>10.454</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>The punchline is the last row: the fully grown tree's accuracy is in the same neighbourhood as the
+others, but its log loss is <strong>an order of magnitude worse</strong>. Why? Its pure leaves output probabilities of
+exactly 0 or 1 — and every time one of those certainties is wrong, the logarithm detonates. The pruned
+tree's leaves are mixed, its probabilities humbler, its log loss far saner; logistic regression, which was
+<em>trained</em> to minimize this very quantity, wins comfortably.</p>
+<p>Moral: <strong>accuracy measures how often you're right; log loss measures whether your confidence can be
+trusted.</strong> If downstream decisions consume the probability (risk scores, triage, bidding), evaluate with
+log loss — it will catch overconfident models that accuracy waves through.</p>
+<h4 id="multiclass-postscript">Multiclass postscript</h4>
+<p>Everything here generalizes to <span class="arithmatex">\(K\)</span> classes exactly as the Decision Trees module showed: the confusion
+matrix becomes <span class="arithmatex">\(K \times K\)</span>, per-class precision/recall/F1 get combined by <strong>macro / weighted / micro</strong>
+averaging, and log loss becomes cross-entropy. As a reminder of where the levers are:</p>
+<div class="highlight"><pre><span></span><code><span class="n">iris</span> <span class="o">=</span> <span class="n">load_iris</span><span class="p">()</span>
+<span class="n">Xi_train</span><span class="p">,</span> <span class="n">Xi_test</span><span class="p">,</span> <span class="n">yi_train</span><span class="p">,</span> <span class="n">yi_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">iris</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">iris</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">iris</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
+
+<span class="n">clf_iris</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">max_depth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Xi_train</span><span class="p">,</span> <span class="n">yi_train</span><span class="p">)</span>
+<span class="n">yi_pred</span> <span class="o">=</span> <span class="n">clf_iris</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">Xi_test</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">avg</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;macro&quot;</span><span class="p">,</span> <span class="s2">&quot;weighted&quot;</span><span class="p">,</span> <span class="s2">&quot;micro&quot;</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">avg</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2"> F1: </span><span class="si">{</span><span class="n">f1_score</span><span class="p">(</span><span class="n">yi_test</span><span class="p">,</span><span class="w"> </span><span class="n">yi_pred</span><span class="p">,</span><span class="w"> </span><span class="n">average</span><span class="o">=</span><span class="n">avg</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>    macro F1: 0.9333
+ weighted F1: 0.9333
+    micro F1: 0.9333
+</code></pre></div>
+<hr />
+<h2 id="12-choosing-a-metric-the-decision-tables">12. Choosing a metric: the decision tables</h2>
+<p>The single most important sentence of the module: <strong>choosing the metric is a modelling decision — make it
+before you evaluate, based on what errors cost in the domain.</strong> The tables below compress both halves into
+that decision.</p>
+<h3 id="regression">Regression</h3>
+<table>
+<thead>
+<tr>
+<th>You want to know…</th>
+<th>Reach for</th>
+<th>Watch out for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Typical error, in the target's units</td>
+<td><strong>MAE</strong></td>
+<td>treats a huge miss as merely proportionally bad</td>
+</tr>
+<tr>
+<td>Error with the worst cases counted extra</td>
+<td><strong>RMSE</strong></td>
+<td>one outlier label can dominate it</td>
+</tr>
+<tr>
+<td>The quantity your OLS/GD training optimized</td>
+<td><strong>MSE</strong></td>
+<td>squared units — don't quote it to humans</td>
+</tr>
+<tr>
+<td>Skill relative to predicting the mean</td>
+<td><strong>R²</strong></td>
+<td>says nothing about absolute error; negative = alarm</td>
+</tr>
+<tr>
+<td>R² when comparing different feature counts (no test set)</td>
+<td><strong>adjusted R²</strong></td>
+<td>still a training-data metric</td>
+</tr>
+<tr>
+<td>Scale-free % error, comparable across problems</td>
+<td><strong>MAPE</strong></td>
+<td>explodes near zero targets; favours under-prediction</td>
+</tr>
+</tbody>
+</table>
+<p><em>Default reporting habit: RMSE (or MAE) together with R² — one absolute, one relative.</em></p>
+<h3 id="classification">Classification</h3>
+<table>
+<thead>
+<tr>
+<th>Your situation</th>
+<th>Reach for</th>
+<th>Watch out for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Balanced classes, equal error costs</td>
+<td><strong>accuracy</strong></td>
+<td>the paradox: worthless under imbalance</td>
+</tr>
+<tr>
+<td>False alarms are expensive</td>
+<td><strong>precision</strong></td>
+<td>can be gamed by predicting positive rarely</td>
+</tr>
+<tr>
+<td>Misses are expensive (screening, fraud)</td>
+<td><strong>recall</strong></td>
+<td>can be gamed by flagging everyone</td>
+</tr>
+<tr>
+<td>One number, imbalanced classes</td>
+<td><strong>F1</strong></td>
+<td>hides <em>which</em> of P/R is weak — read both</td>
+</tr>
+<tr>
+<td>Comparing models before choosing a threshold</td>
+<td><strong>ROC-AUC</strong></td>
+<td>insensitive to calibration; optimistic under heavy imbalance (prefer PR curve)</td>
+</tr>
+<tr>
+<td>Downstream code consumes the probabilities</td>
+<td><strong>log loss</strong></td>
+<td>brutal on overconfidence — which is the point</td>
+</tr>
+<tr>
+<td>Multiclass, rare classes matter</td>
+<td><strong>macro F1</strong></td>
+<td>weighted/micro will mask rare-class failure</td>
+</tr>
+</tbody>
+</table>
+<p><em>Default reporting habit: the full <code>classification_report</code> plus AUC — then the one metric your domain
+actually optimizes, chosen out loud.</em></p>
+<hr />
+<h2 id="13-your-turn">13. Your turn</h2>
+<p>Add cells below each exercise. Exercises 2 and 4 consolidate the big ideas.</p>
+<p><strong>Exercise 1 — The scoreboard, by hand.</strong>
+Compute MAE, RMSE, and R² for the <em>TV-only</em> simple regression (fit <code>LinearRegression</code> on just the <code>TV</code>
+column) on our test split, without using any <code>sklearn.metrics</code> functions — numpy only. Check yourself
+against scikit-learn. How much does dropping radio and newspaper cost in each metric?</p>
+<p><strong>Exercise 2 — Design the metric for the domain.</strong>
+For each scenario, pick the <em>one</em> metric you would optimize, and defend it in a sentence: (a) forecasting
+electricity demand, where under-supply causes blackouts; (b) predicting house prices for a listings
+website across cities with wildly different price levels; (c) a spam filter for a hospital's email;
+(d) ranking loan applicants by default risk for a human reviewer who reads the top 100.</p>
+<p><strong>Exercise 3 — MAPE's blind spot, live.</strong>
+Create <code>y_tiny = y_test.copy()</code> and set its first value to 0.1. Recompute MAPE and MAE against the same
+predictions. Which metric just became useless, and why? What does this tell you about <em>checking the
+target's range</em> before choosing MAPE?</p>
+<p><strong>Exercise 4 — Calibration vs. accuracy.</strong>
+Take the fully grown diabetes tree from Section 11. Using <code>np.clip</code>, squash its predicted probabilities
+into the range [0.05, 0.95] and recompute the log loss. Accuracy hasn't changed (the labels are the same
+— why?), but log loss improves dramatically. Explain in two sentences what this "clipping" did and why a
+model that hedges its bets scores better here.</p>
+<p><strong>Exercise 5 — The full report.</strong>
+Write a function <code>evaluate_classifier(model, X_test, y_test)</code> that prints the confusion matrix, the
+classification report, ROC-AUC, and log loss, and draws the ROC and PR curves side by side. Run it on both
+diabetes models. This function is worth keeping — you'll use it for every classifier you build after this
+course.</p>
+<hr />
+<h2 id="14-if-you-remember-nothing-else">14. If you remember nothing else</h2>
+<ol>
+<li>
+<p><strong>A metric is a summary of residuals (regression) or of the confusion matrix (classification), and
+   every summary has an opinion.</strong> Know the opinion before you trust the number.</p>
+</li>
+<li>
+<p><strong>MAE = typical error in real units; RMSE = the same but with big errors counted extra.</strong> RMSE ≥ MAE
+   always; a wide gap means a few large errors dominate — and one bad label can triple RMSE while barely
+   moving MAE.</p>
+</li>
+<li>
+<p><strong>R² is skill versus the predict-the-mean baseline</strong> — 1 perfect, 0 useless, negative = worse than
+   lazy (a loud overfitting alarm on test data). It's relative: always pair it with an absolute metric.
+   <strong>Adjusted R²</strong> charges rent per feature and exposes the junk-feature free lunch on training data.</p>
+</li>
+<li>
+<p><strong>MAPE speaks percentages</strong> and travels across scales — but never point it at targets that touch zero,
+   and remember it forgives under-prediction more than over-prediction.</p>
+</li>
+<li>
+<p><strong>Accuracy averages over error types; the confusion matrix separates them.</strong> Precision guards against
+   false alarms, recall against misses, F1 balances — and all of them are functions of a <em>threshold you
+   chose</em>. Sweep it: ROC/AUC compares models threshold-free; the sweep picks the operating point.</p>
+</li>
+<li>
+<p><strong>Log loss grades the probabilities, not the labels.</strong> It is binary cross-entropy in report-card
+   clothing, and it detonates on confident mistakes — the metric that catches overconfident models
+   (pure-leaf trees!) that accuracy happily waves through.</p>
+</li>
+<li>
+<p><strong>Choose the metric before evaluating, out loud, from the domain's error costs.</strong> The metric is the
+   finish line; models become whatever their metric rewards.</p>
+</li>
+</ol>
+<hr />
+<h2 id="15-further-reading-and-glossary">15. Further reading and glossary</h2>
+<h3 id="further-reading">Further reading</h3>
+<ul>
+<li><em>An Introduction to Statistical Learning</em>, <a href="https://www.statlearning.com/">Chapters 2–3</a> — assessing
+  model accuracy, R², and residual analysis with full statistical care.</li>
+<li>scikit-learn's <a href="https://scikit-learn.org/stable/modules/model_evaluation.html">metrics and scoring guide</a>
+  — the definitive reference for every function used in this module, including the multiclass averaging
+  rules.</li>
+<li>Aurélien Géron, <em>Hands-On Machine Learning</em> — Chapter 2 (RMSE vs. MAE in a real project) and Chapter 3
+  (the classification metrics workflow, end to end).</li>
+<li>Rob Hyndman &amp; George Athanasopoulos, <a href="https://otexts.com/fpp3/accuracy.html"><em>Forecasting: Principles and Practice</em>, section on accuracy
+  evaluation</a> — the forecasting community's view of MAE/RMSE/MAPE
+  and their pitfalls.</li>
+<li>C. J. van Rijsbergen, <a href="http://www.dcs.gla.ac.uk/Keith/Chapter.7/Ch.7.html"><em>Information Retrieval</em>, Chapter 7</a>
+  — where precision, recall, and the F-measure come from.</li>
+</ul>
+<h3 id="glossary">Glossary</h3>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Residual</strong></td>
+<td><span class="arithmatex">\(y - \hat{y}\)</span>; the raw material of every regression metric</td>
+</tr>
+<tr>
+<td><strong>MAE</strong></td>
+<td>Mean of |residuals|; typical error in target units</td>
+</tr>
+<tr>
+<td><strong>MSE</strong></td>
+<td>Mean of squared residuals; the OLS training objective, in squared units</td>
+</tr>
+<tr>
+<td><strong>RMSE</strong></td>
+<td><span class="arithmatex">\(\sqrt{\text{MSE}}\)</span>; target units, big errors weighted extra</td>
+</tr>
+<tr>
+<td><strong>R²</strong></td>
+<td><span class="arithmatex">\(1 - \text{SS}_{\text{res}}/\text{SS}_{\text{tot}}\)</span>; skill vs. the mean-predictor; can go negative on test data</td>
+</tr>
+<tr>
+<td><strong>Adjusted R²</strong></td>
+<td>R² with a per-feature penalty: <span class="arithmatex">\(1-(1-R^2)\frac{n-1}{n-p-1}\)</span></td>
+</tr>
+<tr>
+<td><strong>MAPE</strong></td>
+<td>Mean of |residual / actual|; scale-free but explodes near zero targets</td>
+</tr>
+<tr>
+<td><strong>Accuracy paradox</strong></td>
+<td>High accuracy from a useless model on imbalanced classes</td>
+</tr>
+<tr>
+<td><strong>Precision / Recall / F1</strong></td>
+<td>FP-guard / FN-guard / their harmonic mean (see Logistic Regression module)</td>
+</tr>
+<tr>
+<td><strong>Threshold</strong></td>
+<td>The probability cutoff behind <code>predict</code>; a free parameter you choose</td>
+</tr>
+<tr>
+<td><strong>ROC-AUC</strong></td>
+<td>Area under the TPR-vs-FPR curve; threshold-free ranking quality (1 perfect, 0.5 random)</td>
+</tr>
+<tr>
+<td><strong>PR curve</strong></td>
+<td>Precision vs. recall across thresholds; preferred view under heavy imbalance</td>
+</tr>
+<tr>
+<td><strong>Log loss (cross-entropy)</strong></td>
+<td><span class="arithmatex">\(-\frac{1}{m}\sum [y\log\hat{p} + (1-y)\log(1-\hat{p})]\)</span>; grades probability quality</td>
+</tr>
+<tr>
+<td><strong>Calibration</strong></td>
+<td>Agreement between predicted probabilities and observed frequencies</td>
+</tr>
+<tr>
+<td><strong>Macro / weighted / micro</strong></td>
+<td>Multiclass averaging schemes (see Decision Trees module)</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../07_decision_trees/" class="btn btn-neutral float-left" title="Decision Trees"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../09_knn/" class="btn btn-neutral float-right" title="K-Nearest Neighbors">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright &copy; 2026 - Aayush Raj Regmi</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../07_decision_trees/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../09_knn/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../javascripts/mathjax.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

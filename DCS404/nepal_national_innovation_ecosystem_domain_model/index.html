@@ -1,0 +1,2657 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Domain Model for Nepal's National Innovation Ecosystem Platform - DCS 404</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Domain Model for Nepal\u0027s National Innovation Ecosystem Platform";
+        var mkdocs_page_input_path = "DCS404/nepal_national_innovation_ecosystem_domain_model.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> DCS 404
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Welcome</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../InstallationGuide/">Installation Guide</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Machine Learning and AI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../01_introduction_to_machine_learning/">Introduction to Machine Learning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02_ml_workflow/">ML Workflow</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../03_regression/">Regression</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04_gradient_descent/">Gradient Descent</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../05_regularization/">Regularization</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../06_logistic_regression/">Classification & Logistic Regression</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07_decision_trees/">Decision Trees</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../08_evaluation_metrics/">Evaluation Metrics</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../09_knn/">K-Nearest Neighbors</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Time Series Analysis</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../10_time_series_foundations/">Time Series Foundations</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../11_exponential_smoothing/">Exponential Smoothing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../12_arima_models/">ARIMA and SARIMA Models</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Final Project</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../project/00_final_project/">Project Work</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">DCS 404</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Domain Model for Nepal's National Innovation Ecosystem Platform</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="domain-model-for-nepals-national-innovation-ecosystem-platform">Domain Model for Nepal's National Innovation Ecosystem Platform</h1>
+<p><strong>Document Type:</strong> Domain-Driven Design Domain Model / Business Domain Blueprint<br />
+<strong>Project:</strong> National Innovation Ecosystem Platform for Nepal<br />
+<strong>Purpose:</strong> Discover and organize the business domain before SRS, PRD, UX, database, microservice, AI, CQRS, event-sourcing, and API design.<br />
+<strong>Important Exclusion:</strong> This document does <strong>not</strong> design APIs, databases, infrastructure, user interfaces, or choose technologies.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#executive-summary">Executive Summary</a></li>
+<li><a href="#1-ubiquitous-language">Ubiquitous Language</a></li>
+<li><a href="#2-core-supporting-and-generic-domains">Core, Supporting, and Generic Domains</a></li>
+<li><a href="#3-bounded-contexts">Bounded Contexts</a></li>
+<li><a href="#4-domain-relationships-and-context-maps">Domain Relationships and Context Maps</a></li>
+<li><a href="#5-aggregates">Aggregates</a></li>
+<li><a href="#6-entities">Entities</a></li>
+<li><a href="#7-value-objects">Value Objects</a></li>
+<li><a href="#8-business-rules">Business Rules</a></li>
+<li><a href="#9-domain-events">Domain Events</a></li>
+<li><a href="#10-commands">Commands</a></li>
+<li><a href="#11-policies">Policies</a></li>
+<li><a href="#12-state-machines">State Machines</a></li>
+<li><a href="#13-domain-services">Domain Services</a></li>
+<li><a href="#14-business-capabilities">Business Capabilities</a></li>
+<li><a href="#15-cross-domain-workflows">Cross-Domain Workflows</a></li>
+<li><a href="#16-business-glossary">Business Glossary</a></li>
+<li><a href="#appendix-a-event-storming-starter-map">Appendix A: Event Storming Starter Map</a></li>
+<li><a href="#appendix-b-open-domain-questions">Appendix B: Open Domain Questions</a></li>
+</ol>
+<hr />
+<h2 id="executive-summary">Executive Summary</h2>
+<p>This document defines the business domain model for a National Innovation Ecosystem Platform for Nepal. The platform connects students, faculty, universities, colleges, researchers, alumni, startups, companies, investors, government bodies, mentors, incubators, accelerators, communities, and innovation partners into one coordinated ecosystem.</p>
+<p>Domain-Driven Design, or DDD, is useful here because the platform is not a normal software application with a single customer journey. It is a multi-sided national ecosystem with many meanings, rules, incentives, ownership boundaries, approval responsibilities, lifecycle transitions, and institutional conflicts. A word like <strong>evaluation</strong> means different things to a faculty supervisor, investor, recruiter, mentor, researcher, government officer, and incubation manager. A word like <strong>project</strong> may mean an academic submission, a portfolio artifact, a research prototype, an open-source contribution, a sponsored industry solution, or the starting point of a startup. DDD helps separate these meanings into clear bounded contexts.</p>
+<p>Domain modeling must come before software architecture because architecture should serve the domain, not the other way around. If microservices, APIs, databases, or AI modules are designed before the domain is understood, the system will likely reproduce current fragmentation: dead final-year projects, disconnected university records, weak industry linkage, unclear project ownership, superficial rankings, and untrusted startup pipelines. The domain model makes explicit what the system must protect: evidence, trust, lifecycle continuity, fair recognition, institutional autonomy, investor confidence, and long-term national innovation growth.</p>
+<p>The central thesis of this model is that the platform should behave like an <strong>innovation operating system</strong>, not just an LMS, job board, startup directory, research portal, or social network. The platform's core domain is the movement of talent and knowledge through learning, projects, research, innovation validation, incubation, funding, startup creation, recruitment, alumni reinvestment, and national impact. The strongest differentiator is not the existence of profiles or dashboards; it is the ability to preserve continuity from student capability to measurable innovation outcomes.</p>
+<p>The model defines core domains, supporting domains, generic domains, bounded contexts, context relationships, aggregates, entities, value objects, business rules, domain events, commands, policies, state machines, domain services, capabilities, workflows, and glossary terms. It is intended to become the business foundation for SRS, PRD, event storming, UX research, data modeling, microservice boundary discovery, CQRS, event sourcing, AI governance, and API design.</p>
+<h1 id="1-ubiquitous-language">1. Ubiquitous Language</h1>
+<p>The ubiquitous language is the shared business vocabulary of the ecosystem. It reduces confusion between universities, companies, investors, students, government, designers, analysts, and future engineering teams.</p>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Agreed Business Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| Actor | Any person, organization, institution, community, or formal group participating in the ecosystem. |</p>
+<p>| User | A human actor who accesses the platform. A user may have multiple roles across contexts. |</p>
+<p>| Participant | An actor actively involved in a specific activity such as a project, cohort, challenge, research work, investment review, or mentorship. |</p>
+<p>| Affiliation | A formal relationship between a person and an organization, such as student-university, faculty-department, mentor-company, or officer-government unit. |</p>
+<p>| Role | A business responsibility assigned within a context, such as project supervisor, evaluator, mentor, founder, recruiter, investor reviewer, or government officer. |</p>
+<p>| Permission | The authority to perform a business action within a defined scope. Permission depends on role, context, ownership, delegation, and policy. |</p>
+<p>| Student | A learner with active or historical academic affiliation. A student can also be a researcher, founder, community member, intern, or project owner. |</p>
+<p>| Alumni | A former student who retains a lifelong portfolio and may later become mentor, founder, recruiter, investor, researcher, or ecosystem contributor. |</p>
+<p>| Faculty | Academic staff responsible for teaching, supervision, research, assessment, mentoring, governance, or innovation support. |</p>
+<p>| Researcher | A person conducting systematic inquiry. A researcher may be student, faculty, industry expert, independent scholar, or institutional researcher. |</p>
+<p>| University | A higher education institution recognized as an academic authority that may govern colleges, departments, programs, research centers, and innovation policies. |</p>
+<p>| College | An academic institution affiliated with or constituent of a university that operates programs and manages students locally. |</p>
+<p>| Department | An academic unit responsible for a subject area, faculty group, academic program, research direction, and project supervision. |</p>
+<p>| Program | A structured academic offering such as engineering, management, science, agriculture, medicine, design, or social science program. |</p>
+<p>| Course | A formal learning unit. Course completion may support but does not automatically prove practical competency. |</p>
+<p>| Learning Track | A career or capability-aligned pathway such as AI Engineer, Backend Engineer, Product Manager, Researcher, Cybersecurity Analyst, or Founder. |</p>
+<p>| Roadmap | A sequence of skills, milestones, projects, assessments, and evidence expectations aligned to a learning or career goal. |</p>
+<p>| Skill | A specific demonstrable capability such as programming, data analysis, research writing, product discovery, sales, grant writing, or public speaking. |</p>
+<p>| Competency | A broader capability combining knowledge, skill, judgment, application, and context-sensitive performance. |</p>
+<p>| Skill Evidence | Proof that a skill has been demonstrated, such as project review, internship feedback, code contribution, publication, assessment, certificate, or mentor validation. |</p>
+<p>| Skill Badge | A recognized marker issued only after sufficient evidence validates a skill or competency. |</p>
+<p>| Portfolio | A lifelong, evidence-backed innovation and talent profile. It is not just a resume; it contains verified learning, projects, research, startup participation, mentorship, employment, achievements, and impact. |</p>
+<p>| Project | A structured work artifact created to solve a problem, demonstrate learning, conduct research, build a prototype, contribute to open source, satisfy academic requirements, or create commercial/social value. |</p>
+<p>| Final-Year Project | A required academic project near graduation that may become portfolio evidence, research continuation, open-source work, innovation candidate, incubation candidate, or startup foundation. |</p>
+<p>| Problem Statement | A clear definition of the problem, affected users, pain points, context, evidence, and desired improvement. |</p>
+<p>| Prototype | A testable representation of a solution. It may be technical, physical, scientific, service-based, policy-based, or design-based. |</p>
+<p>| MVP | A minimum viable product or pilot used to test real demand, usage, feasibility, or adoption. |</p>
+<p>| Innovation | A validated project, research output, process, product, service, model, or prototype with novelty, usefulness, feasibility, and potential impact. |</p>
+<p>| Innovation Candidate | An idea, project, research output, prototype, startup, or challenge submission submitted for innovation evaluation. |</p>
+<p>| Validation | Evidence-based confirmation that a problem, skill, solution, market, research claim, impact claim, or venture assumption is credible. |</p>
+<p>| Research | Systematic inquiry intended to generate knowledge, methods, evidence, datasets, publications, inventions, prototypes, policy insight, or applied solutions. |</p>
+<p>| Publication | A research output made available through journal, conference, repository, thesis, report, technical note, or recognized publication channel. |</p>
+<p>| Patent | A legal intellectual property claim for an invention. Patent lifecycle is separate from publication and project lifecycle. |</p>
+<p>| Grant | Non-dilutive funding awarded for research, innovation, public interest, development, institutional support, or social impact. |</p>
+<p>| Intellectual Property | Rights related to inventions, creative works, software, datasets, designs, methods, research outputs, or knowledge assets. |</p>
+<p>| Startup | A new venture formed to build a scalable solution under uncertainty. Not every small business is a startup. |</p>
+<p>| Founder | A person with explicit ownership, accountability, and leadership responsibility in a startup. |</p>
+<p>| Incubation | Structured support that helps projects, innovations, or startups move toward validation, venture formation, funding readiness, and impact. |</p>
+<p>| Cohort | A group of selected teams, startups, students, researchers, or innovators participating in the same program cycle. |</p>
+<p>| Mentor | An experienced advisor who supports students, projects, researchers, founders, or startups without automatically holding approval authority. |</p>
+<p>| Investor | An actor that evaluates and may provide capital. Includes angel investors, venture capital funds, corporate investors, diaspora investors, public funds, and impact investors. |</p>
+<p>| Funding Round | A structured fundraising process such as pre-seed, seed, bridge, or growth round. |</p>
+<p>| Due Diligence | Structured evidence review before funding, investment, grant approval, partnership, acquisition, or high-trust decision. |</p>
+<p>| Company | An organization seeking talent, innovation, research collaboration, pilots, services, products, or investment opportunities. |</p>
+<p>| Recruiter | A person or organization that sources and evaluates candidates for internships, jobs, fellowships, or contract roles. |</p>
+<p>| Opportunity | Any opening for job, internship, challenge, grant, mentorship, partnership, research collaboration, incubation, or investment. |</p>
+<p>| Challenge | A structured problem-solving opportunity with sponsor, eligibility, rules, deadline, evaluation criteria, and outcomes. |</p>
+<p>| Hackathon | A time-bound event where participants build or propose solutions. In this ecosystem it should feed projects, portfolios, and incubation pathways. |</p>
+<p>| Community | A group of practice around topic, region, institution, sector, technology, mission, alumni identity, founder stage, or social cause. |</p>
+<p>| Innovation Marketplace | A structured discovery space for projects, research, startups, talent, mentors, challenges, funding, partnerships, and services. |</p>
+<p>| Ranking | Contextual ordered recognition based on validated evidence and transparent criteria. |</p>
+<p>| Innovation Score | Composite evaluation of innovation quality, novelty, feasibility, validation, collaboration, impact, and readiness. |</p>
+<p>| Impact Score | Assessment of measurable economic, social, environmental, educational, institutional, or community impact. |</p>
+<p>| Reputation | Trust accumulated through verified contribution, mentorship, delivery, ethical behavior, and ecosystem participation. |</p>
+<p>| Evidence | Any artifact or confirmation supporting a business claim. Evidence is the currency of trust in the ecosystem. |</p>
+<p>| Conflict of Interest | A situation where an actor has personal, financial, institutional, relational, or competitive interest that may bias a decision. |</p>
+<h1 id="2-core-supporting-and-generic-domains">2. Core, Supporting, and Generic Domains</h1>
+<p>DDD separates domains by strategic importance. Core domains create the unique value of the platform. Supporting domains enable the core. Generic domains are necessary but not strategically unique.</p>
+<h2 id="21-core-domains">2.1 Core Domains</h2>
+<table>
+<thead>
+<tr>
+<th>Core Domain</th>
+<th>Why It Is Core</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| Innovation Lifecycle | Tracks the movement from idea to project, research, prototype, validated innovation, incubation, startup, funding, deployment, and impact. This is the central domain because it solves the dead-project problem. |</p>
+<p>| Talent and Portfolio | Makes human capability visible through evidence instead of grades or generic resumes. It preserves lifelong continuity across student, alumni, employee, founder, researcher, mentor, and investor identities. |</p>
+<p>| Incubation and Venture Formation | Transforms validated innovation into structured ventures through mentorship, customer discovery, legal readiness, milestones, funding readiness, and growth support. |</p>
+<p>| Ecosystem Coordination | Connects universities, companies, investors, government, mentors, communities, and development partners through challenges, partnerships, opportunity flows, and governance. |</p>
+<h2 id="22-supporting-domains">2.2 Supporting Domains</h2>
+<table>
+<thead>
+<tr>
+<th>Supporting Domain</th>
+<th>Role in the Ecosystem</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| Learning Alignment | Maps goals, skills, roadmaps, evidence, assessments, and career readiness. |</p>
+<p>| Research Commercialization | Connects research outputs, publications, patents, grants, labs, and applied pathways. |</p>
+<p>| Mentorship | Manages mentor capability, matching, engagement, feedback, conflict disclosure, and contribution recognition. |</p>
+<p>| Funding Pipeline | Manages grants, investment requests, investor interest, due diligence, decisions, commitments, disbursement, and post-funding reporting. |</p>
+<p>| Recruitment and Opportunity | Connects verified portfolios with internships, jobs, fellowships, freelance work, and employer feedback. |</p>
+<p>| Events and Challenges | Creates structured entry points for problem solving, competitions, hackathons, demo days, and workshops. |</p>
+<p>| Communities | Supports peer learning, open source, alumni networks, founder circles, regional innovation groups, and professional communities. |</p>
+<p>| Ranking and Recognition | Rewards verified contribution, collaboration, impact, consistency, mentorship, research, startup progress, and institutional performance. |</p>
+<p>| Government Monitoring | Provides aggregate national insight into innovation, employment, research, startups, funding, regional development, and policy outcomes. |</p>
+<p>| Institutional Governance | Manages university, department, college, incubator, research center, and partner authority. |</p>
+<h2 id="23-generic-domains">2.3 Generic Domains</h2>
+<table>
+<thead>
+<tr>
+<th>Generic Domain</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| Identity and Access | Basic identity, affiliation, role, delegation, and permission support. |</p>
+<p>| Notification | Status updates, reminders, alerts, deadline messages, and workflow notices. |</p>
+<p>| Communication | Announcements, discussions, messaging, and coordination support. |</p>
+<p>| Document Handling | Forms, evidence files, letters, reports, proposals, pitch decks, certificates, and agreements. |</p>
+<p>| Administration | Platform configuration, moderation support, operational settings, and support workflows. |</p>
+<p>| Audit Logging | Traceability of important actions and decisions. |</p>
+<p>| Basic Search | General discovery of people, projects, institutions, startups, opportunities, and documents. |</p>
+<h1 id="3-bounded-contexts">3. Bounded Contexts</h1>
+<p>A bounded context defines where a model is internally consistent. The same word may exist in multiple contexts with different meaning. For example, evaluation in Learning means competency assessment, while evaluation in Funding means due diligence or investment review.</p>
+<div class="highlight"><pre><span></span><code>National Innovation Ecosystem
+├── Identity and Access
+├── Institution
+├── Learning and Competency
+├── Portfolio
+├── Project
+├── Research
+├── Innovation
+├── Incubation
+├── Startup and Venture
+├── Funding and Investment
+├── Mentorship
+├── Recruitment and Opportunity
+├── Events and Challenges
+├── Community
+├── Marketplace and Partnership
+├── Ranking and Recognition
+├── Government and Policy
+├── Analytics and Impact
+└── Administration and Compliance
+</code></pre></div>
+<h2 id="31-identity-and-access-context">3.1 Identity and Access Context</h2>
+<p><strong>Purpose:</strong> Defines actors, affiliations, roles, delegation, eligibility, and authority. It does not decide innovation, learning, funding, or recruitment outcomes.</p>
+<p><strong>Owned Concepts:</strong> User, Actor, Affiliation, Role Assignment, Permission Scope, Delegation, Verification Status.</p>
+<p><strong>Boundary Rule:</strong> This context should own its language and decisions. Other contexts may consume its published events or evidence, but they should not silently redefine its core concepts.</p>
+<p><strong>Typical Interactions:</strong> It publishes domain events, consumes validated identity and institutional references, and participates in cross-domain workflows where its decisions are needed.</p>
+<h2 id="32-institution-context">3.2 Institution Context</h2>
+<p><strong>Purpose:</strong> Represents universities, colleges, departments, programs, research centers, incubators, companies, government offices, and partner organizations.</p>
+<p><strong>Owned Concepts:</strong> University, College, Department, Program, Research Center, Incubation Center, Company, Government Unit.</p>
+<p><strong>Boundary Rule:</strong> This context should own its language and decisions. Other contexts may consume its published events or evidence, but they should not silently redefine its core concepts.</p>
+<p><strong>Typical Interactions:</strong> It publishes domain events, consumes validated identity and institutional references, and participates in cross-domain workflows where its decisions are needed.</p>
+<h2 id="33-learning-and-competency-context">3.3 Learning and Competency Context</h2>
+<p><strong>Purpose:</strong> Defines career goals, learning tracks, skills, competencies, assessments, badges, gap analysis, and evidence of capability.</p>
+<p><strong>Owned Concepts:</strong> Learning Track, Skill, Competency, Assessment, Skill Evidence, Skill Badge, Career Goal.</p>
+<p><strong>Boundary Rule:</strong> This context should own its language and decisions. Other contexts may consume its published events or evidence, but they should not silently redefine its core concepts.</p>
+<p><strong>Typical Interactions:</strong> It publishes domain events, consumes validated identity and institutional references, and participates in cross-domain workflows where its decisions are needed.</p>
+<h2 id="34-portfolio-context">3.4 Portfolio Context</h2>
+<p><strong>Purpose:</strong> Aggregates verified evidence into a lifelong talent and innovation profile. It references source evidence but does not independently create it.</p>
+<p><strong>Owned Concepts:</strong> Portfolio, Portfolio Item, Achievement, Recommendation, Endorsement, Readiness Profile, Visibility Rule.</p>
+<p><strong>Boundary Rule:</strong> This context should own its language and decisions. Other contexts may consume its published events or evidence, but they should not silently redefine its core concepts.</p>
+<p><strong>Typical Interactions:</strong> It publishes domain events, consumes validated identity and institutional references, and participates in cross-domain workflows where its decisions are needed.</p>
+<h2 id="35-project-context">3.5 Project Context</h2>
+<p><strong>Purpose:</strong> Represents academic, personal, industry, research, open-source, social, and startup-oriented projects.</p>
+<p><strong>Owned Concepts:</strong> Project, Project Team, Milestone, Submission, Evidence, Review, Ownership Statement.</p>
+<p><strong>Boundary Rule:</strong> This context should own its language and decisions. Other contexts may consume its published events or evidence, but they should not silently redefine its core concepts.</p>
+<p><strong>Typical Interactions:</strong> It publishes domain events, consumes validated identity and institutional references, and participates in cross-domain workflows where its decisions are needed.</p>
+<h2 id="36-research-context">3.6 Research Context</h2>
+<p><strong>Purpose:</strong> Represents research proposals, outputs, publications, patents, research grants, ethics, research teams, and commercialization potential.</p>
+<p><strong>Owned Concepts:</strong> Research Work, Publication, Patent Case, Grant Link, Ethics Clearance, Commercialization Assessment.</p>
+<p><strong>Boundary Rule:</strong> This context should own its language and decisions. Other contexts may consume its published events or evidence, but they should not silently redefine its core concepts.</p>
+<p><strong>Typical Interactions:</strong> It publishes domain events, consumes validated identity and institutional references, and participates in cross-domain workflows where its decisions are needed.</p>
+<h2 id="37-innovation-context">3.7 Innovation Context</h2>
+<p><strong>Purpose:</strong> Evaluates ideas, projects, research outputs, prototypes, and startups as innovation candidates.</p>
+<p><strong>Owned Concepts:</strong> Innovation Candidate, Innovation Claim, Validation Evidence, Evaluation Panel, Readiness Assessment.</p>
+<p><strong>Boundary Rule:</strong> This context should own its language and decisions. Other contexts may consume its published events or evidence, but they should not silently redefine its core concepts.</p>
+<p><strong>Typical Interactions:</strong> It publishes domain events, consumes validated identity and institutional references, and participates in cross-domain workflows where its decisions are needed.</p>
+<h2 id="38-incubation-context">3.8 Incubation Context</h2>
+<p><strong>Purpose:</strong> Runs structured incubation programs, applications, cohorts, milestones, mentorship, progress review, and graduation decisions.</p>
+<p><strong>Owned Concepts:</strong> Incubation Program, Cohort, Incubation Application, Milestone, Resource Package, Graduation Decision.</p>
+<p><strong>Boundary Rule:</strong> This context should own its language and decisions. Other contexts may consume its published events or evidence, but they should not silently redefine its core concepts.</p>
+<p><strong>Typical Interactions:</strong> It publishes domain events, consumes validated identity and institutional references, and participates in cross-domain workflows where its decisions are needed.</p>
+<h2 id="39-startup-and-venture-context">3.9 Startup and Venture Context</h2>
+<p><strong>Purpose:</strong> Represents startups, founders, founder roles, venture stage, traction, pilots, business model, and startup lifecycle.</p>
+<p><strong>Owned Concepts:</strong> Startup, Founder Team, Founder Role, Venture Profile, Traction Record, Pilot Record.</p>
+<p><strong>Boundary Rule:</strong> This context should own its language and decisions. Other contexts may consume its published events or evidence, but they should not silently redefine its core concepts.</p>
+<p><strong>Typical Interactions:</strong> It publishes domain events, consumes validated identity and institutional references, and participates in cross-domain workflows where its decisions are needed.</p>
+<h2 id="310-funding-and-investment-context">3.10 Funding and Investment Context</h2>
+<p><strong>Purpose:</strong> Manages grant requests, investment requests, investor interest, due diligence, funding decisions, commitments, and reporting.</p>
+<p><strong>Owned Concepts:</strong> Funding Request, Grant Application, Investor Interest, Due Diligence Case, Investment Round, Funding Outcome.</p>
+<p><strong>Boundary Rule:</strong> This context should own its language and decisions. Other contexts may consume its published events or evidence, but they should not silently redefine its core concepts.</p>
+<p><strong>Typical Interactions:</strong> It publishes domain events, consumes validated identity and institutional references, and participates in cross-domain workflows where its decisions are needed.</p>
+<h2 id="311-mentorship-context">3.11 Mentorship Context</h2>
+<p><strong>Purpose:</strong> Manages mentor profiles, expertise, matching, engagements, sessions, feedback, and conflict declarations.</p>
+<p><strong>Owned Concepts:</strong> Mentor Profile, Mentorship Request, Mentorship Engagement, Session, Feedback, Conflict Declaration.</p>
+<p><strong>Boundary Rule:</strong> This context should own its language and decisions. Other contexts may consume its published events or evidence, but they should not silently redefine its core concepts.</p>
+<p><strong>Typical Interactions:</strong> It publishes domain events, consumes validated identity and institutional references, and participates in cross-domain workflows where its decisions are needed.</p>
+<h2 id="312-recruitment-and-opportunity-context">3.12 Recruitment and Opportunity Context</h2>
+<p><strong>Purpose:</strong> Connects verified portfolios with jobs, internships, fellowships, and employer opportunities.</p>
+<p><strong>Owned Concepts:</strong> Opportunity, Application, Candidate Shortlist, Recruiter Evaluation, Offer, Placement Outcome.</p>
+<p><strong>Boundary Rule:</strong> This context should own its language and decisions. Other contexts may consume its published events or evidence, but they should not silently redefine its core concepts.</p>
+<p><strong>Typical Interactions:</strong> It publishes domain events, consumes validated identity and institutional references, and participates in cross-domain workflows where its decisions are needed.</p>
+<h2 id="313-events-and-challenges-context">3.13 Events and Challenges Context</h2>
+<p><strong>Purpose:</strong> Manages hackathons, competitions, seminars, bootcamps, demo days, registrations, submissions, judging, and awards.</p>
+<p><strong>Owned Concepts:</strong> Event, Challenge, Registration, Submission, Judging Panel, Award.</p>
+<p><strong>Boundary Rule:</strong> This context should own its language and decisions. Other contexts may consume its published events or evidence, but they should not silently redefine its core concepts.</p>
+<p><strong>Typical Interactions:</strong> It publishes domain events, consumes validated identity and institutional references, and participates in cross-domain workflows where its decisions are needed.</p>
+<h2 id="314-community-context">3.14 Community Context</h2>
+<p><strong>Purpose:</strong> Represents communities of practice, alumni groups, founder circles, open-source groups, regional communities, and topic networks.</p>
+<p><strong>Owned Concepts:</strong> Community, Membership, Moderator, Topic, Contribution, Community Event.</p>
+<p><strong>Boundary Rule:</strong> This context should own its language and decisions. Other contexts may consume its published events or evidence, but they should not silently redefine its core concepts.</p>
+<p><strong>Typical Interactions:</strong> It publishes domain events, consumes validated identity and institutional references, and participates in cross-domain workflows where its decisions are needed.</p>
+<h2 id="315-marketplace-and-partnership-context">3.15 Marketplace and Partnership Context</h2>
+<p><strong>Purpose:</strong> Coordinates discovery and exchange of opportunities, challenges, startups, mentors, services, partnerships, pilots, and sponsorships.</p>
+<p><strong>Owned Concepts:</strong> Marketplace Listing, Partnership Request, Collaboration Proposal, Sponsorship Offer, Collaboration Agreement.</p>
+<p><strong>Boundary Rule:</strong> This context should own its language and decisions. Other contexts may consume its published events or evidence, but they should not silently redefine its core concepts.</p>
+<p><strong>Typical Interactions:</strong> It publishes domain events, consumes validated identity and institutional references, and participates in cross-domain workflows where its decisions are needed.</p>
+<h2 id="316-ranking-and-recognition-context">3.16 Ranking and Recognition Context</h2>
+<p><strong>Purpose:</strong> Consumes validated evidence and produces contextual rankings, scores, badges, recognitions, appeals, and audit trails.</p>
+<p><strong>Owned Concepts:</strong> Ranking Cycle, Ranking Category, Score Component, Result Entry, Appeal, Recognition Badge.</p>
+<p><strong>Boundary Rule:</strong> This context should own its language and decisions. Other contexts may consume its published events or evidence, but they should not silently redefine its core concepts.</p>
+<p><strong>Typical Interactions:</strong> It publishes domain events, consumes validated identity and institutional references, and participates in cross-domain workflows where its decisions are needed.</p>
+<h2 id="317-government-and-policy-context">3.17 Government and Policy Context</h2>
+<p><strong>Purpose:</strong> Represents government programs, policy rules, public grants, municipal initiatives, compliance reporting, and national indicators.</p>
+<p><strong>Owned Concepts:</strong> Government Program, Policy Requirement, Public Grant, Municipality Initiative, Compliance Report.</p>
+<p><strong>Boundary Rule:</strong> This context should own its language and decisions. Other contexts may consume its published events or evidence, but they should not silently redefine its core concepts.</p>
+<p><strong>Typical Interactions:</strong> It publishes domain events, consumes validated identity and institutional references, and participates in cross-domain workflows where its decisions are needed.</p>
+<h2 id="318-analytics-and-impact-context">3.18 Analytics and Impact Context</h2>
+<p><strong>Purpose:</strong> Measures ecosystem indicators, outcomes, skill gaps, innovation pipeline, regional performance, startup progress, and national impact.</p>
+<p><strong>Owned Concepts:</strong> Metric, Indicator, Impact Report, Cohort Analysis, Benchmark, Trend Insight.</p>
+<p><strong>Boundary Rule:</strong> This context should own its language and decisions. Other contexts may consume its published events or evidence, but they should not silently redefine its core concepts.</p>
+<p><strong>Typical Interactions:</strong> It publishes domain events, consumes validated identity and institutional references, and participates in cross-domain workflows where its decisions are needed.</p>
+<h2 id="319-administration-and-compliance-context">3.19 Administration and Compliance Context</h2>
+<p><strong>Purpose:</strong> Handles moderation, policy violations, disputes, appeals, audit records, misuse, fraud review, and data ownership claims.</p>
+<p><strong>Owned Concepts:</strong> Compliance Case, Dispute, Appeal, Policy Violation, Moderation Decision, Audit Record.</p>
+<p><strong>Boundary Rule:</strong> This context should own its language and decisions. Other contexts may consume its published events or evidence, but they should not silently redefine its core concepts.</p>
+<p><strong>Typical Interactions:</strong> It publishes domain events, consumes validated identity and institutional references, and participates in cross-domain workflows where its decisions are needed.</p>
+<h1 id="4-domain-relationships-and-context-maps">4. Domain Relationships and Context Maps</h1>
+<p>Context mapping explains how bounded contexts interact. This platform should avoid one giant model because that would hide conflict between academic, innovation, funding, recruitment, and government language.</p>
+<h2 id="41-high-level-context-map">4.1 High-Level Context Map</h2>
+<div class="highlight"><pre><span></span><code>                    Government and Policy
+                            │
+                            ▼
+Institution ──▶ Learning ──▶ Portfolio ◀── Recruitment
+    │             │             ▲              ▲
+    ▼             ▼             │              │
+Research ───▶ Project ───▶ Innovation ───▶ Incubation
+    │             │             │              │
+    └────────────▶ Startup and Venture ◀──────┘
+                       ▲        ▲
+                       │        │
+                  Mentorship   Funding and Investment
+                       ▲        ▲
+                       │        │
+Events and Challenges ─┴──▶ Marketplace and Partnership
+                       │
+                       ▼
+                   Community
+</code></pre></div>
+<h2 id="42-relationship-types">4.2 Relationship Types</h2>
+<table>
+<thead>
+<tr>
+<th>Relationship Type</th>
+<th>Where Used</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Shared Kernel</td>
+<td>Identity, Evidence, Opportunity, Evaluation</td>
+<td>A small shared language is used because inconsistency would be dangerous. Shared kernels must remain small.</td>
+</tr>
+<tr>
+<td>Customer-Supplier</td>
+<td>Institution to Learning, Project to Innovation, Innovation to Incubation, Startup to Funding</td>
+<td>One context depends on another for validated upstream facts.</td>
+</tr>
+<tr>
+<td>Conformist</td>
+<td>Government grant rules, university program structures, identity references</td>
+<td>A downstream context must conform to an authoritative upstream model.</td>
+</tr>
+<tr>
+<td>Open Host Service</td>
+<td>Portfolio summaries, innovation status, startup readiness, government indicators</td>
+<td>A context publishes a stable business-facing model for others.</td>
+</tr>
+<tr>
+<td>Anti-Corruption Layer</td>
+<td>Existing grading systems, HR tools, investor spreadsheets, social media metrics</td>
+<td>A context protects its model from external language that would distort meaning.</td>
+</tr>
+<tr>
+<td>Published Language</td>
+<td>Domain events and evidence vocabulary</td>
+<td>Contexts communicate using agreed business messages.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="43-relationship-matrix">4.3 Relationship Matrix</h2>
+<table>
+<thead>
+<tr>
+<th>Upstream Context</th>
+<th>Downstream Context</th>
+<th>Relationship</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Identity and Access</td>
+<td>All Contexts</td>
+<td>Shared Kernel / Conformist</td>
+<td>All business actions need actor, role, and authority references.</td>
+</tr>
+<tr>
+<td>Institution</td>
+<td>Learning</td>
+<td>Customer-Supplier</td>
+<td>Learning tracks may depend on university programs and departments.</td>
+</tr>
+<tr>
+<td>Learning</td>
+<td>Portfolio</td>
+<td>Customer-Supplier</td>
+<td>Portfolio displays verified competencies and badges.</td>
+</tr>
+<tr>
+<td>Project</td>
+<td>Portfolio</td>
+<td>Customer-Supplier</td>
+<td>Portfolio consumes completed project evidence.</td>
+</tr>
+<tr>
+<td>Project</td>
+<td>Innovation</td>
+<td>Customer-Supplier</td>
+<td>Innovation evaluates project artifacts and evidence.</td>
+</tr>
+<tr>
+<td>Research</td>
+<td>Innovation</td>
+<td>Customer-Supplier</td>
+<td>Research outputs may become innovation candidates.</td>
+</tr>
+<tr>
+<td>Innovation</td>
+<td>Incubation</td>
+<td>Customer-Supplier</td>
+<td>Incubation receives validated candidates.</td>
+</tr>
+<tr>
+<td>Incubation</td>
+<td>Startup</td>
+<td>Customer-Supplier</td>
+<td>Startup readiness is enriched by incubation progress.</td>
+</tr>
+<tr>
+<td>Startup</td>
+<td>Funding and Investment</td>
+<td>Customer-Supplier</td>
+<td>Funding consumes startup stage, traction, founders, and evidence.</td>
+</tr>
+<tr>
+<td>Portfolio</td>
+<td>Recruitment</td>
+<td>Open Host Service</td>
+<td>Recruiters consume verified portfolio views.</td>
+</tr>
+<tr>
+<td>Government and Policy</td>
+<td>Funding</td>
+<td>Conformist</td>
+<td>Public grant processes must follow policy eligibility.</td>
+</tr>
+<tr>
+<td>Ranking and Recognition</td>
+<td>All Evidence Producers</td>
+<td>Published Language</td>
+<td>Ranking consumes validated evidence and events.</td>
+</tr>
+<tr>
+<td>Administration and Compliance</td>
+<td>All Contexts</td>
+<td>Control Partnership</td>
+<td>Compliance cases may affect visibility, validity, and permissions.</td>
+</tr>
+</tbody>
+</table>
+<h1 id="5-aggregates">5. Aggregates</h1>
+<p>Aggregates are consistency boundaries. They protect business invariants and define where lifecycle decisions must be controlled. They are not database tables.</p>
+<table>
+<thead>
+<tr>
+<th>Aggregate</th>
+<th>Root</th>
+<th>Entities</th>
+<th>Value Objects</th>
+<th>Key Invariants</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| Student | Student | StudentAffiliation, EnrollmentRecord, AcademicStanding, CareerGoal, ConsentPreference | StudentStatus, AcademicTerm, ProgramReference, InstitutionReference, ConsentScope | A student must have identity; verified affiliation requires institutional confirmation; graduation changes status but does not delete portfolio continuity. |</p>
+<p>| Portfolio | Portfolio | PortfolioItem, Achievement, Recommendation, Endorsement, ReadinessProfile, VisibilityRule | EvidenceReference, VisibilityLevel, PortfolioItemType, ReadinessScore | Verified items cannot be altered directly by the owner; private items need consent before external sharing; readiness score must be explainable. |</p>
+<p>| University | University | CollegeAffiliation, Department, Program, ResearchCenter, InnovationPolicy, ApprovalAuthority | UniversityType, AccreditationStatus, InstitutionAddress, AcademicCalendar | A university must be verified before granting official authority; colleges cannot claim affiliation without approval; delegation must be scoped. |</p>
+<p>| Project | Project | ProjectTeam, ProjectMember, Milestone, Submission, Evidence, Review, OwnershipStatement | ProjectStatus, ProjectCategory, ProblemStatement, ContributionShare, ConfidentialityLevel | A formal project requires owner, category, problem statement, evidence, and contribution rules; innovation transition requires ownership clarity. |</p>
+<p>| Research | ResearchWork | ResearchProposal, ResearchTeam, ResearchOutput, ReviewRecord, EthicsClearance, CommercializationAssessment | ResearchStatus, ResearchType, PublicationStatus, EthicsStatus, CitationReference | Research involving sensitive areas needs ethics clearance; publication claims need evidence; commercialization must respect IP and confidentiality. |</p>
+<p>| Publication | Publication | AuthorContribution, PublicationEvidence, VerificationRecord, CorrectionRecord | PublicationStatus, CitationReference, PeerReviewStatus | Published status requires evidence; corrections and retractions must affect portfolio and ranking evidence. |</p>
+<p>| Patent | PatentCase | InventorRecord, DisclosureRecord, FilingRecord, OwnershipClaim, LicenseRecord | IPStatus, PatentStage, ConfidentialityLevel | Inventors and authors are distinct; patent-sensitive material may require restricted visibility. |</p>
+<p>| Innovation | InnovationCandidate | InnovationClaim, SourceReference, ValidationEvidence, EvaluationPanel, ImpactPathway, Recommendation | InnovationStatus, NoveltyLevel, FeasibilityLevel, ImpactCategory, ReadinessLevel | Innovation cannot be validated without evidence and evaluator rationale; rejected candidates may resubmit with new evidence. |</p>
+<p>| Incubation Program | IncubationProgram | ProgramCycle, EligibilityCriteria, SelectionCriteria, MentorPool, ResourcePackage, GraduationCriteria | ProgramStatus, ProgramDuration, CohortSize, EligibilityRule | Eligibility and selection criteria must be published before applications; graduation requires milestone review. |</p>
+<p>| Cohort | Cohort | CohortMember, AssignedMentor, ProgramMilestone, ProgressReview, GraduationDecision | CohortStatus, MilestoneStatus, ReviewDecision | A cohort needs selected members, program authority, milestones, and review cadence. |</p>
+<p>| Startup | Startup | FounderTeam, FounderRole, VentureProfile, BusinessModel, TractionRecord, PilotRecord, LegalFormationStatus | StartupStage, FundingStage, FounderCommitmentLevel, BusinessModelType | A startup needs at least one accountable founder; stage claims require evidence; startup from project/research must record IP assumptions. |</p>
+<p>| Funding Request | FundingRequest | Applicant, FundingNeed, UseOfFunds, EvidencePackage, DueDiligenceRecord, FundingOutcome | FundingType, Money, DecisionStatus, RiskRating | Funding request must state type, amount, purpose, applicant, and evidence; approval may be conditional. |</p>
+<p>| Mentor | MentorProfile | ExpertiseArea, AvailabilityRecord, VerificationRecord, ContributionRecord, ConflictDeclaration | MentorStatus, ExpertiseLevel, AvailabilityWindow | Official mentoring requires verified or accepted expertise; conflicts must be declared. |</p>
+<p>| Mentorship Engagement | MentorshipEngagement | MentorReference, MenteeReference, Session, ActionItem, Feedback, ClosureRecord | MentorshipStatus, SessionOutcome, ConfidentialityLevel | Engagement needs scope and goal; confidential notes stay within allowed visibility. |</p>
+<p>| Opportunity | Opportunity | EligibilityCriteria, Sponsor, ApplicationWindow, SelectionProcess, OutcomeRecord | OpportunityType, Deadline, VisibilityLevel, OpportunityStatus | Opportunities require owner, eligibility, timeline, and authenticity checks. |</p>
+<p>| Event | Event | Organizer, Registration, Session, ParticipantRecord, OutcomeRecord | EventStatus, EventType, AttendanceStatus | Participation evidence should be recorded only when attendance or contribution is confirmed. |</p>
+<p>| Challenge | Challenge | ProblemStatement, RuleSet, Submission, JudgingPanel, Award, ConversionRecord | ChallengeStatus, SubmissionStatus, AwardType | Challenges must define IP expectations, criteria, and conversion paths before submissions. |</p>
+<p>| Community | Community | Membership, Moderator, Topic, Contribution, CommunityEvent | CommunityStatus, MembershipRole, ContributionType | Communities should track contribution but not replace formal evaluation contexts. |</p>
+<p>| Ranking Cycle | RankingCycle | RankingCategory, EligibilityRule, ScoreComponent, EvidenceSnapshot, ResultEntry, Appeal | RankingPeriod, ScoreWeight, ScoreValue, AppealStatus | Criteria must be published before scoring; rankings use validated evidence and support appeals. |</p>
+<p>| Compliance Case | ComplianceCase | Complainant, Respondent, EvidenceRecord, ReviewAction, Decision, Appeal | CaseStatus, SeverityLevel, ResolutionType | High-impact disputes require due process, audit, and scoped action. |</p>
+<h2 id="51-representative-aggregate-diagrams">5.1 Representative Aggregate Diagrams</h2>
+<h3 id="student-aggregate">Student Aggregate</h3>
+<div class="highlight"><pre><span></span><code>Student (Root)
+├── StudentAffiliation
+├── EnrollmentRecord
+├── AcademicStanding
+├── CareerGoal
+├── ConsentPreference
+└── Value Objects: StudentStatus, AcademicTerm, ProgramReference, InstitutionReference, ConsentScope
+</code></pre></div>
+<p><strong>Lifecycle Protection:</strong> A student must have identity; verified affiliation requires institutional confirmation; graduation changes status but does not delete portfolio continuity.</p>
+<h3 id="portfolio-aggregate">Portfolio Aggregate</h3>
+<div class="highlight"><pre><span></span><code>Portfolio (Root)
+├── PortfolioItem
+├── Achievement
+├── Recommendation
+├── Endorsement
+├── ReadinessProfile
+└── Value Objects: EvidenceReference, VisibilityLevel, PortfolioItemType, ReadinessScore
+</code></pre></div>
+<p><strong>Lifecycle Protection:</strong> Verified items cannot be altered directly by the owner; private items need consent before external sharing; readiness score must be explainable.</p>
+<h3 id="university-aggregate">University Aggregate</h3>
+<div class="highlight"><pre><span></span><code>University (Root)
+├── CollegeAffiliation
+├── Department
+├── Program
+├── ResearchCenter
+├── InnovationPolicy
+└── Value Objects: UniversityType, AccreditationStatus, InstitutionAddress, AcademicCalendar
+</code></pre></div>
+<p><strong>Lifecycle Protection:</strong> A university must be verified before granting official authority; colleges cannot claim affiliation without approval; delegation must be scoped.</p>
+<h3 id="project-aggregate">Project Aggregate</h3>
+<div class="highlight"><pre><span></span><code>Project (Root)
+├── ProjectTeam
+├── ProjectMember
+├── Milestone
+├── Submission
+├── Evidence
+└── Value Objects: ProjectStatus, ProjectCategory, ProblemStatement, ContributionShare, ConfidentialityLevel
+</code></pre></div>
+<p><strong>Lifecycle Protection:</strong> A formal project requires owner, category, problem statement, evidence, and contribution rules; innovation transition requires ownership clarity.</p>
+<h3 id="research-aggregate">Research Aggregate</h3>
+<div class="highlight"><pre><span></span><code>ResearchWork (Root)
+├── ResearchProposal
+├── ResearchTeam
+├── ResearchOutput
+├── ReviewRecord
+├── EthicsClearance
+└── Value Objects: ResearchStatus, ResearchType, PublicationStatus, EthicsStatus, CitationReference
+</code></pre></div>
+<p><strong>Lifecycle Protection:</strong> Research involving sensitive areas needs ethics clearance; publication claims need evidence; commercialization must respect IP and confidentiality.</p>
+<h3 id="publication-aggregate">Publication Aggregate</h3>
+<div class="highlight"><pre><span></span><code>Publication (Root)
+├── AuthorContribution
+├── PublicationEvidence
+├── VerificationRecord
+├── CorrectionRecord
+└── Value Objects: PublicationStatus, CitationReference, PeerReviewStatus
+</code></pre></div>
+<p><strong>Lifecycle Protection:</strong> Published status requires evidence; corrections and retractions must affect portfolio and ranking evidence.</p>
+<h3 id="patent-aggregate">Patent Aggregate</h3>
+<div class="highlight"><pre><span></span><code>PatentCase (Root)
+├── InventorRecord
+├── DisclosureRecord
+├── FilingRecord
+├── OwnershipClaim
+├── LicenseRecord
+└── Value Objects: IPStatus, PatentStage, ConfidentialityLevel
+</code></pre></div>
+<p><strong>Lifecycle Protection:</strong> Inventors and authors are distinct; patent-sensitive material may require restricted visibility.</p>
+<h3 id="innovation-aggregate">Innovation Aggregate</h3>
+<div class="highlight"><pre><span></span><code>InnovationCandidate (Root)
+├── InnovationClaim
+├── SourceReference
+├── ValidationEvidence
+├── EvaluationPanel
+├── ImpactPathway
+└── Value Objects: InnovationStatus, NoveltyLevel, FeasibilityLevel, ImpactCategory, ReadinessLevel
+</code></pre></div>
+<p><strong>Lifecycle Protection:</strong> Innovation cannot be validated without evidence and evaluator rationale; rejected candidates may resubmit with new evidence.</p>
+<h3 id="incubation-program-aggregate">Incubation Program Aggregate</h3>
+<div class="highlight"><pre><span></span><code>IncubationProgram (Root)
+├── ProgramCycle
+├── EligibilityCriteria
+├── SelectionCriteria
+├── MentorPool
+├── ResourcePackage
+└── Value Objects: ProgramStatus, ProgramDuration, CohortSize, EligibilityRule
+</code></pre></div>
+<p><strong>Lifecycle Protection:</strong> Eligibility and selection criteria must be published before applications; graduation requires milestone review.</p>
+<h3 id="cohort-aggregate">Cohort Aggregate</h3>
+<div class="highlight"><pre><span></span><code>Cohort (Root)
+├── CohortMember
+├── AssignedMentor
+├── ProgramMilestone
+├── ProgressReview
+├── GraduationDecision
+└── Value Objects: CohortStatus, MilestoneStatus, ReviewDecision
+</code></pre></div>
+<p><strong>Lifecycle Protection:</strong> A cohort needs selected members, program authority, milestones, and review cadence.</p>
+<h3 id="startup-aggregate">Startup Aggregate</h3>
+<div class="highlight"><pre><span></span><code>Startup (Root)
+├── FounderTeam
+├── FounderRole
+├── VentureProfile
+├── BusinessModel
+├── TractionRecord
+└── Value Objects: StartupStage, FundingStage, FounderCommitmentLevel, BusinessModelType
+</code></pre></div>
+<p><strong>Lifecycle Protection:</strong> A startup needs at least one accountable founder; stage claims require evidence; startup from project/research must record IP assumptions.</p>
+<h3 id="funding-request-aggregate">Funding Request Aggregate</h3>
+<div class="highlight"><pre><span></span><code>FundingRequest (Root)
+├── Applicant
+├── FundingNeed
+├── UseOfFunds
+├── EvidencePackage
+├── DueDiligenceRecord
+└── Value Objects: FundingType, Money, DecisionStatus, RiskRating
+</code></pre></div>
+<p><strong>Lifecycle Protection:</strong> Funding request must state type, amount, purpose, applicant, and evidence; approval may be conditional.</p>
+<h1 id="6-entities">6. Entities</h1>
+<p>Entities have identity and lifecycle. The same entity can change over time while remaining the same business object.</p>
+<table>
+<thead>
+<tr>
+<th>Entity</th>
+<th>Context</th>
+<th>Purpose</th>
+<th>Relationships</th>
+<th>Lifecycle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| Student | Learning / Portfolio | Learner with academic affiliation and lifelong participation. | University, portfolio, projects, learning tracks, communities. | Registered, verified, active, graduated, alumni, inactive. |</p>
+<p>| Faculty | Institution / Research | Academic actor who may teach, supervise, research, mentor, evaluate, or govern. | Department, projects, research, students, incubation. | Active, delegated, retired, external, suspended. |</p>
+<p>| University | Institution | Academic authority and ecosystem participant. | Colleges, departments, programs, centers, students. | Registered, verified, active, suspended, merged, archived. |</p>
+<p>| Project | Project | Structured work artifact. | Team, evidence, reviews, portfolio, innovation. | Draft, proposed, approved, active, reviewed, completed, archived. |</p>
+<p>| ResearchWork | Research | Research initiative or output. | Researchers, publication, patent, grant, innovation. | Proposed, approved, active, submitted, published, commercialized. |</p>
+<p>| InnovationCandidate | Innovation | Artifact under innovation validation. | Source artifact, evaluators, incubation, funding. | Submitted, screening, evaluated, validated, rejected, recommended. |</p>
+<p>| Startup | Startup | Venture with founder accountability. | Founders, incubation, funding, recruitment, investors. | Concept, validation, prototype, MVP, pilot, revenue, growth, closed. |</p>
+<p>| FundingRequest | Funding | Request for grant, investment, sponsorship, or capital. | Startup, project, research, investor, government. | Draft, submitted, review, approved, rejected, committed, disbursed. |</p>
+<p>| Opportunity | Recruitment / Marketplace | Job, internship, grant, challenge, partnership, or program opening. | Sponsor, applicants, portfolio, event, funding. | Draft, published, active, closed, archived. |</p>
+<p>| MentorshipEngagement | Mentorship | Structured advisory relationship. | Mentor, mentee, project, startup, cohort. | Requested, matched, active, completed, closed. |</p>
+<p>| RankingCycle | Ranking | Scoring and recognition period. | Evidence snapshot, results, appeals. | Configured, open, calculated, published, appealed, locked. |</p>
+<p>| ComplianceCase | Compliance | Dispute, violation, misuse, fraud, or ownership case. | Actors, evidence, decisions, affected contexts. | Open, review, resolved, appealed, closed. |</p>
+<h1 id="7-value-objects">7. Value Objects</h1>
+<p>Value objects are immutable business concepts identified by their attributes rather than identity.</p>
+<h2 id="71-identity-and-institution-value-objects">7.1 Identity and Institution Value Objects</h2>
+<table>
+<thead>
+<tr>
+<th>Value Object</th>
+<th>Business Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| PersonName | Immutable personname used consistently inside its bounded context. |</p>
+<p>| ContactInformation | Immutable contactinformation used consistently inside its bounded context. |</p>
+<p>| Address | Immutable address used consistently inside its bounded context. |</p>
+<p>| InstitutionReference | Immutable institution reference used consistently inside its bounded context. |</p>
+<p>| ProgramReference | Immutable program reference used consistently inside its bounded context. |</p>
+<p>| AcademicTerm | Immutable academicterm used consistently inside its bounded context. |</p>
+<p>| AffiliationStatus | Immutable affiliation status used consistently inside its bounded context. |</p>
+<p>| RoleAssignment | Immutable roleassignment used consistently inside its bounded context. |</p>
+<p>| PermissionScope | Immutable permission scope used consistently inside its bounded context. |</p>
+<p>| ConsentScope | Immutable consent scope used consistently inside its bounded context. |</p>
+<p>| DelegationScope | Immutable delegation scope used consistently inside its bounded context. |</p>
+<h2 id="72-learning-and-competency-value-objects">7.2 Learning and Competency Value Objects</h2>
+<table>
+<thead>
+<tr>
+<th>Value Object</th>
+<th>Business Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| SkillLevel | Immutable skill level used consistently inside its bounded context. |</p>
+<p>| CompetencyLevel | Immutable competency level used consistently inside its bounded context. |</p>
+<p>| AssessmentScore | Immutable assessment score used consistently inside its bounded context. |</p>
+<p>| SkillEvidenceType | Immutable skillevidence type used consistently inside its bounded context. |</p>
+<p>| BadgeStatus | Immutable badge status used consistently inside its bounded context. |</p>
+<p>| RoadmapProgress | Immutable roadmapprogress used consistently inside its bounded context. |</p>
+<p>| CareerAlignmentScore | Immutable careeralignment score used consistently inside its bounded context. |</p>
+<p>| LearningGoal | Immutable learninggoal used consistently inside its bounded context. |</p>
+<p>| EvidenceStrength | Immutable evidencestrength used consistently inside its bounded context. |</p>
+<h2 id="73-project-and-research-value-objects">7.3 Project and Research Value Objects</h2>
+<table>
+<thead>
+<tr>
+<th>Value Object</th>
+<th>Business Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| ProjectStatus | Immutable project status used consistently inside its bounded context. |</p>
+<p>| ProjectCategory | Immutable projectcategory used consistently inside its bounded context. |</p>
+<p>| ProblemStatement | Immutable problemstatement used consistently inside its bounded context. |</p>
+<p>| ContributionShare | Immutable contributionshare used consistently inside its bounded context. |</p>
+<p>| ReviewDecision | Immutable reviewdecision used consistently inside its bounded context. |</p>
+<p>| ResearchStatus | Immutable research status used consistently inside its bounded context. |</p>
+<p>| EthicsStatus | Immutable ethics status used consistently inside its bounded context. |</p>
+<p>| PublicationStatus | Immutable publication status used consistently inside its bounded context. |</p>
+<p>| CitationReference | Immutable citation reference used consistently inside its bounded context. |</p>
+<p>| IPStatus | Immutable ip status used consistently inside its bounded context. |</p>
+<h2 id="74-innovation-and-startup-value-objects">7.4 Innovation and Startup Value Objects</h2>
+<table>
+<thead>
+<tr>
+<th>Value Object</th>
+<th>Business Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| InnovationStatus | Immutable innovation status used consistently inside its bounded context. |</p>
+<p>| NoveltyLevel | Immutable novelty level used consistently inside its bounded context. |</p>
+<p>| FeasibilityLevel | Immutable feasibility level used consistently inside its bounded context. |</p>
+<p>| ImpactCategory | Immutable impactcategory used consistently inside its bounded context. |</p>
+<p>| TechnologyReadinessLevel | Immutable technologyreadiness level used consistently inside its bounded context. |</p>
+<p>| MarketReadinessLevel | Immutable marketreadiness level used consistently inside its bounded context. |</p>
+<p>| StartupStage | Immutable startup stage used consistently inside its bounded context. |</p>
+<p>| FounderCommitmentLevel | Immutable foundercommitment level used consistently inside its bounded context. |</p>
+<p>| TractionMetric | Immutable tractionmetric used consistently inside its bounded context. |</p>
+<p>| BusinessModelType | Immutable businessmodel type used consistently inside its bounded context. |</p>
+<h2 id="75-funding-and-investment-value-objects">7.5 Funding and Investment Value Objects</h2>
+<table>
+<thead>
+<tr>
+<th>Value Object</th>
+<th>Business Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| Money | Immutable money used consistently inside its bounded context. |</p>
+<p>| FundingType | Immutable funding type used consistently inside its bounded context. |</p>
+<p>| FundingStage | Immutable funding stage used consistently inside its bounded context. |</p>
+<p>| UseOfFunds | Immutable useoffunds used consistently inside its bounded context. |</p>
+<p>| RiskRating | Immutable riskrating used consistently inside its bounded context. |</p>
+<p>| InvestorInterestLevel | Immutable investorinterest level used consistently inside its bounded context. |</p>
+<p>| DecisionStatus | Immutable decision status used consistently inside its bounded context. |</p>
+<p>| FundingCondition | Immutable funding condition used consistently inside its bounded context. |</p>
+<p>| CommitmentStatus | Immutable commitment status used consistently inside its bounded context. |</p>
+<h2 id="76-ranking-and-governance-value-objects">7.6 Ranking and Governance Value Objects</h2>
+<table>
+<thead>
+<tr>
+<th>Value Object</th>
+<th>Business Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| InnovationScore | Immutable innovation score used consistently inside its bounded context. |</p>
+<p>| PortfolioScore | Immutable portfolio score used consistently inside its bounded context. |</p>
+<p>| ImpactScore | Immutable impact score used consistently inside its bounded context. |</p>
+<p>| ScoreComponent | Immutable  scorecomponent used consistently inside its bounded context. |</p>
+<p>| ScoreWeight | Immutable  scoreweight used consistently inside its bounded context. |</p>
+<p>| RankingPeriod | Immutable rankingperiod used consistently inside its bounded context. |</p>
+<p>| RankPosition | Immutable rankposition used consistently inside its bounded context. |</p>
+<p>| AppealStatus | Immutable appeal status used consistently inside its bounded context. |</p>
+<p>| PolicyReference | Immutable policy reference used consistently inside its bounded context. |</p>
+<p>| ComplianceStatus | Immutable compliance status used consistently inside its bounded context. |</p>
+<p>| ConfidentialityLevel | Immutable confidentiality level used consistently inside its bounded context. |</p>
+<p>| DataOwnershipClaim | Immutable dataownershipclaim used consistently inside its bounded context. |</p>
+<p>| AuditEntry | Immutable auditentry used consistently inside its bounded context. |</p>
+<p>| ConflictStatus | Immutable conflict status used consistently inside its bounded context. |</p>
+<p>| DisputeStatus | Immutable dispute status used consistently inside its bounded context. |</p>
+<h1 id="8-business-rules">8. Business Rules</h1>
+<p>Business rules are the domain constraints that protect trust, fairness, quality, legal clarity, and institutional accountability. They should be validated in workshops before SRS finalization.</p>
+<h2 id="81-identity-and-eligibility-rules">8.1 Identity and Eligibility Rules</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Business Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| BR-IA-001 | Every business action must be attributable to a known actor. |</p>
+<p>| BR-IA-002 | A user may hold multiple roles, but every role must have a defined context and scope. |</p>
+<p>| BR-IA-003 | Institutional authority must be verified before official academic records can be approved. |</p>
+<p>| BR-IA-004 | Official student status requires institutional confirmation, not only self-registration. |</p>
+<p>| BR-IA-005 | Alumni status must be derived from verified academic history. |</p>
+<p>| BR-IA-006 | Mentor profiles may be created before verification, but official program assignment requires approval. |</p>
+<p>| BR-IA-007 | Investor status must be verified before confidential fundraising materials are visible. |</p>
+<p>| BR-IA-008 | Recruiter status must be tied to a verified company or authorized recruitment body. |</p>
+<p>| BR-IA-009 | Government dashboard access requires verified government role and scope. |</p>
+<p>| BR-IA-010 | Delegated authority must include delegator, delegatee, scope, duration, and revocation rules. |</p>
+<p>| BR-IA-011 | Expired or revoked roles cannot be used for approvals. |</p>
+<p>| BR-IA-012 | Suspended actors cannot perform privileged actions until reinstated. |</p>
+<p>| BR-IA-013 | Identity verification and business authority verification are separate. |</p>
+<p>| BR-IA-014 | Role conflicts must be declared in evaluation, funding, recruitment, ranking, and mentorship. |</p>
+<p>| BR-IA-015 | Users must control personal visibility except where limited institutional or legal reporting is required. |</p>
+<h2 id="82-ownership-and-intellectual-property-rules">8.2 Ownership and Intellectual Property Rules</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Business Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| BR-OA-001 | Every formal project must declare ownership expectations before final submission. |</p>
+<p>| BR-OA-002 | Project participation does not automatically grant startup founder status. |</p>
+<p>| BR-OA-003 | University ownership claims must follow published policy and applicable law. |</p>
+<p>| BR-OA-004 | Sponsor rights must be declared before sponsored project work begins. |</p>
+<p>| BR-OA-005 | Confidential project work cannot be made public without authorized consent. |</p>
+<p>| BR-OA-006 | Open-source release requires consent from rights holders. |</p>
+<p>| BR-OA-007 | Research linked to patent disclosure may require restricted visibility until filing decisions are made. |</p>
+<p>| BR-OA-008 | Faculty supervision does not automatically transfer ownership to faculty. |</p>
+<p>| BR-OA-009 | Team members must acknowledge contribution claims before startup, funding, or ranking use. |</p>
+<p>| BR-OA-010 | Startup creation from a student project must record founder consent, ownership status, and IP assumptions. |</p>
+<p>| BR-OA-011 | Marketplace listings must not expose proprietary information without permission. |</p>
+<p>| BR-OA-012 | Patent inventorship must be separated from authorship, supervision, and general contribution. |</p>
+<p>| BR-OA-013 | Research or sponsored data must have access and usage rules. |</p>
+<p>| BR-OA-014 | Ownership disputes should freeze high-stakes external sharing until resolved or clearly marked disputed. |</p>
+<p>| BR-OA-015 | Alumni retain personal portfolio history subject to confidentiality and policy. |</p>
+<h2 id="83-learning-and-competency-rules">8.3 Learning and Competency Rules</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Business Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| BR-LA-001 | A skill badge must be supported by evidence. |</p>
+<p>| BR-LA-002 | Course completion alone does not automatically prove practical competency. |</p>
+<p>| BR-LA-003 | Practical competency should require applied evidence. |</p>
+<p>| BR-LA-004 | A learning track must define target competencies and acceptable evidence types. |</p>
+<p>| BR-LA-005 | Gap analysis must compare evidence against declared goals, not against one universal ideal. |</p>
+<p>| BR-LA-006 | Students may pursue multiple learning tracks. |</p>
+<p>| BR-LA-007 | Skill level changes must be traceable to evidence or assessment. |</p>
+<p>| BR-LA-008 | External certificates may support evidence but should not automatically equal mastery. |</p>
+<p>| BR-LA-009 | Faculty and mentors may recommend learning actions but cannot alter skill scores without evidence. |</p>
+<p>| BR-LA-010 | Recommendations should consider career goal, evidence, available opportunities, and learner constraints. |</p>
+<p>| BR-LA-011 | Time-sensitive skills may expire or require renewal. |</p>
+<p>| BR-LA-012 | Soft skills require observable evidence such as teamwork feedback, leadership roles, or mentor observations. |</p>
+<p>| BR-LA-013 | Career readiness must not be calculated only from grades. |</p>
+<p>| BR-LA-014 | Students may challenge incorrect competency records. |</p>
+<p>| BR-LA-015 | Learning progress should feed portfolio at evidence checkpoints rather than every minor activity. |</p>
+<h2 id="84-project-rules">8.4 Project Rules</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Business Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| BR-P-001 | A project must have a problem statement before formal approval. |</p>
+<p>| BR-P-002 | A project must identify category: academic, personal, industry, research, open-source, social, or startup-oriented. |</p>
+<p>| BR-P-003 | Formal academic projects require a supervisor or authorized reviewer. |</p>
+<p>| BR-P-004 | A project team must define member roles. |</p>
+<p>| BR-P-005 | Contribution claims must be visible to team members before confirmation. |</p>
+<p>| BR-P-006 | A project cannot be marked completed without required evidence. |</p>
+<p>| BR-P-007 | A final-year project becomes an innovation candidate only after innovation eligibility checks. |</p>
+<p>| BR-P-008 | Projects with sensitive data must define confidentiality level. |</p>
+<p>| BR-P-009 | A project may have multiple outcomes: academic completion, portfolio evidence, research, incubation, open source, startup, or archive. |</p>
+<p>| BR-P-010 | Rejected proposals may be revised and resubmitted. |</p>
+<p>| BR-P-011 | Milestones must fit project type. |</p>
+<p>| BR-P-012 | Academic approval and innovation validation are separate decisions. |</p>
+<p>| BR-P-013 | Company-sponsored projects must identify sponsor expectations. |</p>
+<p>| BR-P-014 | Reviews should include rationale, not only scores. |</p>
+<p>| BR-P-015 | Project evidence may include prototype, code, design, dataset, demo, user research, pilot, report, or presentation. |</p>
+<p>| BR-P-016 | Deployment claims require evidence. |</p>
+<p>| BR-P-017 | Challenge-linked projects should preserve challenge context. |</p>
+<p>| BR-P-018 | Abandoned projects should be archived unless policy permits deletion. |</p>
+<p>| BR-P-019 | Projects should support continuation after graduation when ownership allows. |</p>
+<p>| BR-P-020 | Plagiarism or fraudulent evidence triggers compliance review. |</p>
+<h2 id="85-research-rules">8.5 Research Rules</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Business Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| BR-R-001 | Research proposals must define objective, method, expected output, and responsible researchers. |</p>
+<p>| BR-R-002 | Research requiring ethics approval cannot be approved until clearance exists. |</p>
+<p>| BR-R-003 | Publication status must be supported by evidence. |</p>
+<p>| BR-R-004 | Citation count should not be the only research impact measure. |</p>
+<p>| BR-R-005 | Patent filing must be tracked separately from publication. |</p>
+<p>| BR-R-006 | Commercialization requires IP, market, feasibility, ethical, and regulatory assessment. |</p>
+<p>| BR-R-007 | Faculty cannot independently validate their own publication for ranking without external evidence. |</p>
+<p>| BR-R-008 | Student research contribution must be credited accurately. |</p>
+<p>| BR-R-009 | Grant-funded research must track reporting obligations. |</p>
+<p>| BR-R-010 | Research data visibility must respect consent, confidentiality, sponsor terms, and ethics. |</p>
+<p>| BR-R-011 | Retractions or corrections must update portfolio and ranking evidence. |</p>
+<p>| BR-R-012 | Research becomes innovation candidate only when novelty, utility, and application potential are documented. |</p>
+<p>| BR-R-013 | Research centers can validate outputs only within defined authority. |</p>
+<p>| BR-R-014 | Collaboration agreements should define authorship, data rights, and commercialization expectations. |</p>
+<p>| BR-R-015 | Traditional knowledge and community-based research require benefit-sharing and ethical safeguards. |</p>
+<h2 id="86-innovation-rules">8.6 Innovation Rules</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Business Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| BR-I-001 | Innovation must be evaluated against novelty, usefulness, feasibility, evidence, and impact. |</p>
+<p>| BR-I-002 | An idea alone is not validated innovation. |</p>
+<p>| BR-I-003 | A good academic grade is not automatically innovation. |</p>
+<p>| BR-I-004 | Innovation candidates must identify source artifacts. |</p>
+<p>| BR-I-005 | Evaluation requires conflict-of-interest declaration. |</p>
+<p>| BR-I-006 | Innovation status must be explainable. |</p>
+<p>| BR-I-007 | Innovation may lead to research, incubation, grant, patent, open source, industry pilot, community deployment, or archive. |</p>
+<p>| BR-I-008 | Social innovation must not be penalized for lacking immediate commercial revenue. |</p>
+<p>| BR-I-009 | Technical innovation must provide feasibility evidence appropriate to maturity. |</p>
+<p>| BR-I-010 | Market innovation must include user, customer, or stakeholder validation. |</p>
+<p>| BR-I-011 | Innovation score evolves as evidence improves. |</p>
+<p>| BR-I-012 | Rejected candidates may resubmit with significant new evidence. |</p>
+<p>| BR-I-013 | Confidential innovation evaluation must protect sensitive details. |</p>
+<p>| BR-I-014 | Regulated-sector innovations must identify regulatory requirements. |</p>
+<p>| BR-I-015 | Innovation should be compared within relevant categories, not blindly across disciplines. |</p>
+<h2 id="87-incubation-rules">8.7 Incubation Rules</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Business Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| BR-I-001 | Programs must publish eligibility criteria before accepting applications. |</p>
+<p>| BR-I-002 | Selection criteria must be defined before evaluation begins. |</p>
+<p>| BR-I-003 | A cohort cannot start without program authority. |</p>
+<p>| BR-I-004 | Every incubated team must have milestones. |</p>
+<p>| BR-I-005 | Mentor assignment must consider expertise, availability, conflict, and team need. |</p>
+<p>| BR-I-006 | Resources must be allocated according to program policy. |</p>
+<p>| BR-I-007 | Graduation requires milestone review, not attendance only. |</p>
+<p>| BR-I-008 | Incubation participation does not automatically imply investment readiness. |</p>
+<p>| BR-I-009 | Incubation centers must track outcomes after completion. |</p>
+<p>| BR-I-010 | Teams missing milestones should receive support, revision, or exit decision based on policy. |</p>
+<p>| BR-I-011 | University incubators must clarify relationship between academic projects and venture ownership. |</p>
+<p>| BR-I-012 | Programs may support non-student founders if policy allows. |</p>
+<p>| BR-I-013 | Selection must record evaluator decisions to reduce nepotism. |</p>
+<p>| BR-I-014 | Demo day participation should require readiness review. |</p>
+<p>| BR-I-015 | Program completion should update startup and founder portfolio evidence. |</p>
+<h2 id="88-startup-rules">8.8 Startup Rules</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Business Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| BR-S-001 | A startup must have at least one accountable founder. |</p>
+<p>| BR-S-002 | Founder roles must be explicitly declared. |</p>
+<p>| BR-S-003 | Student project team membership does not automatically equal founder status. |</p>
+<p>| BR-S-004 | Startups derived from university work must identify IP status. |</p>
+<p>| BR-S-005 | Startup stage must be evidence-based. |</p>
+<p>| BR-S-006 | Traction claims require evidence. |</p>
+<p>| BR-S-007 | Startup profiles should have public and confidential sections. |</p>
+<p>| BR-S-008 | Founder departure must be recorded. |</p>
+<p>| BR-S-009 | Startup closure should preserve founder learning evidence. |</p>
+<p>| BR-S-010 | Startups may be commercial, social enterprise, cooperative, research spinout, or impact venture. |</p>
+<p>| BR-S-011 | Funding readiness requires a minimum evidence package. |</p>
+<p>| BR-S-012 | Incubation graduation updates readiness but does not guarantee success. |</p>
+<p>| BR-S-013 | False revenue, user, legal, or funding claims trigger compliance review. |</p>
+<p>| BR-S-014 | Founder commitment level should be declared and updated. |</p>
+<p>| BR-S-015 | Startup profiles should identify sector, region, impact category, and stage. |</p>
+<h2 id="89-funding-and-investment-rules">8.9 Funding and Investment Rules</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Business Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| BR-FA-001 | A funding request must state amount, type, purpose, and applicant. |</p>
+<p>| BR-FA-002 | Grant and investment requests must be distinguished. |</p>
+<p>| BR-FA-003 | Investment requests require startup or proposed venture identity. |</p>
+<p>| BR-FA-004 | Grant requests must satisfy sponsor eligibility. |</p>
+<p>| BR-FA-005 | Due diligence must include evidence review. |</p>
+<p>| BR-FA-006 | Investor access to confidential documents requires permission. |</p>
+<p>| BR-FA-007 | Funding approval may be conditional. |</p>
+<p>| BR-FA-008 | Disbursement conditions must be explicit. |</p>
+<p>| BR-FA-009 | Funding decisions must record rationale. |</p>
+<p>| BR-FA-010 | Rejected requests may be revised and resubmitted if policy allows. |</p>
+<p>| BR-FA-011 | Investors must declare conflicts when evaluating startups. |</p>
+<p>| BR-FA-012 | Public grants must follow reporting requirements. |</p>
+<p>| BR-FA-013 | Funding outcomes should update startup and founder portfolio records. |</p>
+<p>| BR-FA-014 | Investor interest does not equal commitment. |</p>
+<p>| BR-FA-015 | Metrics must distinguish requested, approved, committed, and disbursed amounts. |</p>
+<h2 id="810-mentorship-rules">8.10 Mentorship Rules</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Business Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| BR-M-001 | A mentor must have declared or verified expertise. |</p>
+<p>| BR-M-002 | Mentorship engagement must define purpose and scope. |</p>
+<p>| BR-M-003 | Mentors must declare conflicts of interest. |</p>
+<p>| BR-M-004 | Mentor feedback follows confidentiality rules. |</p>
+<p>| BR-M-005 | Mentors cannot be forced into unlimited support beyond agreement. |</p>
+<p>| BR-M-006 | Mentees should provide feedback on mentorship quality. |</p>
+<p>| BR-M-007 | Mentor contribution counts toward recognition only when evidence exists. |</p>
+<p>| BR-M-008 | A mentor advising a startup should not independently decide its funding approval. |</p>
+<p>| BR-M-009 | Confidential mentorship notes should not be exposed through portfolio. |</p>
+<p>| BR-M-010 | Repeated no-shows may affect reputation or assignment priority. |</p>
+<h2 id="811-recruitment-rules">8.11 Recruitment Rules</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Business Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| BR-R-001 | Recruiters must represent verified companies or authorized bodies. |</p>
+<p>| BR-R-002 | Opportunities must describe role, eligibility, expectations, and selection process. |</p>
+<p>| BR-R-003 | Shortlisting should use consented and relevant portfolio evidence. |</p>
+<p>| BR-R-004 | Grades should not be the only hiring filter unless role requires it. |</p>
+<p>| BR-R-005 | Companies may search public portfolios but need permission for private evidence. |</p>
+<p>| BR-R-006 | Internship completion should produce verified evidence and feedback. |</p>
+<p>| BR-R-007 | Recruiter evaluation should not manipulate public ranking without validation. |</p>
+<p>| BR-R-008 | Listings must be authentic and non-exploitative. |</p>
+<p>| BR-R-009 | Application history is private by default. |</p>
+<p>| BR-R-010 | Employment outcomes require appropriate confirmation and consent. |</p>
+<h2 id="812-ranking-and-recognition-rules">8.12 Ranking and Recognition Rules</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Business Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| BR-RA-001 | Criteria must be published before the ranking period. |</p>
+<p>| BR-RA-002 | Ranking must use validated evidence only. |</p>
+<p>| BR-RA-003 | Rankings must be contextual by category, level, discipline, stage, and period. |</p>
+<p>| BR-RA-004 | Rankings should reward consistency, collaboration, impact, quality, and verified outcomes. |</p>
+<p>| BR-RA-005 | Rankings must not reward spam activity. |</p>
+<p>| BR-RA-006 | Results must explain major score components. |</p>
+<p>| BR-RA-007 | Participants may appeal incorrect evidence or calculation. |</p>
+<p>| BR-RA-008 | Self-issued claims carry lower weight than independent validation. |</p>
+<p>| BR-RA-009 | Mentor, faculty, and institutional contribution should be recognized separately from student output. |</p>
+<p>| BR-RA-010 | Fraud, plagiarism, or retractions may affect reputation after due process. |</p>
+<p>| BR-RA-011 | Ranking should avoid permanent punishment for early failure when recovery occurs. |</p>
+<p>| BR-RA-012 | Popularity indicators may only be weak signals unless tied to impact evidence. |</p>
+<p>| BR-RA-013 | University rankings should reward ecosystem contribution, not user count alone. |</p>
+<p>| BR-RA-014 | Faculty recognition should include mentorship, research impact, startup support, and student outcomes. |</p>
+<p>| BR-RA-015 | Startup ranking should account for stage and sector. |</p>
+<h2 id="813-government-and-reporting-rules">8.13 Government and Reporting Rules</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Business Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| BR-GA-001 | Government dashboards should use aggregate indicators unless individual disclosure is authorized. |</p>
+<p>| BR-GA-002 | Public grants must define eligibility, selection criteria, conditions, and reporting obligations. |</p>
+<p>| BR-GA-003 | Municipality programs may define local priorities while aligning with national language. |</p>
+<p>| BR-GA-004 | Government reporting must not expose confidential startup or research information without authority. |</p>
+<p>| BR-GA-005 | National indicators should distinguish activity, output, outcome, and impact. |</p>
+<p>| BR-GA-006 | Government officers cannot alter institutional records unless legally authorized and audited. |</p>
+<p>| BR-GA-007 | Public funding results may be reportable while protecting due diligence details. |</p>
+<p>| BR-GA-008 | Policy changes should be versioned and not retroactively invalidate completed processes unless legally required. |</p>
+<h2 id="814-marketplace-and-partnership-rules">8.14 Marketplace and Partnership Rules</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Business Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| BR-MA-001 | Listings must identify owner and opportunity type. |</p>
+<p>| BR-MA-002 | Confidential listings must restrict visibility. |</p>
+<p>| BR-MA-003 | Partnership proposals must define objective, parties, contribution, and intended outcome. |</p>
+<p>| BR-MA-004 | Industry challenges must define problem context, eligibility, criteria, and IP expectations. |</p>
+<p>| BR-MA-005 | Sponsored opportunities must identify sponsor obligations. |</p>
+<p>| BR-MA-006 | Spam, fake opportunities, and predatory offers trigger moderation. |</p>
+<p>| BR-MA-007 | Accepted partnerships create traceable collaboration records. |</p>
+<p>| BR-MA-008 | Listings that lead to projects, internships, funding, or incubation should link to the relevant context. |</p>
+<h2 id="815-compliance-and-integrity-rules">8.15 Compliance and Integrity Rules</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Business Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| BR-CA-001 | Important decisions must be auditable. |</p>
+<p>| BR-CA-002 | Actors can dispute incorrect claims about them or their work. |</p>
+<p>| BR-CA-003 | Fraudulent evidence triggers investigation before penalty. |</p>
+<p>| BR-CA-004 | Plagiarism claims should be reviewed by authorized evaluators. |</p>
+<p>| BR-CA-005 | Conflicts of interest must be recorded and resolved according to policy. |</p>
+<p>| BR-CA-006 | Data ownership disputes should restrict high-stakes external sharing until resolved. |</p>
+<p>| BR-CA-007 | Appeals need defined timeline and authority. |</p>
+<p>| BR-CA-008 | System errors affecting scores or decisions must be correctable and visible to affected users. |</p>
+<p>| BR-CA-009 | Sanctions should be proportional to severity and evidence. |</p>
+<p>| BR-CA-010 | Sensitive data should be shared only under authorized scope. |</p>
+<h1 id="9-domain-events">9. Domain Events</h1>
+<p>Domain events are business facts that have already happened. They should be named in past tense and should be meaningful to domain experts.</p>
+<h2 id="91-identity-and-institution-events">9.1 Identity and Institution Events</h2>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Producer Context</th>
+<th>Likely Consumers</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| UserRegistered | Identity and Institution | Portfolio, Analytics, Ranking, related workflow contexts | User Registered occurred and may trigger follow-up business reactions. |</p>
+<p>| IdentityVerified | Identity and Institution | Portfolio, Analytics, Ranking, related workflow contexts | Identity Verified occurred and may trigger follow-up business reactions. |</p>
+<p>| OrganizationRegistered | Identity and Institution | Portfolio, Analytics, Ranking, related workflow contexts | Organization Registered occurred and may trigger follow-up business reactions. |</p>
+<p>| InstitutionVerified | Identity and Institution | Portfolio, Analytics, Ranking, related workflow contexts | Institution Verified occurred and may trigger follow-up business reactions. |</p>
+<p>| StudentAffiliationRequested | Identity and Institution | Portfolio, Analytics, Ranking, related workflow contexts | Student Affiliation Requested occurred and may trigger follow-up business reactions. |</p>
+<p>| StudentAffiliationVerified | Identity and Institution | Portfolio, Analytics, Ranking, related workflow contexts | Student Affiliation Verified occurred and may trigger follow-up business reactions. |</p>
+<p>| FacultyRoleAssigned | Identity and Institution | Portfolio, Analytics, Ranking, related workflow contexts | Faculty Role Assigned occurred and may trigger follow-up business reactions. |</p>
+<p>| ProgramRegistered | Identity and Institution | Portfolio, Analytics, Ranking, related workflow contexts | Program Registered occurred and may trigger follow-up business reactions. |</p>
+<p>| RoleDelegated | Identity and Institution | Portfolio, Analytics, Ranking, related workflow contexts | Role Delegated occurred and may trigger follow-up business reactions. |</p>
+<p>| RoleRevoked | Identity and Institution | Portfolio, Analytics, Ranking, related workflow contexts | Role Revoked occurred and may trigger follow-up business reactions. |</p>
+<h2 id="92-learning-and-portfolio-events">9.2 Learning and Portfolio Events</h2>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Producer Context</th>
+<th>Likely Consumers</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| LearningGoalDeclared | Learning and Portfolio | Portfolio, Analytics, Ranking, related workflow contexts | Learning Goal Declared occurred and may trigger follow-up business reactions. |</p>
+<p>| LearningTrackStarted | Learning and Portfolio | Portfolio, Analytics, Ranking, related workflow contexts | Learning Track Started occurred and may trigger follow-up business reactions. |</p>
+<p>| SkillEvidenceSubmitted | Learning and Portfolio | Portfolio, Analytics, Ranking, related workflow contexts | Skill Evidence Submitted occurred and may trigger follow-up business reactions. |</p>
+<p>| SkillEvidenceVerified | Learning and Portfolio | Portfolio, Analytics, Ranking, related workflow contexts | Skill Evidence Verified occurred and may trigger follow-up business reactions. |</p>
+<p>| SkillBadgeIssued | Learning and Portfolio | Portfolio, Analytics, Ranking, related workflow contexts | Skill Badge Issued occurred and may trigger follow-up business reactions. |</p>
+<p>| CompetencyLevelUpdated | Learning and Portfolio | Portfolio, Analytics, Ranking, related workflow contexts | Competency Level Updated occurred and may trigger follow-up business reactions. |</p>
+<p>| GapAnalysisCompleted | Learning and Portfolio | Portfolio, Analytics, Ranking, related workflow contexts | Gap Analysis Completed occurred and may trigger follow-up business reactions. |</p>
+<p>| PortfolioCreated | Learning and Portfolio | Portfolio, Analytics, Ranking, related workflow contexts | Portfolio Created occurred and may trigger follow-up business reactions. |</p>
+<p>| PortfolioItemAdded | Learning and Portfolio | Portfolio, Analytics, Ranking, related workflow contexts | Portfolio Item Added occurred and may trigger follow-up business reactions. |</p>
+<p>| RecommendationAdded | Learning and Portfolio | Portfolio, Analytics, Ranking, related workflow contexts | Recommendation Added occurred and may trigger follow-up business reactions. |</p>
+<h2 id="93-project-events">9.3 Project Events</h2>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Producer Context</th>
+<th>Likely Consumers</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| ProjectCreated | Project | Portfolio, Analytics, Ranking, related workflow contexts | Project Created occurred and may trigger follow-up business reactions. |</p>
+<p>| ProjectTeamFormed | Project | Portfolio, Analytics, Ranking, related workflow contexts | Project Team Formed occurred and may trigger follow-up business reactions. |</p>
+<p>| ProjectProposalSubmitted | Project | Portfolio, Analytics, Ranking, related workflow contexts | Project Proposal Submitted occurred and may trigger follow-up business reactions. |</p>
+<p>| ProjectApproved | Project | Portfolio, Analytics, Ranking, related workflow contexts | Project Approved occurred and may trigger follow-up business reactions. |</p>
+<p>| ProjectRejected | Project | Portfolio, Analytics, Ranking, related workflow contexts | Project Rejected occurred and may trigger follow-up business reactions. |</p>
+<p>| ProjectMilestoneCompleted | Project | Portfolio, Analytics, Ranking, related workflow contexts | Project Milestone Completed occurred and may trigger follow-up business reactions. |</p>
+<p>| ProjectEvidenceSubmitted | Project | Portfolio, Analytics, Ranking, related workflow contexts | Project Evidence Submitted occurred and may trigger follow-up business reactions. |</p>
+<p>| ProjectReviewed | Project | Portfolio, Analytics, Ranking, related workflow contexts | Project Reviewed occurred and may trigger follow-up business reactions. |</p>
+<p>| ProjectCompleted | Project | Portfolio, Analytics, Ranking, related workflow contexts | Project Completed occurred and may trigger follow-up business reactions. |</p>
+<p>| ProjectMarkedInnovationCandidate | Project | Portfolio, Analytics, Ranking, related workflow contexts | Project Marked Innovation Candidate occurred and may trigger follow-up business reactions. |</p>
+<p>| ProjectOwnershipDisputed | Project | Portfolio, Analytics, Ranking, related workflow contexts | Project Ownership Disputed occurred and may trigger follow-up business reactions. |</p>
+<h2 id="94-research-events">9.4 Research Events</h2>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Producer Context</th>
+<th>Likely Consumers</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| ResearchProposalSubmitted | Research | Portfolio, Analytics, Ranking, related workflow contexts | Research Proposal Submitted occurred and may trigger follow-up business reactions. |</p>
+<p>| ResearchApproved | Research | Portfolio, Analytics, Ranking, related workflow contexts | Research Approved occurred and may trigger follow-up business reactions. |</p>
+<p>| EthicsApprovalGranted | Research | Portfolio, Analytics, Ranking, related workflow contexts | Ethics Approval Granted occurred and may trigger follow-up business reactions. |</p>
+<p>| ResearchOutputSubmitted | Research | Portfolio, Analytics, Ranking, related workflow contexts | Research Output Submitted occurred and may trigger follow-up business reactions. |</p>
+<p>| ResearchReviewed | Research | Portfolio, Analytics, Ranking, related workflow contexts | Research Reviewed occurred and may trigger follow-up business reactions. |</p>
+<p>| PublicationSubmitted | Research | Portfolio, Analytics, Ranking, related workflow contexts | Publication Submitted occurred and may trigger follow-up business reactions. |</p>
+<p>| PublicationAccepted | Research | Portfolio, Analytics, Ranking, related workflow contexts | Publication Accepted occurred and may trigger follow-up business reactions. |</p>
+<p>| PublicationPublished | Research | Portfolio, Analytics, Ranking, related workflow contexts | Publication Published occurred and may trigger follow-up business reactions. |</p>
+<p>| PublicationRetracted | Research | Portfolio, Analytics, Ranking, related workflow contexts | Publication Retracted occurred and may trigger follow-up business reactions. |</p>
+<p>| PatentDisclosureSubmitted | Research | Portfolio, Analytics, Ranking, related workflow contexts | Patent Disclosure Submitted occurred and may trigger follow-up business reactions. |</p>
+<p>| PatentFiled | Research | Portfolio, Analytics, Ranking, related workflow contexts | Patent Filed occurred and may trigger follow-up business reactions. |</p>
+<p>| ResearchCommercializationRecommended | Research | Portfolio, Analytics, Ranking, related workflow contexts | Research Commercialization Recommended occurred and may trigger follow-up business reactions. |</p>
+<h2 id="95-innovation-events">9.5 Innovation Events</h2>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Producer Context</th>
+<th>Likely Consumers</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| InnovationCandidateSubmitted | Innovation | Portfolio, Analytics, Ranking, related workflow contexts | Innovation Candidate Submitted occurred and may trigger follow-up business reactions. |</p>
+<p>| InnovationScreeningStarted | Innovation | Portfolio, Analytics, Ranking, related workflow contexts | Innovation Screening Started occurred and may trigger follow-up business reactions. |</p>
+<p>| InnovationEvaluationRequested | Innovation | Portfolio, Analytics, Ranking, related workflow contexts | Innovation Evaluation Requested occurred and may trigger follow-up business reactions. |</p>
+<p>| InnovationEvaluationCompleted | Innovation | Portfolio, Analytics, Ranking, related workflow contexts | Innovation Evaluation Completed occurred and may trigger follow-up business reactions. |</p>
+<p>| InnovationValidated | Innovation | Portfolio, Analytics, Ranking, related workflow contexts | Innovation Validated occurred and may trigger follow-up business reactions. |</p>
+<p>| InnovationRejected | Innovation | Portfolio, Analytics, Ranking, related workflow contexts | Innovation Rejected occurred and may trigger follow-up business reactions. |</p>
+<p>| InnovationRevisionRequested | Innovation | Portfolio, Analytics, Ranking, related workflow contexts | Innovation Revision Requested occurred and may trigger follow-up business reactions. |</p>
+<p>| IncubationRecommended | Innovation | Portfolio, Analytics, Ranking, related workflow contexts | Incubation Recommended occurred and may trigger follow-up business reactions. |</p>
+<p>| PatentPathRecommended | Innovation | Portfolio, Analytics, Ranking, related workflow contexts | Patent Path Recommended occurred and may trigger follow-up business reactions. |</p>
+<p>| IndustryPilotRecommended | Innovation | Portfolio, Analytics, Ranking, related workflow contexts | Industry Pilot Recommended occurred and may trigger follow-up business reactions. |</p>
+<p>| InnovationArchived | Innovation | Portfolio, Analytics, Ranking, related workflow contexts | Innovation Archived occurred and may trigger follow-up business reactions. |</p>
+<h2 id="96-incubation-and-startup-events">9.6 Incubation and Startup Events</h2>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Producer Context</th>
+<th>Likely Consumers</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| IncubationProgramCreated | Incubation and Startup | Portfolio, Analytics, Ranking, related workflow contexts | Incubation Program Created occurred and may trigger follow-up business reactions. |</p>
+<p>| IncubationApplicationOpened | Incubation and Startup | Portfolio, Analytics, Ranking, related workflow contexts | Incubation Application Opened occurred and may trigger follow-up business reactions. |</p>
+<p>| IncubationApplicationSubmitted | Incubation and Startup | Portfolio, Analytics, Ranking, related workflow contexts | Incubation Application Submitted occurred and may trigger follow-up business reactions. |</p>
+<p>| IncubationApplicationAccepted | Incubation and Startup | Portfolio, Analytics, Ranking, related workflow contexts | Incubation Application Accepted occurred and may trigger follow-up business reactions. |</p>
+<p>| CohortFormed | Incubation and Startup | Portfolio, Analytics, Ranking, related workflow contexts | Cohort Formed occurred and may trigger follow-up business reactions. |</p>
+<p>| MentorAssignedToCohort | Incubation and Startup | Portfolio, Analytics, Ranking, related workflow contexts | Mentor Assigned To Cohort occurred and may trigger follow-up business reactions. |</p>
+<p>| IncubationStarted | Incubation and Startup | Portfolio, Analytics, Ranking, related workflow contexts | Incubation Started occurred and may trigger follow-up business reactions. |</p>
+<p>| IncubationMilestoneCompleted | Incubation and Startup | Portfolio, Analytics, Ranking, related workflow contexts | Incubation Milestone Completed occurred and may trigger follow-up business reactions. |</p>
+<p>| IncubationCompleted | Incubation and Startup | Portfolio, Analytics, Ranking, related workflow contexts | Incubation Completed occurred and may trigger follow-up business reactions. |</p>
+<p>| StartupCreated | Incubation and Startup | Portfolio, Analytics, Ranking, related workflow contexts | Startup Created occurred and may trigger follow-up business reactions. |</p>
+<p>| FounderAdded | Incubation and Startup | Portfolio, Analytics, Ranking, related workflow contexts | Founder Added occurred and may trigger follow-up business reactions. |</p>
+<p>| FounderRoleChanged | Incubation and Startup | Portfolio, Analytics, Ranking, related workflow contexts | Founder Role Changed occurred and may trigger follow-up business reactions. |</p>
+<p>| StartupStageUpdated | Incubation and Startup | Portfolio, Analytics, Ranking, related workflow contexts | Startup Stage Updated occurred and may trigger follow-up business reactions. |</p>
+<p>| TractionEvidenceAdded | Incubation and Startup | Portfolio, Analytics, Ranking, related workflow contexts | Traction Evidence Added occurred and may trigger follow-up business reactions. |</p>
+<p>| StartupGraduated | Incubation and Startup | Portfolio, Analytics, Ranking, related workflow contexts | Startup Graduated occurred and may trigger follow-up business reactions. |</p>
+<p>| StartupClosed | Incubation and Startup | Portfolio, Analytics, Ranking, related workflow contexts | Startup Closed occurred and may trigger follow-up business reactions. |</p>
+<h2 id="97-funding-and-investment-events">9.7 Funding and Investment Events</h2>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Producer Context</th>
+<th>Likely Consumers</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| FundingRequestCreated | Funding and Investment | Portfolio, Analytics, Ranking, related workflow contexts | Funding Request Created occurred and may trigger follow-up business reactions. |</p>
+<p>| FundingRequestSubmitted | Funding and Investment | Portfolio, Analytics, Ranking, related workflow contexts | Funding Request Submitted occurred and may trigger follow-up business reactions. |</p>
+<p>| InvestorInterestRegistered | Funding and Investment | Portfolio, Analytics, Ranking, related workflow contexts | Investor Interest Registered occurred and may trigger follow-up business reactions. |</p>
+<p>| DueDiligenceStarted | Funding and Investment | Portfolio, Analytics, Ranking, related workflow contexts | Due Diligence Started occurred and may trigger follow-up business reactions. |</p>
+<p>| DueDiligenceCompleted | Funding and Investment | Portfolio, Analytics, Ranking, related workflow contexts | Due Diligence Completed occurred and may trigger follow-up business reactions. |</p>
+<p>| FundingApproved | Funding and Investment | Portfolio, Analytics, Ranking, related workflow contexts | Funding Approved occurred and may trigger follow-up business reactions. |</p>
+<p>| FundingRejected | Funding and Investment | Portfolio, Analytics, Ranking, related workflow contexts | Funding Rejected occurred and may trigger follow-up business reactions. |</p>
+<p>| FundingConditionIssued | Funding and Investment | Portfolio, Analytics, Ranking, related workflow contexts | Funding Condition Issued occurred and may trigger follow-up business reactions. |</p>
+<p>| FundingCommitted | Funding and Investment | Portfolio, Analytics, Ranking, related workflow contexts | Funding Committed occurred and may trigger follow-up business reactions. |</p>
+<p>| FundingDisbursed | Funding and Investment | Portfolio, Analytics, Ranking, related workflow contexts | Funding Disbursed occurred and may trigger follow-up business reactions. |</p>
+<p>| FundingReportSubmitted | Funding and Investment | Portfolio, Analytics, Ranking, related workflow contexts | Funding Report Submitted occurred and may trigger follow-up business reactions. |</p>
+<p>| InvestmentRoundOpened | Funding and Investment | Portfolio, Analytics, Ranking, related workflow contexts | Investment Round Opened occurred and may trigger follow-up business reactions. |</p>
+<p>| InvestmentRoundClosed | Funding and Investment | Portfolio, Analytics, Ranking, related workflow contexts | Investment Round Closed occurred and may trigger follow-up business reactions. |</p>
+<h2 id="98-recruitment-events">9.8 Recruitment Events</h2>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Producer Context</th>
+<th>Likely Consumers</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| CompanyVerified | Recruitment | Portfolio, Analytics, Ranking, related workflow contexts | Company Verified occurred and may trigger follow-up business reactions. |</p>
+<p>| OpportunityPublished | Recruitment | Portfolio, Analytics, Ranking, related workflow contexts | Opportunity Published occurred and may trigger follow-up business reactions. |</p>
+<p>| OpportunityClosed | Recruitment | Portfolio, Analytics, Ranking, related workflow contexts | Opportunity Closed occurred and may trigger follow-up business reactions. |</p>
+<p>| ApplicationSubmitted | Recruitment | Portfolio, Analytics, Ranking, related workflow contexts | Application Submitted occurred and may trigger follow-up business reactions. |</p>
+<p>| CandidateShortlisted | Recruitment | Portfolio, Analytics, Ranking, related workflow contexts | Candidate Shortlisted occurred and may trigger follow-up business reactions. |</p>
+<p>| InterviewRequested | Recruitment | Portfolio, Analytics, Ranking, related workflow contexts | Interview Requested occurred and may trigger follow-up business reactions. |</p>
+<p>| OfferIssued | Recruitment | Portfolio, Analytics, Ranking, related workflow contexts | Offer Issued occurred and may trigger follow-up business reactions. |</p>
+<p>| OfferAccepted | Recruitment | Portfolio, Analytics, Ranking, related workflow contexts | Offer Accepted occurred and may trigger follow-up business reactions. |</p>
+<p>| InternshipStarted | Recruitment | Portfolio, Analytics, Ranking, related workflow contexts | Internship Started occurred and may trigger follow-up business reactions. |</p>
+<p>| InternshipCompleted | Recruitment | Portfolio, Analytics, Ranking, related workflow contexts | Internship Completed occurred and may trigger follow-up business reactions. |</p>
+<p>| EmploymentRecorded | Recruitment | Portfolio, Analytics, Ranking, related workflow contexts | Employment Recorded occurred and may trigger follow-up business reactions. |</p>
+<h2 id="99-events-community-marketplace-events">9.9 Events, Community, Marketplace Events</h2>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Producer Context</th>
+<th>Likely Consumers</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| EventCreated | Events, Community, Marketplace | Portfolio, Analytics, Ranking, related workflow contexts | Event Created occurred and may trigger follow-up business reactions. |</p>
+<p>| EventRegistrationOpened | Events, Community, Marketplace | Portfolio, Analytics, Ranking, related workflow contexts | Event Registration Opened occurred and may trigger follow-up business reactions. |</p>
+<p>| ParticipantRegistered | Events, Community, Marketplace | Portfolio, Analytics, Ranking, related workflow contexts | Participant Registered occurred and may trigger follow-up business reactions. |</p>
+<p>| EventCompleted | Events, Community, Marketplace | Portfolio, Analytics, Ranking, related workflow contexts | Event Completed occurred and may trigger follow-up business reactions. |</p>
+<p>| ChallengePublished | Events, Community, Marketplace | Portfolio, Analytics, Ranking, related workflow contexts | Challenge Published occurred and may trigger follow-up business reactions. |</p>
+<p>| ChallengeSubmissionReceived | Events, Community, Marketplace | Portfolio, Analytics, Ranking, related workflow contexts | Challenge Submission Received occurred and may trigger follow-up business reactions. |</p>
+<p>| ChallengeWinnerSelected | Events, Community, Marketplace | Portfolio, Analytics, Ranking, related workflow contexts | Challenge Winner Selected occurred and may trigger follow-up business reactions. |</p>
+<p>| ChallengeOutputConvertedToProject | Events, Community, Marketplace | Portfolio, Analytics, Ranking, related workflow contexts | Challenge Output Converted To Project occurred and may trigger follow-up business reactions. |</p>
+<p>| CommunityCreated | Events, Community, Marketplace | Portfolio, Analytics, Ranking, related workflow contexts | Community Created occurred and may trigger follow-up business reactions. |</p>
+<p>| CommunityMemberJoined | Events, Community, Marketplace | Portfolio, Analytics, Ranking, related workflow contexts | Community Member Joined occurred and may trigger follow-up business reactions. |</p>
+<p>| CommunityContributionRecorded | Events, Community, Marketplace | Portfolio, Analytics, Ranking, related workflow contexts | Community Contribution Recorded occurred and may trigger follow-up business reactions. |</p>
+<p>| PartnershipProposed | Events, Community, Marketplace | Portfolio, Analytics, Ranking, related workflow contexts | Partnership Proposed occurred and may trigger follow-up business reactions. |</p>
+<p>| PartnershipAccepted | Events, Community, Marketplace | Portfolio, Analytics, Ranking, related workflow contexts | Partnership Accepted occurred and may trigger follow-up business reactions. |</p>
+<p>| MarketplaceListingPublished | Events, Community, Marketplace | Portfolio, Analytics, Ranking, related workflow contexts | Marketplace Listing Published occurred and may trigger follow-up business reactions. |</p>
+<h2 id="910-ranking-and-compliance-events">9.10 Ranking and Compliance Events</h2>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Producer Context</th>
+<th>Likely Consumers</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| RankingCycleConfigured | Ranking and Compliance | Portfolio, Analytics, Ranking, related workflow contexts | Ranking Cycle Configured occurred and may trigger follow-up business reactions. |</p>
+<p>| RankingEvidenceSnapshotCreated | Ranking and Compliance | Portfolio, Analytics, Ranking, related workflow contexts | Ranking Evidence Snapshot Created occurred and may trigger follow-up business reactions. |</p>
+<p>| RankingCalculated | Ranking and Compliance | Portfolio, Analytics, Ranking, related workflow contexts | Ranking Calculated occurred and may trigger follow-up business reactions. |</p>
+<p>| RankingPublished | Ranking and Compliance | Portfolio, Analytics, Ranking, related workflow contexts | Ranking Published occurred and may trigger follow-up business reactions. |</p>
+<p>| RankingAppealSubmitted | Ranking and Compliance | Portfolio, Analytics, Ranking, related workflow contexts | Ranking Appeal Submitted occurred and may trigger follow-up business reactions. |</p>
+<p>| RankingAppealResolved | Ranking and Compliance | Portfolio, Analytics, Ranking, related workflow contexts | Ranking Appeal Resolved occurred and may trigger follow-up business reactions. |</p>
+<p>| PolicyViolationReported | Ranking and Compliance | Portfolio, Analytics, Ranking, related workflow contexts | Policy Violation Reported occurred and may trigger follow-up business reactions. |</p>
+<p>| ComplianceCaseOpened | Ranking and Compliance | Portfolio, Analytics, Ranking, related workflow contexts | Compliance Case Opened occurred and may trigger follow-up business reactions. |</p>
+<p>| ComplianceCaseResolved | Ranking and Compliance | Portfolio, Analytics, Ranking, related workflow contexts | Compliance Case Resolved occurred and may trigger follow-up business reactions. |</p>
+<p>| EvidenceRevoked | Ranking and Compliance | Portfolio, Analytics, Ranking, related workflow contexts | Evidence Revoked occurred and may trigger follow-up business reactions. |</p>
+<p>| ImpactReportGenerated | Ranking and Compliance | Portfolio, Analytics, Ranking, related workflow contexts | Impact Report Generated occurred and may trigger follow-up business reactions. |</p>
+<p>| NationalIndicatorUpdated | Ranking and Compliance | Portfolio, Analytics, Ranking, related workflow contexts | National Indicator Updated occurred and may trigger follow-up business reactions. |</p>
+<h1 id="10-commands">10. Commands</h1>
+<p>Commands express business intent. A command may be accepted, rejected, or produce one or more domain events.</p>
+<h2 id="101-identity-and-institution-commands">10.1 Identity and Institution Commands</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Typical Actor</th>
+<th>Expected Business Outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| RegisterUser | Authorized actor in Identity and Institution context | Attempts to register user and, if valid, produces a domain event. |</p>
+<p>| VerifyIdentity | Authorized actor in Identity and Institution context | Attempts to verify identity and, if valid, produces a domain event. |</p>
+<p>| RegisterOrganization | Authorized actor in Identity and Institution context | Attempts to register organization and, if valid, produces a domain event. |</p>
+<p>| VerifyInstitution | Authorized actor in Identity and Institution context | Attempts to verify institution and, if valid, produces a domain event. |</p>
+<p>| RequestStudentAffiliation | Authorized actor in Identity and Institution context | Attempts to request student affiliation and, if valid, produces a domain event. |</p>
+<p>| ApproveStudentAffiliation | Authorized actor in Identity and Institution context | Attempts to approve student affiliation and, if valid, produces a domain event. |</p>
+<p>| AssignFacultyRole | Authorized actor in Identity and Institution context | Attempts to assign faculty role and, if valid, produces a domain event. |</p>
+<p>| DelegateRoleAuthority | Authorized actor in Identity and Institution context | Attempts to delegate role authority and, if valid, produces a domain event. |</p>
+<p>| RevokeRoleAuthority | Authorized actor in Identity and Institution context | Attempts to revoke role authority and, if valid, produces a domain event. |</p>
+<h2 id="102-learning-and-portfolio-commands">10.2 Learning and Portfolio Commands</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Typical Actor</th>
+<th>Expected Business Outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| DeclareLearningGoal | Authorized actor in Learning and Portfolio context | Attempts to declare learning goal and, if valid, produces a domain event. |</p>
+<p>| StartLearningTrack | Authorized actor in Learning and Portfolio context | Attempts to start learning track and, if valid, produces a domain event. |</p>
+<p>| SubmitSkillEvidence | Authorized actor in Learning and Portfolio context | Attempts to submit skill evidence and, if valid, produces a domain event. |</p>
+<p>| VerifySkillEvidence | Authorized actor in Learning and Portfolio context | Attempts to verify skill evidence and, if valid, produces a domain event. |</p>
+<p>| IssueSkillBadge | Authorized actor in Learning and Portfolio context | Attempts to issue skill badge and, if valid, produces a domain event. |</p>
+<p>| CompleteGapAnalysis | Authorized actor in Learning and Portfolio context | Attempts to complete gap analysis and, if valid, produces a domain event. |</p>
+<p>| CreatePortfolio | Authorized actor in Learning and Portfolio context | Attempts to create portfolio and, if valid, produces a domain event. |</p>
+<p>| AddPortfolioItem | Authorized actor in Learning and Portfolio context | Attempts to add portfolio item and, if valid, produces a domain event. |</p>
+<p>| ChangePortfolioVisibility | Authorized actor in Learning and Portfolio context | Attempts to change portfolio visibility and, if valid, produces a domain event. |</p>
+<p>| AddRecommendation | Authorized actor in Learning and Portfolio context | Attempts to add recommendation and, if valid, produces a domain event. |</p>
+<h2 id="103-project-commands">10.3 Project Commands</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Typical Actor</th>
+<th>Expected Business Outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| CreateProject | Authorized actor in Project context | Attempts to create project and, if valid, produces a domain event. |</p>
+<p>| FormProjectTeam | Authorized actor in Project context | Attempts to form project team and, if valid, produces a domain event. |</p>
+<p>| SubmitProjectProposal | Authorized actor in Project context | Attempts to submit project proposal and, if valid, produces a domain event. |</p>
+<p>| ApproveProject | Authorized actor in Project context | Attempts to approve project and, if valid, produces a domain event. |</p>
+<p>| RejectProject | Authorized actor in Project context | Attempts to reject project and, if valid, produces a domain event. |</p>
+<p>| CompleteProjectMilestone | Authorized actor in Project context | Attempts to complete project milestone and, if valid, produces a domain event. |</p>
+<p>| SubmitProjectEvidence | Authorized actor in Project context | Attempts to submit project evidence and, if valid, produces a domain event. |</p>
+<p>| ReviewProject | Authorized actor in Project context | Attempts to review project and, if valid, produces a domain event. |</p>
+<p>| CompleteProject | Authorized actor in Project context | Attempts to complete project and, if valid, produces a domain event. |</p>
+<p>| NominateProjectForInnovation | Authorized actor in Project context | Attempts to nominate project for innovation and, if valid, produces a domain event. |</p>
+<p>| RaiseProjectOwnershipDispute | Authorized actor in Project context | Attempts to raise project ownership dispute and, if valid, produces a domain event. |</p>
+<h2 id="104-research-commands">10.4 Research Commands</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Typical Actor</th>
+<th>Expected Business Outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| SubmitResearchProposal | Authorized actor in Research context | Attempts to submit research proposal and, if valid, produces a domain event. |</p>
+<p>| ApproveResearch | Authorized actor in Research context | Attempts to approve research and, if valid, produces a domain event. |</p>
+<p>| GrantEthicsApproval | Authorized actor in Research context | Attempts to grant ethics approval and, if valid, produces a domain event. |</p>
+<p>| SubmitResearchOutput | Authorized actor in Research context | Attempts to submit research output and, if valid, produces a domain event. |</p>
+<p>| ReviewResearch | Authorized actor in Research context | Attempts to review research and, if valid, produces a domain event. |</p>
+<p>| SubmitPublicationRecord | Authorized actor in Research context | Attempts to submit publication record and, if valid, produces a domain event. |</p>
+<p>| ConfirmPublicationAccepted | Authorized actor in Research context | Attempts to confirm publication accepted and, if valid, produces a domain event. |</p>
+<p>| ConfirmPublicationPublished | Authorized actor in Research context | Attempts to confirm publication published and, if valid, produces a domain event. |</p>
+<p>| SubmitPatentDisclosure | Authorized actor in Research context | Attempts to submit patent disclosure and, if valid, produces a domain event. |</p>
+<p>| ConfirmPatentFiled | Authorized actor in Research context | Attempts to confirm patent filed and, if valid, produces a domain event. |</p>
+<p>| RecommendResearchCommercialization | Authorized actor in Research context | Attempts to recommend research commercialization and, if valid, produces a domain event. |</p>
+<h2 id="105-innovation-commands">10.5 Innovation Commands</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Typical Actor</th>
+<th>Expected Business Outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| SubmitInnovationCandidate | Authorized actor in Innovation context | Attempts to submit innovation candidate and, if valid, produces a domain event. |</p>
+<p>| StartInnovationScreening | Authorized actor in Innovation context | Attempts to start innovation screening and, if valid, produces a domain event. |</p>
+<p>| RequestInnovationEvaluation | Authorized actor in Innovation context | Attempts to request innovation evaluation and, if valid, produces a domain event. |</p>
+<p>| CompleteInnovationEvaluation | Authorized actor in Innovation context | Attempts to complete innovation evaluation and, if valid, produces a domain event. |</p>
+<p>| ValidateInnovation | Authorized actor in Innovation context | Attempts to validate innovation and, if valid, produces a domain event. |</p>
+<p>| RejectInnovation | Authorized actor in Innovation context | Attempts to reject innovation and, if valid, produces a domain event. |</p>
+<p>| RequestInnovationRevision | Authorized actor in Innovation context | Attempts to request innovation revision and, if valid, produces a domain event. |</p>
+<p>| RecommendIncubation | Authorized actor in Innovation context | Attempts to recommend incubation and, if valid, produces a domain event. |</p>
+<p>| RecommendPatentPath | Authorized actor in Innovation context | Attempts to recommend patent path and, if valid, produces a domain event. |</p>
+<p>| RecommendIndustryPilot | Authorized actor in Innovation context | Attempts to recommend industry pilot and, if valid, produces a domain event. |</p>
+<h2 id="106-incubation-and-startup-commands">10.6 Incubation and Startup Commands</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Typical Actor</th>
+<th>Expected Business Outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| CreateIncubationProgram | Authorized actor in Incubation and Startup context | Attempts to create incubation program and, if valid, produces a domain event. |</p>
+<p>| OpenIncubationApplications | Authorized actor in Incubation and Startup context | Attempts to open incubation applications and, if valid, produces a domain event. |</p>
+<p>| SubmitIncubationApplication | Authorized actor in Incubation and Startup context | Attempts to submit incubation application and, if valid, produces a domain event. |</p>
+<p>| AcceptIncubationApplication | Authorized actor in Incubation and Startup context | Attempts to accept incubation application and, if valid, produces a domain event. |</p>
+<p>| RejectIncubationApplication | Authorized actor in Incubation and Startup context | Attempts to reject incubation application and, if valid, produces a domain event. |</p>
+<p>| FormCohort | Authorized actor in Incubation and Startup context | Attempts to form cohort and, if valid, produces a domain event. |</p>
+<p>| AssignMentorToCohort | Authorized actor in Incubation and Startup context | Attempts to assign mentor to cohort and, if valid, produces a domain event. |</p>
+<p>| StartIncubation | Authorized actor in Incubation and Startup context | Attempts to start incubation and, if valid, produces a domain event. |</p>
+<p>| CompleteIncubationMilestone | Authorized actor in Incubation and Startup context | Attempts to complete incubation milestone and, if valid, produces a domain event. |</p>
+<p>| ReviewIncubationProgress | Authorized actor in Incubation and Startup context | Attempts to review incubation progress and, if valid, produces a domain event. |</p>
+<p>| CompleteIncubation | Authorized actor in Incubation and Startup context | Attempts to complete incubation and, if valid, produces a domain event. |</p>
+<p>| CreateStartup | Authorized actor in Incubation and Startup context | Attempts to create startup and, if valid, produces a domain event. |</p>
+<p>| AddFounder | Authorized actor in Incubation and Startup context | Attempts to add founder and, if valid, produces a domain event. |</p>
+<p>| ChangeFounderRole | Authorized actor in Incubation and Startup context | Attempts to change founder role and, if valid, produces a domain event. |</p>
+<p>| UpdateStartupStage | Authorized actor in Incubation and Startup context | Attempts to update startup stage and, if valid, produces a domain event. |</p>
+<p>| AddTractionEvidence | Authorized actor in Incubation and Startup context | Attempts to add traction evidence and, if valid, produces a domain event. |</p>
+<p>| CloseStartup | Authorized actor in Incubation and Startup context | Attempts to close startup and, if valid, produces a domain event. |</p>
+<h2 id="107-funding-and-investment-commands">10.7 Funding and Investment Commands</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Typical Actor</th>
+<th>Expected Business Outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| CreateFundingRequest | Authorized actor in Funding and Investment context | Attempts to create funding request and, if valid, produces a domain event. |</p>
+<p>| SubmitFundingRequest | Authorized actor in Funding and Investment context | Attempts to submit funding request and, if valid, produces a domain event. |</p>
+<p>| RegisterInvestorInterest | Authorized actor in Funding and Investment context | Attempts to register investor interest and, if valid, produces a domain event. |</p>
+<p>| StartDueDiligence | Authorized actor in Funding and Investment context | Attempts to start due diligence and, if valid, produces a domain event. |</p>
+<p>| CompleteDueDiligence | Authorized actor in Funding and Investment context | Attempts to complete due diligence and, if valid, produces a domain event. |</p>
+<p>| ApproveFunding | Authorized actor in Funding and Investment context | Attempts to approve funding and, if valid, produces a domain event. |</p>
+<p>| RejectFunding | Authorized actor in Funding and Investment context | Attempts to reject funding and, if valid, produces a domain event. |</p>
+<p>| IssueFundingCondition | Authorized actor in Funding and Investment context | Attempts to issue funding condition and, if valid, produces a domain event. |</p>
+<p>| CommitFunding | Authorized actor in Funding and Investment context | Attempts to commit funding and, if valid, produces a domain event. |</p>
+<p>| RecordFundingDisbursement | Authorized actor in Funding and Investment context | Attempts to record funding disbursement and, if valid, produces a domain event. |</p>
+<p>| SubmitFundingReport | Authorized actor in Funding and Investment context | Attempts to submit funding report and, if valid, produces a domain event. |</p>
+<p>| OpenInvestmentRound | Authorized actor in Funding and Investment context | Attempts to open investment round and, if valid, produces a domain event. |</p>
+<p>| CloseInvestmentRound | Authorized actor in Funding and Investment context | Attempts to close investment round and, if valid, produces a domain event. |</p>
+<h2 id="108-recruitment-events-community-ranking-compliance-commands">10.8 Recruitment, Events, Community, Ranking, Compliance Commands</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Typical Actor</th>
+<th>Expected Business Outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| PublishOpportunity | Authorized actor in Recruitment, Events, Community, Ranking, Compliance context | Attempts to publish opportunity and, if valid, produces a domain event. |</p>
+<p>| CloseOpportunity | Authorized actor in Recruitment, Events, Community, Ranking, Compliance context | Attempts to close opportunity and, if valid, produces a domain event. |</p>
+<p>| SubmitApplication | Authorized actor in Recruitment, Events, Community, Ranking, Compliance context | Attempts to submit application and, if valid, produces a domain event. |</p>
+<p>| ShortlistCandidate | Authorized actor in Recruitment, Events, Community, Ranking, Compliance context | Attempts to shortlist candidate and, if valid, produces a domain event. |</p>
+<p>| RequestInterview | Authorized actor in Recruitment, Events, Community, Ranking, Compliance context | Attempts to request interview and, if valid, produces a domain event. |</p>
+<p>| IssueOffer | Authorized actor in Recruitment, Events, Community, Ranking, Compliance context | Attempts to issue offer and, if valid, produces a domain event. |</p>
+<p>| AcceptOffer | Authorized actor in Recruitment, Events, Community, Ranking, Compliance context | Attempts to accept offer and, if valid, produces a domain event. |</p>
+<p>| RecordInternshipCompletion | Authorized actor in Recruitment, Events, Community, Ranking, Compliance context | Attempts to record internship completion and, if valid, produces a domain event. |</p>
+<p>| CreateEvent | Authorized actor in Recruitment, Events, Community, Ranking, Compliance context | Attempts to create event and, if valid, produces a domain event. |</p>
+<p>| RegisterForEvent | Authorized actor in Recruitment, Events, Community, Ranking, Compliance context | Attempts to register for event and, if valid, produces a domain event. |</p>
+<p>| PublishChallenge | Authorized actor in Recruitment, Events, Community, Ranking, Compliance context | Attempts to publish challenge and, if valid, produces a domain event. |</p>
+<p>| SubmitChallengeEntry | Authorized actor in Recruitment, Events, Community, Ranking, Compliance context | Attempts to submit challenge entry and, if valid, produces a domain event. |</p>
+<p>| SelectChallengeWinner | Authorized actor in Recruitment, Events, Community, Ranking, Compliance context | Attempts to select challenge winner and, if valid, produces a domain event. |</p>
+<p>| CreateCommunity | Authorized actor in Recruitment, Events, Community, Ranking, Compliance context | Attempts to create community and, if valid, produces a domain event. |</p>
+<p>| JoinCommunity | Authorized actor in Recruitment, Events, Community, Ranking, Compliance context | Attempts to join community and, if valid, produces a domain event. |</p>
+<p>| RecordCommunityContribution | Authorized actor in Recruitment, Events, Community, Ranking, Compliance context | Attempts to record community contribution and, if valid, produces a domain event. |</p>
+<p>| ConfigureRankingCycle | Authorized actor in Recruitment, Events, Community, Ranking, Compliance context | Attempts to configure ranking cycle and, if valid, produces a domain event. |</p>
+<p>| PublishRanking | Authorized actor in Recruitment, Events, Community, Ranking, Compliance context | Attempts to publish ranking and, if valid, produces a domain event. |</p>
+<p>| SubmitRankingAppeal | Authorized actor in Recruitment, Events, Community, Ranking, Compliance context | Attempts to submit ranking appeal and, if valid, produces a domain event. |</p>
+<p>| ReportPolicyViolation | Authorized actor in Recruitment, Events, Community, Ranking, Compliance context | Attempts to report policy violation and, if valid, produces a domain event. |</p>
+<p>| ResolveComplianceCase | Authorized actor in Recruitment, Events, Community, Ranking, Compliance context | Attempts to resolve compliance case and, if valid, produces a domain event. |</p>
+<h1 id="11-policies">11. Policies</h1>
+<p>Policies are decision rules, governance mechanisms, and institutional constraints that guide domain behavior. Some may later be automated, but they are business policies first.</p>
+<table>
+<thead>
+<tr>
+<th>Policy</th>
+<th>Purpose</th>
+<th>Primary Contexts</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| Institutional Verification Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for institutional verification. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Academic Affiliation Approval Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for academic affiliation approval. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Project Approval Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for project approval. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Research Ethics Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for research ethics. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Publication Verification Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for publication verification. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Patent Disclosure Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for patent disclosure. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Innovation Validation Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for innovation validation. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Incubation Selection Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for incubation selection. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Cohort Graduation Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for cohort graduation. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Mentor Verification Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for mentor verification. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Mentorship Confidentiality Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for mentorship confidentiality. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Conflict-of-Interest Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for conflict-of-interest. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Funding Readiness Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for funding readiness. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Grant Eligibility Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for grant eligibility. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Investment Confidentiality Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for investment confidentiality. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Due Diligence Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for due diligence. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Post-Funding Reporting Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for post-funding reporting. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Recruitment Fairness Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for recruitment fairness. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Portfolio Sharing Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for portfolio sharing. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Ranking Eligibility Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for ranking eligibility. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Evidence Weighting Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for evidence weighting. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Anti-Gaming Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for anti-gaming. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Ranking Appeal Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for ranking appeal. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Government Reporting Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for government reporting. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Municipality Innovation Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for municipality innovation. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Marketplace Trust Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for marketplace trust. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Data Ownership Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for data ownership. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Data Retention Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for data retention. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Dispute Resolution Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for dispute resolution. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Misconduct Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for misconduct. | Relevant domain contexts and Administration/Compliance. |</p>
+<p>| Audit Policy | Defines consistent decision-making, authority, evidence expectations, and fairness for audit. | Relevant domain contexts and Administration/Compliance. |</p>
+<h1 id="12-state-machines">12. State Machines</h1>
+<p>State machines describe business lifecycles. They are not implementation diagrams; they show valid business progression and transition logic.</p>
+<h2 id="121-student-lifecycle">12.1 Student Lifecycle</h2>
+<div class="highlight"><pre><span></span><code>Prospective User
+    ↓
+Registered User
+    ↓
+Identity Verified
+    ↓
+Affiliation Pending
+    ↓
+Active Student
+    ↓
+Graduated / Alumni / Inactive / Suspended
+</code></pre></div>
+<h2 id="122-project-lifecycle">12.2 Project Lifecycle</h2>
+<div class="highlight"><pre><span></span><code>Draft
+    ↓
+Proposed
+    ↓
+Approved / Rejected / Revision Required
+    ↓
+In Progress
+    ↓
+Submitted for Review
+    ↓
+Completed
+    ↓
+Innovation Candidate / Research Linked / Startup Candidate / Archived
+</code></pre></div>
+<h2 id="123-research-lifecycle">12.3 Research Lifecycle</h2>
+<div class="highlight"><pre><span></span><code>Research Idea
+    ↓
+Proposal Submitted
+    ↓
+Approved / Rejected / Revision Required
+    ↓
+Ethics Pending if required
+    ↓
+Active Research
+    ↓
+Output Submitted
+    ↓
+Published / Patent Path / Commercialization Candidate / Archived
+</code></pre></div>
+<h2 id="124-innovation-lifecycle">12.4 Innovation Lifecycle</h2>
+<div class="highlight"><pre><span></span><code>Identified
+    ↓
+Submitted
+    ↓
+Screening
+    ↓
+Evidence Required / Under Evaluation / Rejected
+    ↓
+Validated
+    ↓
+Incubation Ready / Patent Path / Industry Pilot / Research Path / Archived
+</code></pre></div>
+<h2 id="125-incubation-lifecycle">12.5 Incubation Lifecycle</h2>
+<div class="highlight"><pre><span></span><code>Program Planned
+    ↓
+Applications Open
+    ↓
+Selection
+    ↓
+Cohort Formed
+    ↓
+Active Incubation
+    ↓
+At Risk / Graduation Review / Exited
+    ↓
+Graduated
+</code></pre></div>
+<h2 id="126-startup-lifecycle">12.6 Startup Lifecycle</h2>
+<div class="highlight"><pre><span></span><code>Concept
+    ↓
+Profile Created
+    ↓
+Founder Verified
+    ↓
+Problem Validated
+    ↓
+Prototype
+    ↓
+MVP
+    ↓
+Pilot / Fundraising / Early Revenue
+    ↓
+Funded
+    ↓
+Growth / Closed / Exited
+</code></pre></div>
+<h2 id="127-grant-lifecycle">12.7 Grant Lifecycle</h2>
+<div class="highlight"><pre><span></span><code>Grant Draft
+    ↓
+Open for Applications
+    ↓
+Application Submitted
+    ↓
+Eligibility Review
+    ↓
+Under Review
+    ↓
+Approved / Conditional / Rejected
+    ↓
+Disbursed
+    ↓
+Reporting
+    ↓
+Closed
+</code></pre></div>
+<h2 id="128-investment-lifecycle">12.8 Investment Lifecycle</h2>
+<div class="highlight"><pre><span></span><code>Funding Need
+    ↓
+Request Draft
+    ↓
+Submitted
+    ↓
+Investor Interested
+    ↓
+Due Diligence
+    ↓
+Term Discussion
+    ↓
+Committed
+    ↓
+Funded
+    ↓
+Monitored / New Round / Exit Recorded
+</code></pre></div>
+<h2 id="129-job-application-lifecycle">12.9 Job Application Lifecycle</h2>
+<div class="highlight"><pre><span></span><code>Opportunity Published
+    ↓
+Application Submitted
+    ↓
+Shortlisted / Rejected
+    ↓
+Interview
+    ↓
+Offer Issued
+    ↓
+Accepted / Declined
+    ↓
+Active Placement
+    ↓
+Completed / Employed / Ended
+</code></pre></div>
+<h2 id="1210-mentorship-lifecycle">12.10 Mentorship Lifecycle</h2>
+<div class="highlight"><pre><span></span><code>Need Identified
+    ↓
+Request Submitted
+    ↓
+Match Proposed
+    ↓
+Active Engagement
+    ↓
+Closure Review
+    ↓
+Completed / Closed / Under Review
+</code></pre></div>
+<h2 id="1211-ranking-lifecycle">12.11 Ranking Lifecycle</h2>
+<div class="highlight"><pre><span></span><code>Criteria Draft
+    ↓
+Criteria Published
+    ↓
+Evidence Snapshot
+    ↓
+Calculation
+    ↓
+Draft Results
+    ↓
+Appeal Window
+    ↓
+Published
+    ↓
+Locked
+</code></pre></div>
+<h2 id="1212-compliance-case-lifecycle">12.12 Compliance Case Lifecycle</h2>
+<div class="highlight"><pre><span></span><code>Reported
+    ↓
+Opened
+    ↓
+Evidence Review
+    ↓
+Decision Draft
+    ↓
+Resolved / Sanctioned / Dismissed
+    ↓
+Appealed / Closed
+</code></pre></div>
+<h1 id="13-domain-services">13. Domain Services</h1>
+<p>Domain services are business operations that do not naturally belong to one entity or aggregate. They should not be confused with technical services.</p>
+<table>
+<thead>
+<tr>
+<th>Domain Service</th>
+<th>Business Purpose</th>
+<th>Typical Inputs</th>
+<th>Expected Decision or Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| Innovation Evaluation Service | Performs cross-aggregate business reasoning for innovation evaluation. | Relevant evidence, policies, actor roles, lifecycle status, and contextual constraints. | Recommendation, eligibility result, score, risk flag, match, or validation decision. |</p>
+<p>| Portfolio Scoring Service | Performs cross-aggregate business reasoning for portfolio scoring. | Relevant evidence, policies, actor roles, lifecycle status, and contextual constraints. | Recommendation, eligibility result, score, risk flag, match, or validation decision. |</p>
+<p>| Skill Assessment Service | Performs cross-aggregate business reasoning for skill assessment. | Relevant evidence, policies, actor roles, lifecycle status, and contextual constraints. | Recommendation, eligibility result, score, risk flag, match, or validation decision. |</p>
+<p>| Roadmap Evaluation Service | Performs cross-aggregate business reasoning for roadmap evaluation. | Relevant evidence, policies, actor roles, lifecycle status, and contextual constraints. | Recommendation, eligibility result, score, risk flag, match, or validation decision. |</p>
+<p>| Mentor Matching Service | Performs cross-aggregate business reasoning for mentor matching. | Relevant evidence, policies, actor roles, lifecycle status, and contextual constraints. | Recommendation, eligibility result, score, risk flag, match, or validation decision. |</p>
+<p>| Investor Matching Service | Performs cross-aggregate business reasoning for investor matching. | Relevant evidence, policies, actor roles, lifecycle status, and contextual constraints. | Recommendation, eligibility result, score, risk flag, match, or validation decision. |</p>
+<p>| Recruiter Matching Service | Performs cross-aggregate business reasoning for recruiter matching. | Relevant evidence, policies, actor roles, lifecycle status, and contextual constraints. | Recommendation, eligibility result, score, risk flag, match, or validation decision. |</p>
+<p>| Project-to-Innovation Qualification Service | Performs cross-aggregate business reasoning for project-to-innovation qualification. | Relevant evidence, policies, actor roles, lifecycle status, and contextual constraints. | Recommendation, eligibility result, score, risk flag, match, or validation decision. |</p>
+<p>| Research Commercialization Assessment Service | Performs cross-aggregate business reasoning for research commercialization assessment. | Relevant evidence, policies, actor roles, lifecycle status, and contextual constraints. | Recommendation, eligibility result, score, risk flag, match, or validation decision. |</p>
+<p>| Startup Readiness Service | Performs cross-aggregate business reasoning for startup readiness. | Relevant evidence, policies, actor roles, lifecycle status, and contextual constraints. | Recommendation, eligibility result, score, risk flag, match, or validation decision. |</p>
+<p>| Funding Assessment Service | Performs cross-aggregate business reasoning for funding assessment. | Relevant evidence, policies, actor roles, lifecycle status, and contextual constraints. | Recommendation, eligibility result, score, risk flag, match, or validation decision. |</p>
+<p>| Ranking Calculation Service | Performs cross-aggregate business reasoning for ranking calculation. | Relevant evidence, policies, actor roles, lifecycle status, and contextual constraints. | Recommendation, eligibility result, score, risk flag, match, or validation decision. |</p>
+<p>| Conflict Detection Service | Performs cross-aggregate business reasoning for conflict detection. | Relevant evidence, policies, actor roles, lifecycle status, and contextual constraints. | Recommendation, eligibility result, score, risk flag, match, or validation decision. |</p>
+<p>| Evidence Validation Service | Performs cross-aggregate business reasoning for evidence validation. | Relevant evidence, policies, actor roles, lifecycle status, and contextual constraints. | Recommendation, eligibility result, score, risk flag, match, or validation decision. |</p>
+<p>| Policy Eligibility Service | Performs cross-aggregate business reasoning for policy eligibility. | Relevant evidence, policies, actor roles, lifecycle status, and contextual constraints. | Recommendation, eligibility result, score, risk flag, match, or validation decision. |</p>
+<p>| Impact Measurement Service | Performs cross-aggregate business reasoning for impact measurement. | Relevant evidence, policies, actor roles, lifecycle status, and contextual constraints. | Recommendation, eligibility result, score, risk flag, match, or validation decision. |</p>
+<p>| Collaboration Matching Service | Performs cross-aggregate business reasoning for collaboration matching. | Relevant evidence, policies, actor roles, lifecycle status, and contextual constraints. | Recommendation, eligibility result, score, risk flag, match, or validation decision. |</p>
+<p>| Fraud Risk Assessment Service | Performs cross-aggregate business reasoning for fraud risk assessment. | Relevant evidence, policies, actor roles, lifecycle status, and contextual constraints. | Recommendation, eligibility result, score, risk flag, match, or validation decision. |</p>
+<h1 id="14-business-capabilities">14. Business Capabilities</h1>
+<p>Business capabilities define what the ecosystem must be able to do independent of software design.</p>
+<div class="highlight"><pre><span></span><code>National Innovation Ecosystem Capabilities
+├── Ecosystem Governance
+│   ├── Institutional onboarding
+│   ├── Policy alignment
+│   ├── Role and authority management
+│   ├── Dispute and appeal governance
+│   └── National reporting
+├── Talent Development
+│   ├── Learning roadmap alignment
+│   ├── Skill evidence validation
+│   ├── Portfolio development
+│   ├── Career readiness assessment
+│   └── Lifelong learning continuity
+├── Project and Research Activation
+│   ├── Project lifecycle management
+│   ├── Final-year project continuity
+│   ├── Research output tracking
+│   ├── Patent and IP pathway support
+│   └── Research commercialization readiness
+├── Innovation Pipeline
+│   ├── Idea capture
+│   ├── Innovation candidate evaluation
+│   ├── Validation evidence management
+│   ├── Impact pathway classification
+│   └── Innovation marketplace discovery
+├── Venture Creation
+│   ├── Startup formation readiness
+│   ├── Incubation selection
+│   ├── Cohort management
+│   ├── Mentorship and milestones
+│   └── Demo day and graduation readiness
+├── Capital Mobilization
+│   ├── Grant discovery
+│   ├── Funding request preparation
+│   ├── Investor matching
+│   ├── Due diligence support
+│   └── Post-funding monitoring
+├── Industry and Employment Linkage
+│   ├── Opportunity publishing
+│   ├── Talent discovery
+│   ├── Internship management
+│   ├── Skill-based recruitment
+│   └── Employer feedback loop
+└── Intelligence and Impact
+    ├── Ranking and recognition
+    ├── Skill gap analytics
+    ├── Innovation pipeline analytics
+    ├── Regional ecosystem indicators
+    └── Economic and social impact measurement
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Capability</th>
+<th>Strategic Importance</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| Innovation Lifecycle Management | Very High | Required to convert learning, research, projects, and collaboration into trusted innovation outcomes. |</p>
+<p>| Portfolio and Talent Evidence | Very High | Required to convert learning, research, projects, and collaboration into trusted innovation outcomes. |</p>
+<p>| Project Continuity | Very High | Required to convert learning, research, projects, and collaboration into trusted innovation outcomes. |</p>
+<p>| Incubation Pipeline | Very High | Required to convert learning, research, projects, and collaboration into trusted innovation outcomes. |</p>
+<p>| Ecosystem Governance | Very High | Required to convert learning, research, projects, and collaboration into trusted innovation outcomes. |</p>
+<p>| Skill Roadmap Alignment | High | Required to convert learning, research, projects, and collaboration into trusted innovation outcomes. |</p>
+<p>| Research Commercialization | High | Required to convert learning, research, projects, and collaboration into trusted innovation outcomes. |</p>
+<p>| Mentor Matching | High | Required to convert learning, research, projects, and collaboration into trusted innovation outcomes. |</p>
+<p>| Funding Pipeline | High | Required to convert learning, research, projects, and collaboration into trusted innovation outcomes. |</p>
+<p>| Recruitment Linkage | High | Required to convert learning, research, projects, and collaboration into trusted innovation outcomes. |</p>
+<p>| Ranking and Recognition | Medium-High | Required to convert learning, research, projects, and collaboration into trusted innovation outcomes. |</p>
+<p>| Events and Challenges | Medium-High | Required to convert learning, research, projects, and collaboration into trusted innovation outcomes. |</p>
+<p>| Communities | Medium | Required to convert learning, research, projects, and collaboration into trusted innovation outcomes. |</p>
+<p>| Government Monitoring | Medium-High | Required to convert learning, research, projects, and collaboration into trusted innovation outcomes. |</p>
+<p>| Marketplace and Partnerships | Medium-High | Required to convert learning, research, projects, and collaboration into trusted innovation outcomes. |</p>
+<h1 id="15-cross-domain-workflows">15. Cross-Domain Workflows</h1>
+<p>Cross-domain workflows connect bounded contexts. These should become the basis for event storming and future PRD epics.</p>
+<h2 id="151-student-to-founder-workflow">15.1 Student to Founder Workflow</h2>
+<div class="highlight"><pre><span></span><code>StudentAffiliationVerified
+    ↓
+LearningGoalDeclared
+    ↓
+ProjectCreated
+    ↓
+ProjectCompleted
+    ↓
+ProjectMarkedInnovationCandidate
+    ↓
+InnovationValidated
+    ↓
+IncubationRecommended
+    ↓
+IncubationApplicationAccepted
+    ↓
+StartupCreated
+    ↓
+FounderRolesDeclared
+    ↓
+FundingRequestSubmitted
+    ↓
+FundingApproved
+</code></pre></div>
+<p><strong>Primary Concern:</strong> Maintain evidence, ownership clarity, consent, and lifecycle continuity across contexts.</p>
+<h2 id="152-final-year-project-continuity-workflow">15.2 Final-Year Project Continuity Workflow</h2>
+<div class="highlight"><pre><span></span><code>ProjectProposed
+    ↓
+SupervisorAssigned
+    ↓
+MilestonesCompleted
+    ↓
+ProjectSubmitted
+    ↓
+AcademicReviewCompleted
+    ↓
+OwnershipConfirmed
+    ↓
+InnovationEligibilityChecked
+    ↓
+ContinuationPathSelected
+</code></pre></div>
+<p><strong>Primary Concern:</strong> Maintain evidence, ownership clarity, consent, and lifecycle continuity across contexts.</p>
+<h2 id="153-research-to-commercialization-workflow">15.3 Research to Commercialization Workflow</h2>
+<div class="highlight"><pre><span></span><code>ResearchProposalSubmitted
+    ↓
+ResearchApproved
+    ↓
+EthicsChecked
+    ↓
+ResearchConducted
+    ↓
+OutputSubmitted
+    ↓
+PublicationOrPatentRecorded
+    ↓
+CommercializationAssessmentCompleted
+    ↓
+InnovationCandidateCreated
+    ↓
+PartnershipOrStartupPathInitiated
+</code></pre></div>
+<p><strong>Primary Concern:</strong> Maintain evidence, ownership clarity, consent, and lifecycle continuity across contexts.</p>
+<h2 id="154-industry-challenge-to-recruitment-workflow">15.4 Industry Challenge to Recruitment Workflow</h2>
+<div class="highlight"><pre><span></span><code>CompanyVerified
+    ↓
+ChallengePublished
+    ↓
+TeamsRegister
+    ↓
+SubmissionsCreated
+    ↓
+JudgingCompleted
+    ↓
+StrongSubmissionsIdentified
+    ↓
+PortfolioEvidenceCreated
+    ↓
+InternshipOpportunityPublished
+    ↓
+OfferIssued
+    ↓
+InternshipCompleted
+</code></pre></div>
+<p><strong>Primary Concern:</strong> Maintain evidence, ownership clarity, consent, and lifecycle continuity across contexts.</p>
+<h2 id="155-skill-roadmap-to-employment-workflow">15.5 Skill Roadmap to Employment Workflow</h2>
+<div class="highlight"><pre><span></span><code>CareerGoalDeclared
+    ↓
+LearningTrackSelected
+    ↓
+GapAnalysisCompleted
+    ↓
+RecommendedActionsGenerated
+    ↓
+SkillEvidenceSubmitted
+    ↓
+BadgeIssued
+    ↓
+PortfolioReadinessImproved
+    ↓
+RecruiterDiscoversCandidate
+    ↓
+OfferAccepted
+    ↓
+EmploymentRecorded
+</code></pre></div>
+<p><strong>Primary Concern:</strong> Maintain evidence, ownership clarity, consent, and lifecycle continuity across contexts.</p>
+<h2 id="156-startup-funding-readiness-workflow">15.6 Startup Funding Readiness Workflow</h2>
+<div class="highlight"><pre><span></span><code>StartupCreated
+    ↓
+FounderTeamVerified
+    ↓
+ProblemValidationAdded
+    ↓
+PrototypeEvidenceAdded
+    ↓
+TractionEvidenceAdded
+    ↓
+MentorReviewCompleted
+    ↓
+ReadinessAssessmentCompleted
+    ↓
+InvestorMatched
+    ↓
+DueDiligenceStarted
+    ↓
+FundingDecisionRecorded
+</code></pre></div>
+<p><strong>Primary Concern:</strong> Maintain evidence, ownership clarity, consent, and lifecycle continuity across contexts.</p>
+<h2 id="157-government-grant-workflow">15.7 Government Grant Workflow</h2>
+<div class="highlight"><pre><span></span><code>GovernmentProgramCreated
+    ↓
+GrantEligibilityPublished
+    ↓
+ApplicationSubmitted
+    ↓
+EligibilityChecked
+    ↓
+EvaluationCompleted
+    ↓
+GrantApproved
+    ↓
+FundingDisbursed
+    ↓
+ReportsSubmitted
+    ↓
+ImpactReportGenerated
+    ↓
+NationalIndicatorsUpdated
+</code></pre></div>
+<p><strong>Primary Concern:</strong> Maintain evidence, ownership clarity, consent, and lifecycle continuity across contexts.</p>
+<h2 id="158-alumni-reinvestment-workflow">15.8 Alumni Reinvestment Workflow</h2>
+<div class="highlight"><pre><span></span><code>StudentGraduates
+    ↓
+AlumniProfileActivated
+    ↓
+AlumniJoinsCommunity
+    ↓
+AlumniBecomesMentorRecruiterInvestorOrSpeaker
+    ↓
+ContributionRecorded
+    ↓
+StudentsBenefit
+    ↓
+UniversityContributionImproves
+</code></pre></div>
+<p><strong>Primary Concern:</strong> Maintain evidence, ownership clarity, consent, and lifecycle continuity across contexts.</p>
+<h2 id="159-open-source-contribution-workflow">15.9 Open Source Contribution Workflow</h2>
+<div class="highlight"><pre><span></span><code>ProjectCompleted
+    ↓
+LicenseEligibilityChecked
+    ↓
+OpenSourceReleaseApproved
+    ↓
+ContributionRecordAdded
+    ↓
+CommunityContributorsJoin
+    ↓
+SkillEvidenceUpdated
+    ↓
+PortfolioUpdated
+    ↓
+CompanyDiscoversMaintainer
+</code></pre></div>
+<p><strong>Primary Concern:</strong> Maintain evidence, ownership clarity, consent, and lifecycle continuity across contexts.</p>
+<h2 id="1510-municipality-innovation-challenge-workflow">15.10 Municipality Innovation Challenge Workflow</h2>
+<div class="highlight"><pre><span></span><code>MunicipalityProblemIdentified
+    ↓
+ChallengePublished
+    ↓
+UniversitiesParticipate
+    ↓
+SolutionsSubmitted
+    ↓
+PilotSelected
+    ↓
+LocalPilotImplemented
+    ↓
+ImpactEvidenceCollected
+    ↓
+GovernmentDashboardUpdated
+    ↓
+StartupResearchOrPolicyPathRecommended
+</code></pre></div>
+<p><strong>Primary Concern:</strong> Maintain evidence, ownership clarity, consent, and lifecycle continuity across contexts.</p>
+<h1 id="16-business-glossary">16. Business Glossary</h1>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>| Actor | Any person, organization, institution, community, or formal group participating in the ecosystem. |</p>
+<p>| User | A human actor who accesses the platform. A user may have multiple roles across contexts. |</p>
+<p>| Participant | An actor actively involved in a specific activity such as a project, cohort, challenge, research work, investment review, or mentorship. |</p>
+<p>| Affiliation | A formal relationship between a person and an organization, such as student-university, faculty-department, mentor-company, or officer-government unit. |</p>
+<p>| Role | A business responsibility assigned within a context, such as project supervisor, evaluator, mentor, founder, recruiter, investor reviewer, or government officer. |</p>
+<p>| Permission | The authority to perform a business action within a defined scope. Permission depends on role, context, ownership, delegation, and policy. |</p>
+<p>| Student | A learner with active or historical academic affiliation. A student can also be a researcher, founder, community member, intern, or project owner. |</p>
+<p>| Alumni | A former student who retains a lifelong portfolio and may later become mentor, founder, recruiter, investor, researcher, or ecosystem contributor. |</p>
+<p>| Faculty | Academic staff responsible for teaching, supervision, research, assessment, mentoring, governance, or innovation support. |</p>
+<p>| Researcher | A person conducting systematic inquiry. A researcher may be student, faculty, industry expert, independent scholar, or institutional researcher. |</p>
+<p>| University | A higher education institution recognized as an academic authority that may govern colleges, departments, programs, research centers, and innovation policies. |</p>
+<p>| College | An academic institution affiliated with or constituent of a university that operates programs and manages students locally. |</p>
+<p>| Department | An academic unit responsible for a subject area, faculty group, academic program, research direction, and project supervision. |</p>
+<p>| Program | A structured academic offering such as engineering, management, science, agriculture, medicine, design, or social science program. |</p>
+<p>| Course | A formal learning unit. Course completion may support but does not automatically prove practical competency. |</p>
+<p>| Learning Track | A career or capability-aligned pathway such as AI Engineer, Backend Engineer, Product Manager, Researcher, Cybersecurity Analyst, or Founder. |</p>
+<p>| Roadmap | A sequence of skills, milestones, projects, assessments, and evidence expectations aligned to a learning or career goal. |</p>
+<p>| Skill | A specific demonstrable capability such as programming, data analysis, research writing, product discovery, sales, grant writing, or public speaking. |</p>
+<p>| Competency | A broader capability combining knowledge, skill, judgment, application, and context-sensitive performance. |</p>
+<p>| Skill Evidence | Proof that a skill has been demonstrated, such as project review, internship feedback, code contribution, publication, assessment, certificate, or mentor validation. |</p>
+<p>| Skill Badge | A recognized marker issued only after sufficient evidence validates a skill or competency. |</p>
+<p>| Portfolio | A lifelong, evidence-backed innovation and talent profile. It is not just a resume; it contains verified learning, projects, research, startup participation, mentorship, employment, achievements, and impact. |</p>
+<p>| Project | A structured work artifact created to solve a problem, demonstrate learning, conduct research, build a prototype, contribute to open source, satisfy academic requirements, or create commercial/social value. |</p>
+<p>| Final-Year Project | A required academic project near graduation that may become portfolio evidence, research continuation, open-source work, innovation candidate, incubation candidate, or startup foundation. |</p>
+<p>| Problem Statement | A clear definition of the problem, affected users, pain points, context, evidence, and desired improvement. |</p>
+<p>| Prototype | A testable representation of a solution. It may be technical, physical, scientific, service-based, policy-based, or design-based. |</p>
+<p>| MVP | A minimum viable product or pilot used to test real demand, usage, feasibility, or adoption. |</p>
+<p>| Innovation | A validated project, research output, process, product, service, model, or prototype with novelty, usefulness, feasibility, and potential impact. |</p>
+<p>| Innovation Candidate | An idea, project, research output, prototype, startup, or challenge submission submitted for innovation evaluation. |</p>
+<p>| Validation | Evidence-based confirmation that a problem, skill, solution, market, research claim, impact claim, or venture assumption is credible. |</p>
+<p>| Research | Systematic inquiry intended to generate knowledge, methods, evidence, datasets, publications, inventions, prototypes, policy insight, or applied solutions. |</p>
+<p>| Publication | A research output made available through journal, conference, repository, thesis, report, technical note, or recognized publication channel. |</p>
+<p>| Patent | A legal intellectual property claim for an invention. Patent lifecycle is separate from publication and project lifecycle. |</p>
+<p>| Grant | Non-dilutive funding awarded for research, innovation, public interest, development, institutional support, or social impact. |</p>
+<p>| Intellectual Property | Rights related to inventions, creative works, software, datasets, designs, methods, research outputs, or knowledge assets. |</p>
+<p>| Startup | A new venture formed to build a scalable solution under uncertainty. Not every small business is a startup. |</p>
+<p>| Founder | A person with explicit ownership, accountability, and leadership responsibility in a startup. |</p>
+<p>| Incubation | Structured support that helps projects, innovations, or startups move toward validation, venture formation, funding readiness, and impact. |</p>
+<p>| Cohort | A group of selected teams, startups, students, researchers, or innovators participating in the same program cycle. |</p>
+<p>| Mentor | An experienced advisor who supports students, projects, researchers, founders, or startups without automatically holding approval authority. |</p>
+<p>| Investor | An actor that evaluates and may provide capital. Includes angel investors, venture capital funds, corporate investors, diaspora investors, public funds, and impact investors. |</p>
+<p>| Funding Round | A structured fundraising process such as pre-seed, seed, bridge, or growth round. |</p>
+<p>| Due Diligence | Structured evidence review before funding, investment, grant approval, partnership, acquisition, or high-trust decision. |</p>
+<p>| Company | An organization seeking talent, innovation, research collaboration, pilots, services, products, or investment opportunities. |</p>
+<p>| Recruiter | A person or organization that sources and evaluates candidates for internships, jobs, fellowships, or contract roles. |</p>
+<p>| Opportunity | Any opening for job, internship, challenge, grant, mentorship, partnership, research collaboration, incubation, or investment. |</p>
+<p>| Challenge | A structured problem-solving opportunity with sponsor, eligibility, rules, deadline, evaluation criteria, and outcomes. |</p>
+<p>| Hackathon | A time-bound event where participants build or propose solutions. In this ecosystem it should feed projects, portfolios, and incubation pathways. |</p>
+<p>| Community | A group of practice around topic, region, institution, sector, technology, mission, alumni identity, founder stage, or social cause. |</p>
+<p>| Innovation Marketplace | A structured discovery space for projects, research, startups, talent, mentors, challenges, funding, partnerships, and services. |</p>
+<p>| Ranking | Contextual ordered recognition based on validated evidence and transparent criteria. |</p>
+<p>| Innovation Score | Composite evaluation of innovation quality, novelty, feasibility, validation, collaboration, impact, and readiness. |</p>
+<p>| Impact Score | Assessment of measurable economic, social, environmental, educational, institutional, or community impact. |</p>
+<p>| Reputation | Trust accumulated through verified contribution, mentorship, delivery, ethical behavior, and ecosystem participation. |</p>
+<p>| Evidence | Any artifact or confirmation supporting a business claim. Evidence is the currency of trust in the ecosystem. |</p>
+<p>| Conflict of Interest | A situation where an actor has personal, financial, institutional, relational, or competitive interest that may bias a decision. |</p>
+<h1 id="appendix-a-event-storming-starter-map">Appendix A: Event Storming Starter Map</h1>
+<div class="highlight"><pre><span></span><code>UserRegistered
+→ StudentAffiliationVerified
+→ LearningGoalDeclared
+→ ProjectCreated
+→ ProjectApproved
+→ ProjectCompleted
+→ ProjectMarkedInnovationCandidate
+→ InnovationValidated
+→ IncubationRecommended
+→ IncubationApplicationAccepted
+→ StartupCreated
+→ MentorAssigned
+→ IncubationMilestoneCompleted
+→ StartupStageUpdated
+→ FundingRequestSubmitted
+→ InvestorInterestRegistered
+→ FundingApproved
+→ FundingDisbursed
+→ StartupGraduated
+→ EmploymentRecorded / InvestmentRoundClosed / ImpactReportGenerated
+</code></pre></div>
+<h2 id="workshop-prompts">Workshop Prompts</h2>
+<ol>
+<li>What event is missing between project completion and innovation validation?</li>
+<li>Who has authority to approve each transition?</li>
+<li>What evidence is required before high-trust decisions?</li>
+<li>Which events should update portfolio?</li>
+<li>Which events should influence ranking?</li>
+<li>Which events should be private or confidential?</li>
+<li>Which events should government see only in aggregate?</li>
+<li>Which events create legal or intellectual property implications?</li>
+<li>Which events currently happen informally in universities?</li>
+<li>Which events are completely missing from Nepal's current innovation pipeline?</li>
+</ol>
+<h1 id="appendix-b-open-domain-questions">Appendix B: Open Domain Questions</h1>
+<h2 id="institution-and-governance">Institution and Governance</h2>
+<ol>
+<li>Who verifies university, college, department, and program records?</li>
+<li>Should universities self-manage structures or should a national council verify them?</li>
+<li>How should affiliated colleges be modeled when they operate under different universities?</li>
+<li>What minimum institutional information is required for participation?</li>
+<li>How should suspended, merged, renamed, or discontinued programs be represented?</li>
+</ol>
+<h2 id="project-and-ip">Project and IP</h2>
+<ol>
+<li>Who owns final-year projects by default across different universities?</li>
+<li>Should there be a standard project ownership declaration template?</li>
+<li>How should sponsor-funded projects define IP and confidentiality?</li>
+<li>How should team contribution disputes be resolved?</li>
+<li>Can students continue university projects as independent startups after graduation?</li>
+</ol>
+<h2 id="innovation-and-incubation">Innovation and Incubation</h2>
+<ol>
+<li>What minimum evidence qualifies a project as an innovation candidate?</li>
+<li>Should each university have its own panel or should there be a shared evaluator pool?</li>
+<li>How should discipline-specific innovation criteria differ?</li>
+<li>Should social innovation and commercial startup tracks be separated?</li>
+<li>What is the minimum demo day readiness standard?</li>
+</ol>
+<h2 id="funding-and-investment">Funding and Investment</h2>
+<ol>
+<li>What evidence should be required before investor exposure?</li>
+<li>How should investor verification work for Nepal, diaspora, and international investors?</li>
+<li>How should grant funding and equity investment be clearly separated for founders?</li>
+<li>What funding data should be visible to government?</li>
+<li>What due diligence information should remain confidential?</li>
+</ol>
+<h2 id="ranking-and-recognition">Ranking and Recognition</h2>
+<ol>
+<li>Should rankings be annual, semester-based, cohort-based, or continuous?</li>
+<li>Which evidence types deserve the highest weight?</li>
+<li>How should rankings avoid favoring wealthy urban institutions?</li>
+<li>How should rural innovation and local impact be recognized?</li>
+<li>Who hears appeals and how quickly?</li>
+</ol>
+<h2 id="privacy-and-data-ownership">Privacy and Data Ownership</h2>
+<ol>
+<li>Who owns student portfolio data?</li>
+<li>What can universities see after graduation?</li>
+<li>What can recruiters see without direct student application?</li>
+<li>What can investors see before startup permission is granted?</li>
+<li>What should government see only in aggregate form?</li>
+</ol>
+<hr />
+<h1 id="closing-note">Closing Note</h1>
+<p>This domain model should be treated as a living business artifact. Its value is not in having a large list of nouns. Its value is in making the ecosystem's meaning, ownership, rules, lifecycles, events, and boundaries explicit before technical design begins. Once validated with stakeholders, it can become the foundation for SRS, PRD, UX research, event storming, microservice boundaries, CQRS models, event sourcing, AI governance, database design, and API design.</p>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright &copy; 2026 - Aayush Raj Regmi</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../javascripts/mathjax.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

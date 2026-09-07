@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Exponential Smoothing - DCS 404</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Exponential Smoothing";
+        var mkdocs_page_input_path = "DCS404/11_exponential_smoothing.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> DCS 404
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Welcome</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../InstallationGuide/">Installation Guide</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Machine Learning and AI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../01_introduction_to_machine_learning/">Introduction to Machine Learning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02_ml_workflow/">ML Workflow</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../03_regression/">Regression</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04_gradient_descent/">Gradient Descent</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../05_regularization/">Regularization</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../06_logistic_regression/">Classification & Logistic Regression</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07_decision_trees/">Decision Trees</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../08_evaluation_metrics/">Evaluation Metrics</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../09_knn/">K-Nearest Neighbors</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Time Series Analysis</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../10_time_series_foundations/">Time Series Foundations</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Exponential Smoothing</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-work-through-this">How to work through this</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#learning-objectives">Learning objectives</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#1-the-weighting-problem">1. The weighting problem</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-simple-exponential-smoothing">2. Simple Exponential Smoothing</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#where-the-exponential-weights-went">Where the exponential weights went</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#implementing-it">Implementing it</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#the-effect-of-alpha">The effect of \(\alpha\)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#estimating-alpha-and-ell_0">Estimating \(\alpha\) and \(\ell_0\)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-holts-linear-trend-method">3. Holt's linear trend method</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#damped-trend">Damped trend</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-holt-winters-seasonal-method">4. Holt-Winters seasonal method</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#additive-or-multiplicative">Additive or multiplicative?</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-comparison-and-diagnostics">5. Comparison and diagnostics</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#the-ets-taxonomy">The ETS taxonomy</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-your-turn">6. Your turn</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-if-you-remember-nothing-else">7. If you remember nothing else</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#8-further-reading-and-glossary">8. Further reading and glossary</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#further-reading">Further reading</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#glossary">Glossary</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../12_arima_models/">ARIMA and SARIMA Models</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Final Project</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../project/00_final_project/">Project Work</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">DCS 404</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Time Series Analysis</li>
+      <li class="breadcrumb-item active">Exponential Smoothing</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="exponential-smoothing-forecasts-that-forget">Exponential Smoothing: Forecasts That Forget</h1>
+<p><strong>DCS 404 · Data Science and Machine Learning</strong></p>
+<hr />
+<p>Module 10 ended on an unresolved note. We scored four baseline forecasts on the final two years of Air
+Passengers, and <strong>seasonal naive</strong> won on every metric — MAE of 71.25 thousand passengers, MAPE of 15.5%.
+Then we looked at its residuals and found something the score alone had hidden: the mean residual was
+<span class="arithmatex">\(+71.25\)</span>, <em>exactly equal to the MAE</em>, which can only happen when essentially every error points the same
+way. Seasonal naive does not make random mistakes. It <strong>systematically under-forecasts</strong>, every month,
+by roughly one year's worth of growth, because replaying last July tells you nothing about the fact that
+the airline is bigger this year than it was last year.</p>
+<p>The diagnosis writes the prescription. We need a method that keeps seasonal naive's great strength — a
+forecast with the right <em>shape</em> — while adding the one thing it lacks, a <strong>trend</strong>. That method is
+<strong>Holt-Winters</strong>, and this module builds it from the ground up in three steps.</p>
+<p>The organising idea behind all three is deceptively simple: <strong>recent observations should matter more than
+old ones</strong>. Naive forecasting takes that to one extreme (only the last observation matters at all); the
+mean forecast takes it to the other (a value from 1949 counts as much as one from 1960). Exponential
+smoothing sits between them, weighting the past with weights that decay geometrically as you go back in
+time. It is a forecast that <em>forgets</em>, at a rate you get to choose — and it is, by some distance, the most
+widely deployed forecasting family in industry.</p>
+<h2 id="how-to-work-through-this">How to work through this</h2>
+<p>Same rhythm as before: run every code cell (<code>Shift + Enter</code>), study the output, <em>then</em> read the
+commentary. Cells build on each other, so if something errors, run from the top.</p>
+<p>The module is a single escalating argument, in three acts:</p>
+<ol>
+<li><strong>Sections 1–2</strong> establish the mechanism: geometrically decaying weights, and the one-equation model
+   they imply — <strong>Simple Exponential Smoothing</strong>. We implement it from scratch in five lines of numpy and
+   check it against statsmodels, then watch it fail on trending data.</li>
+<li><strong>Sections 3–4</strong> add one equation at a time. <strong>Holt's method</strong> adds a slope, and its <strong>damped</strong>
+   variant stops that slope running away over long horizons. <strong>Holt-Winters</strong> adds a seasonal equation
+   and finally gives us a forecast with the right shape <em>and</em> the right level.</li>
+<li><strong>Section 5</strong> is the reckoning: all seven methods — our three plus module 10's four baselines — scored
+   on the identical test set, followed by residual diagnostics of the winner to ask whether the
+   under-forecast bias is actually gone.</li>
+</ol>
+<p>We use the same <strong>Air Passengers</strong> series and the same <strong>final-24-months</strong> hold-out as module 10, so
+every number in this module is directly comparable to every number in that one.</p>
+<h2 id="learning-objectives">Learning objectives</h2>
+<p>After completing this module you will be able to:</p>
+<ul>
+<li>Explain <strong>exponential smoothing</strong> as a weighted average with geometrically decaying weights
+  <span class="arithmatex">\(\alpha(1-\alpha)^h\)</span>, and locate the naive and mean forecasts as its two limiting cases.</li>
+<li>Write the <strong>component form</strong> of Simple Exponential Smoothing — a forecast equation plus a level
+  equation — and implement the recursion from scratch.</li>
+<li>Describe how <span class="arithmatex">\(\alpha\)</span> and <span class="arithmatex">\(\ell_0\)</span> are estimated by <strong>minimising the sum of squared errors</strong>, and
+  interpret what a fitted <span class="arithmatex">\(\alpha\)</span> near 0 or near 1 tells you about the series.</li>
+<li>Extend SES to <strong>Holt's linear trend method</strong> with a slope equation, and explain why a
+  <strong>damped trend</strong> (<span class="arithmatex">\(\phi &lt; 1\)</span>) is safer over long horizons.</li>
+<li>Fit <strong>Holt-Winters</strong> with additive and multiplicative seasonality, and choose between them using the
+  diagnostic from module 10.</li>
+<li>Compare a full slate of methods on a chronological hold-out with <strong>MAE, RMSE, MAPE and MASE</strong>, and use
+  <strong>residual diagnostics</strong> to determine whether a known bias has been fixed.</li>
+<li>Place all of these models within the <strong>ETS (Error-Trend-Seasonal)</strong> taxonomy.</li>
+</ul>
+<h2 id="setup">Setup</h2>
+<p>Run this once. Same libraries, same plotting style, same data loader and the same metric functions as
+module 10 — redefined here so this notebook stands alone.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.tsa.holtwinters</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleExpSmoothing</span><span class="p">,</span> <span class="n">Holt</span><span class="p">,</span> <span class="n">ExponentialSmoothing</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.graphics.tsaplots</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_acf</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.tsa.stattools</span><span class="w"> </span><span class="kn">import</span> <span class="n">acf</span> <span class="k">as</span> <span class="n">sm_acf</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>   <span class="c1"># statsmodels warns about optimiser boundaries; we discuss them below</span>
+
+<span class="c1"># A consistent look for every plot in this notebook</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+    <span class="s2">&quot;figure.figsize&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+    <span class="s2">&quot;figure.dpi&quot;</span><span class="p">:</span> <span class="mi">110</span><span class="p">,</span>
+    <span class="s2">&quot;axes.grid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">&quot;grid.alpha&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="s2">&quot;axes.spines.top&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;axes.spines.right&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;font.size&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_palette</span><span class="p">(</span><span class="s2">&quot;deep&quot;</span><span class="p">)</span>
+<span class="n">RANDOM_STATE</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">load_csv</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;data/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;notebooks/data/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)]:</span>
+        <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> from: </span><span class="si">{</span><span class="n">candidate</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Air Passengers: monthly totals (thousands), Jan 1949 - Dec 1960</span>
+<span class="n">air</span> <span class="o">=</span> <span class="n">load_csv</span><span class="p">(</span><span class="s2">&quot;air_passengers.csv&quot;</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Month&quot;</span><span class="p">],</span> <span class="n">index_col</span><span class="o">=</span><span class="s2">&quot;Month&quot;</span><span class="p">)</span>
+<span class="n">air</span> <span class="o">=</span> <span class="n">air</span><span class="o">.</span><span class="n">asfreq</span><span class="p">(</span><span class="s2">&quot;MS&quot;</span><span class="p">)</span>
+<span class="n">passengers</span> <span class="o">=</span> <span class="n">air</span><span class="p">[</span><span class="s2">&quot;Passengers&quot;</span><span class="p">]</span>
+
+<span class="c1"># --- The identical split from module 10 -------------------------------------</span>
+<span class="n">TEST_MONTHS</span> <span class="o">=</span> <span class="mi">24</span>
+<span class="n">m</span> <span class="o">=</span> <span class="mi">12</span>                                     <span class="c1"># seasonal period</span>
+<span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">passengers</span><span class="p">[:</span><span class="o">-</span><span class="n">TEST_MONTHS</span><span class="p">],</span> <span class="n">passengers</span><span class="p">[</span><span class="o">-</span><span class="n">TEST_MONTHS</span><span class="p">:]</span>
+<span class="n">h</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+<span class="n">idx</span> <span class="o">=</span> <span class="n">test</span><span class="o">.</span><span class="n">index</span>
+
+<span class="c1"># --- The identical metrics from module 10 -----------------------------------</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">mase</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">12</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mean Absolute Scaled Error: MAE relative to in-sample seasonal-naive MAE.&quot;&quot;&quot;</span>
+    <span class="n">naive_mae</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y_train</span><span class="p">[</span><span class="n">m</span><span class="p">:]</span><span class="o">.</span><span class="n">values</span> <span class="o">-</span> <span class="n">y_train</span><span class="p">[:</span><span class="o">-</span><span class="n">m</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y_true</span> <span class="o">-</span> <span class="n">y_pred</span><span class="p">))</span> <span class="o">/</span> <span class="n">naive_mae</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">12</span><span class="p">):</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">y_true</span> <span class="o">-</span> <span class="n">y_pred</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;MAE&quot;</span><span class="p">:</span>  <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">e</span><span class="p">)),</span>
+        <span class="s2">&quot;RMSE&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">e</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)),</span>
+        <span class="s2">&quot;MAPE&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">e</span> <span class="o">/</span> <span class="n">y_true</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="s2">&quot;MASE&quot;</span><span class="p">:</span> <span class="n">mase</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">m</span><span class="p">),</span>
+    <span class="p">}</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">passengers</span><span class="p">)</span><span class="si">}</span><span class="s2"> observations, </span><span class="si">{</span><span class="n">passengers</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">%b %Y</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">passengers</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">%b %Y</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Train: </span><span class="si">{</span><span class="n">train</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">%b %Y</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">train</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">%b %Y</span><span class="si">}</span><span class="s2">  (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">train</span><span class="p">)</span><span class="si">}</span><span class="s2"> months)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Test:  </span><span class="si">{</span><span class="n">test</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">%b %Y</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">test</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">%b %Y</span><span class="si">}</span><span class="s2">  (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">test</span><span class="p">)</span><span class="si">}</span><span class="s2"> months)&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Loaded air_passengers.csv from: data/air_passengers.csv
+
+144 observations, Jan 1949 to Dec 1960
+Train: Jan 1949 to Dec 1958  (120 months)
+Test:  Jan 1959 to Dec 1960  (24 months)
+</code></pre></div>
+<hr />
+<h2 id="1-the-weighting-problem">1. The weighting problem</h2>
+<p>Every forecast from historical data is, at bottom, a <strong>weighted average of the past</strong>. The only question
+is what the weights are. Module 10's baselines answer that question in the two most extreme ways possible.</p>
+<div class="arithmatex">\[\text{Naive:}\quad \hat{y}_{T+h|T} = y_T \qquad\qquad \text{Mean:}\quad \hat{y}_{T+h|T} = \frac{1}{T}\sum_{t=1}^{T} y_t\]</div>
+<p>The <strong>naive</strong> forecast puts weight 1 on the most recent observation and weight 0 on everything else. It is
+maximally responsive and maximally forgetful — one freak month and your whole forecast moves. The <strong>mean</strong>
+forecast puts weight <span class="arithmatex">\(1/T\)</span> on every observation, so a value recorded in 1949 counts exactly as much as one
+recorded last month. It is maximally stable and maximally stubborn — it takes years to notice that the
+world has changed.</p>
+<p>Neither is defensible as a general position. The sensible thing is obvious once you say it out loud:
+<strong>recent observations should count for more, but old observations should not count for nothing.</strong> The
+weights should <em>decline smoothly</em> as we go back in time.</p>
+<p><strong>Exponential smoothing</strong> is what you get when you make that decline <strong>geometric</strong>. Pick a single number
+<span class="arithmatex">\(\alpha \in (0, 1)\)</span> — the <strong>smoothing parameter</strong> — and set the weight on the observation <span class="arithmatex">\(h\)</span> steps back to</p>
+<div class="arithmatex">\[w_h = \alpha(1-\alpha)^h, \qquad h = 0, 1, 2, \dots\]</div>
+<p>So the most recent observation gets <span class="arithmatex">\(\alpha\)</span>, the one before it gets <span class="arithmatex">\(\alpha(1-\alpha)\)</span>, the one before
+that <span class="arithmatex">\(\alpha(1-\alpha)^2\)</span>, and so on. Each step further back multiplies the weight by <span class="arithmatex">\((1-\alpha)\)</span>. Let us
+see what that looks like.</p>
+<div class="highlight"><pre><span></span><code><span class="n">alphas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">]</span>
+<span class="n">lags</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">alphas</span><span class="p">:</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">**</span> <span class="n">lags</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lags</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;alpha = </span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">lags</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;alpha = </span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Weight on the observation $h$ steps back&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;h (steps into the past)&quot;</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;weight  $\alpha(1-\alpha)^h$&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Same weights, log scale: geometric decay is a straight line&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;h (steps into the past)&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../11_exponential_smoothing_files/11_exponential_smoothing_6_0.png" /></p>
+<p>The left panel is the whole idea in one picture. A <strong>small <span class="arithmatex">\(\alpha\)</span></strong> gives a slowly decaying, nearly flat
+profile: many past observations contribute, so the forecast is smooth and slow to react — it behaves like
+the mean. A <strong>large <span class="arithmatex">\(\alpha\)</span></strong> dumps almost all the weight onto the last one or two observations: the
+forecast is jumpy and reacts instantly — it behaves like naive. In the limits, <span class="arithmatex">\(\alpha \to 1\)</span> <em>is</em> the
+naive forecast and <span class="arithmatex">\(\alpha \to 0\)</span> approaches the mean forecast. Exponential smoothing does not replace
+those two baselines; it <strong>interpolates between them</strong>, and <span class="arithmatex">\(\alpha\)</span> is the dial.</p>
+<p>The right panel plots the same curves on a log scale, where every one becomes a straight line. That is the
+signature of geometric decay, and the slope of each line is <span class="arithmatex">\(\log(1-\alpha)\)</span>. Steeper line, shorter memory.</p>
+<p>One thing worth checking, because a weighting scheme that does not sum to 1 is not an average at all.</p>
+<div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;How much of the total weight sits in the most recent k observations?</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;alpha&#39;</span><span class="si">:</span><span class="s2">&gt;6</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;k=1&#39;</span><span class="si">:</span><span class="s2">&gt;8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;k=3&#39;</span><span class="si">:</span><span class="s2">&gt;8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;k=6&#39;</span><span class="si">:</span><span class="s2">&gt;8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;k=12&#39;</span><span class="si">:</span><span class="s2">&gt;8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;k=50&#39;</span><span class="si">:</span><span class="s2">&gt;8</span><span class="si">}</span><span class="s2">   half-life&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">alphas</span><span class="p">:</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">**</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">cums</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span><span class="p">[:</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">50</span><span class="p">)]</span>
+    <span class="n">half_life</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span>          <span class="c1"># lags until the weight halves</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">a</span><span class="si">:</span><span class="s2">&gt;6</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">c</span><span class="si">:</span><span class="s2">&gt;8.4f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cums</span><span class="p">)</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;   </span><span class="si">{</span><span class="n">half_life</span><span class="si">:</span><span class="s2">&gt;6.1f</span><span class="si">}</span><span class="s2"> periods&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>How much of the total weight sits in the most recent k observations?
+
+ alpha      k=1      k=3      k=6     k=12     k=50   half-life
+   0.1   0.1000   0.2710   0.4686   0.7176   0.9948      6.6 periods
+   0.3   0.3000   0.6570   0.8824   0.9862   1.0000      1.9 periods
+   0.5   0.5000   0.8750   0.9844   0.9998   1.0000      1.0 periods
+   0.8   0.8000   0.9920   0.9999   1.0000   1.0000      0.4 periods
+</code></pre></div>
+<p>Read the <code>k=50</code> column first: for every <span class="arithmatex">\(\alpha\)</span> the weights sum to essentially exactly 1. That is not a
+coincidence, it is a geometric series — <span class="arithmatex">\(\sum_{h=0}^{\infty} \alpha(1-\alpha)^h = \alpha \cdot
+\frac{1}{1-(1-\alpha)} = 1\)</span> — and it is what licenses us to call this a <strong>weighted average</strong> rather than
+just a weighted sum.</p>
+<p>Now read across the rows. At <span class="arithmatex">\(\alpha = 0.1\)</span>, the most recent 12 observations carry only about 72% of the
+weight; the model is still listening to things that happened years ago. At <span class="arithmatex">\(\alpha = 0.8\)</span>, the last three
+observations carry 99.2% and everything beyond is rounding error. The <strong>half-life</strong> column makes this
+concrete: it is the number of periods you have to go back before an observation's weight has halved. At
+<span class="arithmatex">\(\alpha = 0.1\)</span> that is about 6.6 periods; at <span class="arithmatex">\(\alpha = 0.8\)</span> it is about 0.4 — memory measured in
+fractions of a month.</p>
+<blockquote>
+<p><strong><span class="arithmatex">\(\alpha\)</span> is a memory dial.</strong> Small <span class="arithmatex">\(\alpha\)</span> = long memory, smooth forecasts, slow to adapt. Large
+<span class="arithmatex">\(\alpha\)</span> = short memory, responsive forecasts, sensitive to noise.</p>
+</blockquote>
+<p>Choosing it by hand would be arbitrary. In Section 2 we let the data choose.</p>
+<hr />
+<h2 id="2-simple-exponential-smoothing">2. Simple Exponential Smoothing</h2>
+<p>Writing the forecast as an infinite weighted sum is correct but useless for computation. The standard
+presentation — the <strong>component form</strong> — is a pair of equations that generate exactly the same forecasts
+while storing only one number:</p>
+<div class="arithmatex">\[\text{Forecast equation:}\quad \hat{y}_{t+h|t} = \ell_t$$
+$$\text{Level equation:}\quad\ \ \ \ell_t = \alpha y_t + (1-\alpha)\,\ell_{t-1}\]</div>
+<p>Here <span class="arithmatex">\(\ell_t\)</span> is the <strong>level</strong>: the model's current best estimate of where the series <em>is</em>, stripped of
+noise. The level equation is a compromise, and reading it aloud is the fastest route to intuition: <em>the
+new level is a blend of what we just observed (<span class="arithmatex">\(y_t\)</span>) and what we previously believed (<span class="arithmatex">\(\ell_{t-1}\)</span>),
+mixed in proportion <span class="arithmatex">\(\alpha\)</span> to <span class="arithmatex">\(1-\alpha\)</span>.</em></p>
+<p>The forecast equation says something stark: <strong>the forecast is flat</strong>. <span class="arithmatex">\(\hat{y}_{t+h|t} = \ell_t\)</span> for every
+horizon <span class="arithmatex">\(h\)</span> — one month ahead, twelve months ahead, a decade ahead, the same number. SES has exactly one
+component, a level, and a level does not go anywhere by itself. Hold on to this; it is the limitation that
+Sections 3 and 4 exist to remove.</p>
+<h3 id="where-the-exponential-weights-went">Where the exponential weights went</h3>
+<p>The two forms are the same thing. Substitute the level equation into itself repeatedly:</p>
+<div class="arithmatex">\[\ell_t = \alpha y_t + (1-\alpha)\ell_{t-1} = \alpha y_t + \alpha(1-\alpha) y_{t-1} + (1-\alpha)^2 \ell_{t-2}\]</div>
+<div class="arithmatex">\[= \alpha y_t + \alpha(1-\alpha)y_{t-1} + \alpha(1-\alpha)^2 y_{t-2} + \cdots + (1-\alpha)^{t}\ell_0\]</div>
+<p>There are the Section 1 weights, falling out of a one-line recursion. The last term is the fingerprint of
+the starting value <span class="arithmatex">\(\ell_0\)</span>, and its influence decays by <span class="arithmatex">\((1-\alpha)^t\)</span> — which is why <span class="arithmatex">\(\ell_0\)</span> matters a
+lot for short series and almost not at all for long ones.</p>
+<h3 id="implementing-it">Implementing it</h3>
+<p>The recursion is five lines. Let us write it, then check it against statsmodels.</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">ses_from_scratch</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">level0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simple exponential smoothing. Returns (one-step-ahead forecasts, final level).&quot;&quot;&quot;</span>
+    <span class="n">level</span> <span class="o">=</span> <span class="n">level0</span>
+    <span class="n">fitted</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">y</span><span class="p">:</span>
+        <span class="n">fitted</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>                          <span class="c1"># forecast for time t, made at t-1</span>
+        <span class="n">level</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">value</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">level</span>    <span class="c1"># then absorb the observation</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">fitted</span><span class="p">),</span> <span class="n">level</span>
+
+<span class="n">ALPHA</span> <span class="o">=</span> <span class="mf">0.3</span>
+<span class="n">l0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">mine</span><span class="p">,</span> <span class="n">final_level</span> <span class="o">=</span> <span class="n">ses_from_scratch</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">ALPHA</span><span class="p">,</span> <span class="n">l0</span><span class="p">)</span>
+
+<span class="n">theirs</span> <span class="o">=</span> <span class="n">SimpleExpSmoothing</span><span class="p">(</span>
+    <span class="n">train</span><span class="p">,</span> <span class="n">initialization_method</span><span class="o">=</span><span class="s2">&quot;known&quot;</span><span class="p">,</span> <span class="n">initial_level</span><span class="o">=</span><span class="n">l0</span>
+<span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">smoothing_level</span><span class="o">=</span><span class="n">ALPHA</span><span class="p">,</span> <span class="n">optimized</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;alpha = </span><span class="si">{</span><span class="n">ALPHA</span><span class="si">}</span><span class="s2">, l0 = </span><span class="si">{</span><span class="n">l0</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;&#39;</span><span class="si">:</span><span class="s2">&lt;22</span><span class="si">}{</span><span class="s1">&#39;from scratch&#39;</span><span class="si">:</span><span class="s2">&gt;14</span><span class="si">}{</span><span class="s1">&#39;statsmodels&#39;</span><span class="si">:</span><span class="s2">&gt;14</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Final level (= fcst)&#39;</span><span class="si">:</span><span class="s2">&lt;22</span><span class="si">}{</span><span class="n">final_level</span><span class="si">:</span><span class="s2">&gt;14.6f</span><span class="si">}{</span><span class="n">theirs</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;14.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;SSE&#39;</span><span class="si">:</span><span class="s2">&lt;22</span><span class="si">}{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">train</span><span class="o">.</span><span class="n">values</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">mine</span><span class="p">)</span><span class="w"> </span><span class="o">**</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">:</span><span class="s2">&gt;14.4f</span><span class="si">}{</span><span class="n">theirs</span><span class="o">.</span><span class="n">sse</span><span class="si">:</span><span class="s2">&gt;14.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Largest disagreement across all </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">mine</span><span class="p">)</span><span class="si">}</span><span class="s2"> fitted values: &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">mine</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">theirs</span><span class="o">.</span><span class="n">fittedvalues</span><span class="o">.</span><span class="n">values</span><span class="p">))</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>alpha = 0.3, l0 = 112.0
+
+                        from scratch   statsmodels
+Final level (= fcst)      366.056553    366.056553
+SSE                      177515.7369   177515.7369
+
+Largest disagreement across all 120 fitted values: 0.00e+00
+</code></pre></div>
+<p>The two implementations agree to the last bit — the largest disagreement across all 120 fitted values is
+<code>0.00e+00</code>, an exact match. That is worth doing once for any model you intend to rely on. <code>SimpleExpSmoothing</code>
+is a heavily optimised, well-tested implementation, but it is running precisely the recursion above, and
+now you have seen the whole of it.</p>
+<p>Note the arguments we had to pass to get an exact comparison: <code>initialization_method="known"</code> with an
+explicit <code>initial_level</code>, and <code>.fit(smoothing_level=ALPHA, optimized=False)</code> to pin <span class="arithmatex">\(\alpha\)</span> rather than
+letting the optimiser choose. Without those, statsmodels estimates both — which is what we want in
+practice, and what we do below.</p>
+<p>Before moving on, one loop worth closing. Section 1 claimed the recursion <em>is</em> the geometrically weighted
+average, and the algebra above says so, but claims like that are cheap. Let us evaluate the weighted sum
+directly and compare.</p>
+<div class="highlight"><pre><span></span><code><span class="n">alpha</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="n">ALPHA</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">train</span><span class="p">)</span>
+<span class="n">y_reversed</span> <span class="o">=</span> <span class="n">train</span><span class="o">.</span><span class="n">values</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>                     <span class="c1"># y_T, y_{T-1}, ..., y_1</span>
+
+<span class="n">weighted_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">alpha</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">**</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">y_reversed</span><span class="p">)</span>
+<span class="n">initial_term</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">**</span> <span class="n">t</span> <span class="o">*</span> <span class="n">l0</span>                <span class="c1"># the surviving fingerprint of l0</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Weighted sum of the </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> observations : </span><span class="si">{</span><span class="n">weighted_sum</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Contribution of l0, (1-a)^T * l0     : </span><span class="si">{</span><span class="n">initial_term</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total                                : </span><span class="si">{</span><span class="n">weighted_sum</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">initial_term</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Level from the recursion             : </span><span class="si">{</span><span class="n">final_level</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Weights used sum to </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">alpha</span><span class="p">)</span><span class="w"> </span><span class="o">**</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">t</span><span class="p">))</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">, &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;leaving </span><span class="si">{</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">alpha</span><span class="p">)</span><span class="w"> </span><span class="o">**</span><span class="w"> </span><span class="n">t</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> for l0&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Weighted sum of the 120 observations : 366.056553
+Contribution of l0, (1-a)^T * l0     : 0.000000
+Total                                : 366.056553
+Level from the recursion             : 366.056553
+
+Weights used sum to 1.000000, leaving 2.58e-19 for l0
+</code></pre></div>
+<p>The two routes to the level agree to six decimal places. Note how small the <span class="arithmatex">\(\ell_0\)</span> contribution has
+become: with <span class="arithmatex">\(\alpha = 0.3\)</span> and 120 observations, <span class="arithmatex">\((1-\alpha)^{120}\)</span> is around <span class="arithmatex">\(10^{-19}\)</span>, so the starting
+value has been comprehensively forgotten. On a series of ten observations it would still be carrying
+non-trivial weight, which is why <span class="arithmatex">\(\ell_0\)</span> is estimated rather than guessed.</p>
+<h3 id="the-effect-of-alpha">The effect of <span class="arithmatex">\(\alpha\)</span></h3>
+<p>With the recursion in hand we can watch the memory dial directly.</p>
+<div class="highlight"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">train</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.35</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Observed&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;C0&quot;</span><span class="p">,</span> <span class="s2">&quot;C2&quot;</span><span class="p">,</span> <span class="s2">&quot;C3&quot;</span><span class="p">]):</span>
+    <span class="n">smoothed</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ses_from_scratch</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">l0</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">smoothed</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.6</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;alpha = </span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;The same recursion at three settings of the memory dial&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Passengers (thousands)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../11_exponential_smoothing_files/11_exponential_smoothing_15_0.png" /></p>
+<p>Three quite different objects, from one equation.</p>
+<ul>
+<li><strong><span class="arithmatex">\(\alpha = 0.05\)</span></strong> (blue) is barely a forecast of this series at all — it is so reluctant to update
+  that it lags the data badly, running tens of thousands of passengers below the truth for years at a
+  time. Long memory becomes a liability when the thing you are remembering has changed.</li>
+<li><strong><span class="arithmatex">\(\alpha = 0.9\)</span></strong> (red) tracks the series closely enough that the two lines are hard to separate. But
+  look at what it is doing: it is essentially reproducing last month's value. It has not smoothed
+  anything, it has just delayed the series by one step.</li>
+<li><strong><span class="arithmatex">\(\alpha = 0.3\)</span></strong> (green) is the recognisable compromise, cutting through the seasonal wobble while
+  still following the growth.</li>
+</ul>
+<p>The red curve exposes the trap. "Closest to the data" is <em>not</em> the goal — a model that copies the last
+observation fits beautifully in-sample and tells you nothing. But that is exactly what the fitting
+criterion is about to reward, so let us look at it carefully.</p>
+<h3 id="estimating-alpha-and-ell_0">Estimating <span class="arithmatex">\(\alpha\)</span> and <span class="arithmatex">\(\ell_0\)</span></h3>
+<p>SES has two unknowns: the smoothing parameter <span class="arithmatex">\(\alpha\)</span> and the starting level <span class="arithmatex">\(\ell_0\)</span>. Both are chosen
+the same way linear regression chooses its coefficients — by minimising the <strong>sum of squared one-step
+errors</strong> over the training data:</p>
+<div class="arithmatex">\[\text{SSE}(\alpha, \ell_0) = \sum_{t=1}^{T}\left(y_t - \hat{y}_{t|t-1}\right)^2 = \sum_{t=1}^{T}(y_t - \ell_{t-1})^2\]</div>
+<p>Unlike least squares, there is no closed-form solution — <span class="arithmatex">\(\ell_{t-1}\)</span> depends on <span class="arithmatex">\(\alpha\)</span> through the
+whole recursion — so it is solved numerically. Let us map the surface by hand first.</p>
+<div class="highlight"><pre><span></span><code><span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.999</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">sses</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">train</span><span class="o">.</span><span class="n">values</span> <span class="o">-</span> <span class="n">ses_from_scratch</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">l0</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">grid</span><span class="p">]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">sses</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C0&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\alpha$&quot;</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;SSE on the training data&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;SSE against $\alpha$, with $\ell_0$ held at $y_1$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;alpha&#39;</span><span class="si">:</span><span class="s2">&gt;7</span><span class="si">}{</span><span class="s1">&#39;SSE&#39;</span><span class="si">:</span><span class="s2">&gt;12</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">a</span><span class="si">:</span><span class="s2">&gt;7</span><span class="si">}{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">train</span><span class="o">.</span><span class="n">values</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">ses_from_scratch</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">l0</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span><span class="w"> </span><span class="o">**</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">:</span><span class="s2">&gt;12.0f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">SSE is minimised on this grid at alpha = </span><span class="si">{</span><span class="n">grid</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">sses</span><span class="p">))]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../11_exponential_smoothing_files/11_exponential_smoothing_17_0.png" /></p>
+<div class="highlight"><pre><span></span><code>  alpha         SSE
+    0.1      239336
+    0.3      177516
+    0.5      147565
+    0.7      122330
+    0.9      104537
+   0.99       98720
+
+SSE is minimised on this grid at alpha = 0.999
+</code></pre></div>
+<p>The curve falls monotonically all the way to the right-hand edge. There is no interior minimum: SSE keeps
+improving as <span class="arithmatex">\(\alpha \to 1\)</span>, and the grid search duly returns a value pinned against the boundary.</p>
+<p>This is not a bug, and it is the most instructive thing in the section. <strong>On a strongly trending series,
+the one-step-ahead SSE criterion always pushes <span class="arithmatex">\(\alpha\)</span> towards 1.</strong> The reason is that SES has no way to
+represent growth, so its only route to a small one-step error is to chase the data — and chasing the data
+is exactly what <span class="arithmatex">\(\alpha = 1\)</span> does. The level equation collapses to <span class="arithmatex">\(\ell_t = y_t\)</span>, and the forecast
+becomes <span class="arithmatex">\(\hat{y}_{t+h|t} = y_T\)</span>: <strong>SES with <span class="arithmatex">\(\alpha = 1\)</span> is precisely the naive method</strong> from module 10.</p>
+<p>Now let statsmodels estimate both parameters properly and confirm the diagnosis.</p>
+<div class="highlight"><pre><span></span><code><span class="n">ses_fit</span> <span class="o">=</span> <span class="n">SimpleExpSmoothing</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">initialization_method</span><span class="o">=</span><span class="s2">&quot;estimated&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fitted alpha : </span><span class="si">{</span><span class="n">ses_fit</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;smoothing_level&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fitted l0    : </span><span class="si">{</span><span class="n">ses_fit</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;initial_level&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training SSE : </span><span class="si">{</span><span class="n">ses_fit</span><span class="o">.</span><span class="n">sse</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">ses_fc</span> <span class="o">=</span> <span class="n">ses_fit</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+<span class="n">naive_fc</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="n">idx</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">SES forecast for every one of the </span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s2"> test months: </span><span class="si">{</span><span class="n">ses_fc</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Last training observation (= the naive forecast):  </span><span class="si">{</span><span class="n">train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Max |SES forecast - naive forecast|: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ses_fc</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">naive_fc</span><span class="p">))</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Fitted alpha : 1.0000
+Fitted l0    : 112.001
+Training SSE : 98151.0
+
+SES forecast for every one of the 24 test months: 337.0
+Last training observation (= the naive forecast):  337.0
+Max |SES forecast - naive forecast|: 4.02e-07
+</code></pre></div>
+<p>The optimiser returns <span class="arithmatex">\(\alpha = 1.0000\)</span>, and the resulting forecast is <em>identical to the naive forecast</em>
+at every one of the 24 test months — the maximum absolute difference is <code>4.02e-07</code>, which is optimiser
+tolerance rather than a real gap. The estimated <span class="arithmatex">\(\ell_0\)</span>
+of 112.0 is essentially the first observation, and with <span class="arithmatex">\(\alpha = 1\)</span> it is promptly forgotten anyway.</p>
+<p>Do not read this as "SES is useless". Read it as SES telling you, through its parameter estimate, that
+<strong>this series contains structure it cannot represent</strong>. A fitted <span class="arithmatex">\(\alpha\)</span> pinned at 1 is a diagnostic: it
+means the series is moving systematically and the model has no component for that movement, so it is
+reduced to copying. On a genuinely level series — sales of a mature product, a stable process
+measurement — SES returns an interior <span class="arithmatex">\(\alpha\)</span> and does real work. Here it is the wrong tool, and it says
+so.</p>
+<p>Let us look at the failure directly, because the shape of it is the whole motivation for Section 3.</p>
+<div class="highlight"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">train</span><span class="p">[</span><span class="o">-</span><span class="mi">60</span><span class="p">:],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C0&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Train&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Actual&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ses_fc</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C3&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;SES (alpha = </span><span class="si">{</span><span class="n">ses_fit</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;smoothing_level&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;SES forecasts a horizontal line into a growing, seasonal series&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Passengers (thousands)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">ses_scores</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">ses_fc</span><span class="p">,</span> <span class="n">train</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SES on the test set: &quot;</span> <span class="o">+</span> <span class="s2">&quot;  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">ses_scores</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+</code></pre></div>
+<p><img alt="png" src="../11_exponential_smoothing_files/11_exponential_smoothing_21_0.png" /></p>
+<div class="highlight"><pre><span></span><code>SES on the test set: MAE=115.25  RMSE=137.33  MAPE=23.58  MASE=4.03
+</code></pre></div>
+<p>A flat line, drawn straight through the middle of two years of seasonal oscillation around a rising trend.
+MAE of 115.25 thousand passengers — considerably <em>worse</em> than the seasonal naive baseline's 71.25, and
+worse than every module 10 baseline except the mean.</p>
+<p>Two distinct failures are visible, and it is worth naming them separately because we fix them separately:</p>
+<ol>
+<li><strong>No trend.</strong> The forecast does not rise, so it drifts further below the truth with every passing
+   month.</li>
+<li><strong>No seasonality.</strong> The forecast is a straight line where the truth has a large, perfectly regular
+   annual swing.</li>
+</ol>
+<p>One component, one flat line. Add a second component and the forecast can slope. Add a third and it can
+oscillate.</p>
+<hr />
+<h2 id="3-holts-linear-trend-method">3. Holt's linear trend method</h2>
+<p>Charles Holt's 1957 extension is exactly what the diagnosis calls for: give the model a <strong>second
+component</strong> that tracks not where the series is, but how fast it is moving. Alongside the level <span class="arithmatex">\(\ell_t\)</span>
+we now carry a slope <span class="arithmatex">\(b_t\)</span>, smoothed by its own parameter <span class="arithmatex">\(\beta^*\)</span>:</p>
+<div class="arithmatex">\[\text{Forecast:}\quad \hat{y}_{t+h|t} = \ell_t + h\,b_t$$
+$$\text{Level:}\quad\ \ \ \ \ell_t = \alpha y_t + (1-\alpha)(\ell_{t-1} + b_{t-1})$$
+$$\text{Trend:}\quad\ \ \ \ b_t = \beta^*(\ell_t - \ell_{t-1}) + (1-\beta^*)\,b_{t-1}\]</div>
+<p>Three changes, each worth pausing on.</p>
+<p>The <strong>forecast equation</strong> is no longer flat. <span class="arithmatex">\(\hat{y}_{t+h|t} = \ell_t + h b_t\)</span> is a straight line through
+the current level with slope <span class="arithmatex">\(b_t\)</span> — the forecast now extrapolates, and it grows linearly with the
+horizon.</p>
+<p>The <strong>level equation</strong> now blends <span class="arithmatex">\(y_t\)</span> against <span class="arithmatex">\(\ell_{t-1} + b_{t-1}\)</span> rather than <span class="arithmatex">\(\ell_{t-1}\)</span>. That is
+just honesty about what "what we previously believed" means: last period we believed the level was
+<span class="arithmatex">\(\ell_{t-1}\)</span> <em>and</em> that it was climbing at <span class="arithmatex">\(b_{t-1}\)</span>, so our prior expectation for this period was the sum
+of the two.</p>
+<p>The <strong>trend equation</strong> is SES applied to the slope. The "observation" of the slope at time <span class="arithmatex">\(t\)</span> is
+<span class="arithmatex">\(\ell_t - \ell_{t-1}\)</span>, how much the level actually moved; <span class="arithmatex">\(\beta^*\)</span> controls how much of that we believe
+versus how much we stick with our previous slope estimate. Small <span class="arithmatex">\(\beta^*\)</span> means a slope that changes only
+slowly — a stable, long-run growth rate.</p>
+<p>That is the pattern for the whole family, and it will repeat once more in Section 4: <strong>one component, one
+smoothing parameter, one line in the forecast equation.</strong></p>
+<div class="highlight"><pre><span></span><code><span class="n">holt_fit</span> <span class="o">=</span> <span class="n">Holt</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">initialization_method</span><span class="o">=</span><span class="s2">&quot;estimated&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Holt&#39;s linear trend method&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  alpha (level) : </span><span class="si">{</span><span class="n">holt_fit</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;smoothing_level&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  beta* (trend) : </span><span class="si">{</span><span class="n">holt_fit</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;smoothing_trend&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  l0            : </span><span class="si">{</span><span class="n">holt_fit</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;initial_level&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  b0            : </span><span class="si">{</span><span class="n">holt_fit</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;initial_trend&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">   (passengers per month)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Training SSE  : </span><span class="si">{</span><span class="n">holt_fit</span><span class="o">.</span><span class="n">sse</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">   (SES was </span><span class="si">{</span><span class="n">ses_fit</span><span class="o">.</span><span class="n">sse</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+<span class="n">holt_fc</span> <span class="o">=</span> <span class="n">holt_fit</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Forecast rises from </span><span class="si">{</span><span class="n">holt_fc</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">holt_fc</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> over the </span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s2"> test months&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Holt on the test set: &quot;</span> <span class="o">+</span> <span class="s2">&quot;  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">holt_fc</span><span class="p">,</span> <span class="n">train</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Holt&#39;s linear trend method
+  alpha (level) : 1.0000
+  beta* (trend) : 0.0000
+  l0            : 110.109
+  b0            : 1.8907   (passengers per month)
+  Training SSE  : 97725.6   (SES was 98151.0)
+
+Forecast rises from 338.9 to 382.4 over the 24 test months
+Holt on the test set: MAE=91.62  RMSE=115.70  MAPE=18.41  MASE=3.21
+</code></pre></div>
+<p>The forecast now slopes: it climbs from 338.9 to 382.4 across the two test years, and MAE falls from
+115.25 to 91.62 — a real improvement over SES, and now better than the drift baseline's... well. Look
+more carefully.</p>
+<p>The fitted parameters are <span class="arithmatex">\(\alpha = 1.0000\)</span> and <span class="arithmatex">\(\beta^* = 0.0000\)</span>, both pinned at their boundaries again,
+and the story they tell is precise. <span class="arithmatex">\(\alpha = 1\)</span> means the level simply copies the last observation, as
+before. <span class="arithmatex">\(\beta^* = 0\)</span> means the slope <strong>never updates at all</strong>: <span class="arithmatex">\(b_t = b_0\)</span> for every <span class="arithmatex">\(t\)</span>, frozen at its
+estimated initial value of about 1.89 passengers per month. So Holt's forecast here is "the last
+observation, plus a constant slope times the horizon" — which is the definition of the <strong>drift</strong> method
+from module 10. Let us verify that rather than assert it.</p>
+<div class="highlight"><pre><span></span><code><span class="n">drift_fc</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+    <span class="n">train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">h</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">train</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">index</span><span class="o">=</span><span class="n">idx</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Holt&#39;s fitted b0                    : </span><span class="si">{</span><span class="n">holt_fit</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;initial_trend&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Drift slope (y_T - y_1) / (T - 1)   : &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">train</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Max |Holt forecast - drift forecast| over the test set: &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">holt_fc</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">drift_fc</span><span class="p">))</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Holt&#39;s fitted b0                    : 1.890749
+Drift slope (y_T - y_1) / (T - 1)   : 1.890756
+
+Max |Holt forecast - drift forecast| over the test set: 1.81e-04
+</code></pre></div>
+<p>The two slopes agree to four decimal places and the forecasts differ by less than <span class="arithmatex">\(2 \times 10^{-4}\)</span>
+passengers across the whole test set. <strong>Holt has rediscovered the drift method from scratch</strong>, by
+optimisation rather than by stipulation.</p>
+<blockquote>
+<p><strong>A reproducibility note worth internalising.</strong> We passed <code>initialization_method="estimated"</code>, which
+asks the optimiser to fit <span class="arithmatex">\(\ell_0\)</span> and <span class="arithmatex">\(b_0\)</span> jointly with <span class="arithmatex">\(\alpha\)</span> and <span class="arithmatex">\(\beta^*\)</span>. If you instead write
+the bare <code>Holt(train).fit()</code>, statsmodels uses a different default starting rule, lands on
+<span class="arithmatex">\(\beta^* = 0.0065\)</span> rather than exactly 0, and reports a <strong>better</strong> test MAE of 73.34. Before you prefer
+that: its training SSE is 99385.9 against our 97725.6, so it is the <em>worse</em> fit to the data — it simply
+got lucky on these 24 months. This is a small, clean example of a trap that will cost you real money
+one day: <strong>a model that scores better on one test window is not thereby the better model.</strong> Compare fits
+on the objective they were fitted to, and treat a single test window as one noisy sample.</p>
+</blockquote>
+<p>That is a genuinely satisfying result — the drift baseline is not an arbitrary rule of thumb, it is the
+degenerate corner of a real model — but it also tells us Holt has not bought us much <em>here</em>. It fixed
+failure (1) from Section 2, the missing trend. Failure (2), the missing seasonality, is untouched, and on
+a series where the seasonal swing is <span class="arithmatex">\(\pm 25\%\)</span> that is the larger of the two problems.</p>
+<h3 id="damped-trend">Damped trend</h3>
+<p>Before we add seasonality, one important refinement to the trend itself. Holt's forecast is
+<span class="arithmatex">\(\ell_t + h b_t\)</span>: a straight line, extrapolated <strong>indefinitely</strong>. Forecast 100 months out and it will
+happily project a level 100 slopes above today's. Empirically that is almost always too optimistic — real
+series flatten, saturate, mean-revert, hit capacity limits — and long-horizon linear extrapolation is one
+of the most reliable ways to embarrass yourself with a forecast.</p>
+<p>Gardner and McKenzie's fix introduces a <strong>damping parameter</strong> <span class="arithmatex">\(\phi \in (0, 1)\)</span>:</p>
+<div class="arithmatex">\[\hat{y}_{t+h|t} = \ell_t + (\phi + \phi^2 + \cdots + \phi^h)\,b_t$$
+$$\ell_t = \alpha y_t + (1-\alpha)(\ell_{t-1} + \phi b_{t-1}), \qquad
+b_t = \beta^*(\ell_t - \ell_{t-1}) + (1-\beta^*)\phi\, b_{t-1}\]</div>
+<p>Each additional step contributes only <span class="arithmatex">\(\phi\)</span> times what the previous one did, so the cumulative trend is a
+geometric series. As <span class="arithmatex">\(h \to \infty\)</span> it converges to <span class="arithmatex">\(\ell_t + \frac{\phi}{1-\phi}b_t\)</span> — a <strong>finite
+asymptote</strong>. The forecast still rises, but it flattens out instead of running away. <span class="arithmatex">\(\phi = 1\)</span> recovers
+undamped Holt exactly; in practice <span class="arithmatex">\(\phi\)</span> is estimated and usually lands between 0.8 and 0.98.</p>
+<div class="highlight"><pre><span></span><code><span class="n">holt_damped</span> <span class="o">=</span> <span class="n">Holt</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">damped_trend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">initialization_method</span><span class="o">=</span><span class="s2">&quot;estimated&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Damped Holt&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  alpha : </span><span class="si">{</span><span class="n">holt_damped</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;smoothing_level&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  beta* : </span><span class="si">{</span><span class="n">holt_damped</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;smoothing_trend&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  phi   : </span><span class="si">{</span><span class="n">holt_damped</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;damping_trend&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  SSE   : </span><span class="si">{</span><span class="n">holt_damped</span><span class="o">.</span><span class="n">sse</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">   (undamped Holt: </span><span class="si">{</span><span class="n">holt_fit</span><span class="o">.</span><span class="n">sse</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+<span class="n">damped_fc</span> <span class="o">=</span> <span class="n">holt_damped</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">            &quot;</span> <span class="o">+</span> <span class="s2">&quot;  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">:</span><span class="s2">&gt;8</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;MAE&quot;</span><span class="p">,</span> <span class="s2">&quot;RMSE&quot;</span><span class="p">,</span> <span class="s2">&quot;MAPE&quot;</span><span class="p">,</span> <span class="s2">&quot;MASE&quot;</span><span class="p">]))</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">fc</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;Holt      &quot;</span><span class="p">,</span> <span class="n">holt_fc</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;Holt damped&quot;</span><span class="p">,</span> <span class="n">damped_fc</span><span class="p">)]:</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">fc</span><span class="p">,</span> <span class="n">train</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="s2">&quot;  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">&gt;8.2f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Damped Holt
+  alpha : 1.0000
+  beta* : 0.0000
+  phi   : 0.9940
+  SSE   : 97696.5   (undamped Holt: 97725.6)
+
+                 MAE      RMSE      MAPE      MASE
+Holt           91.62    115.70     18.41      3.21
+Holt damped     99.67    122.85     20.17      3.49
+</code></pre></div>
+<p><span class="arithmatex">\(\phi = 0.9940\)</span> — very close to 1, so the damping is gentle, and the training SSE improves only slightly
+(97696.5 against 97725.6). On the <strong>test set</strong> damping actually makes things marginally worse: MAE rises
+from 91.62 to 99.67.</p>
+<p>That is the honest result and it deserves an honest reading rather than a rescue. Over a 24-month horizon
+Air Passengers really does keep growing roughly linearly, so holding the trend back costs accuracy.
+Damping is insurance, and insurance has a premium. The premium is worth paying when the horizon is long
+relative to the data, when the series might plausibly saturate, or when you are forecasting many series
+automatically and cannot inspect each one. Over two years of a series that has grown steadily for a
+decade, it is not.</p>
+<p>The place damping earns its keep is far out. Extend both forecasts to five years and the divergence
+becomes obvious.</p>
+<div class="highlight"><pre><span></span><code><span class="n">LONG</span> <span class="o">=</span> <span class="mi">60</span>
+<span class="n">long_holt</span> <span class="o">=</span> <span class="n">holt_fit</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="n">LONG</span><span class="p">)</span>
+<span class="n">long_damped</span> <span class="o">=</span> <span class="n">holt_damped</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="n">LONG</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C0&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Train&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Actual (test)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">long_holt</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C3&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Holt (undamped)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">long_damped</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C2&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Holt damped (phi=</span><span class="si">{</span><span class="n">holt_damped</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;damping_trend&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Extrapolating </span><span class="si">{</span><span class="n">LONG</span><span class="si">}</span><span class="s2"> months: the undamped line never stops climbing&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Passengers (thousands)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;At h = </span><span class="si">{</span><span class="n">LONG</span><span class="si">}</span><span class="s2">:  undamped = </span><span class="si">{</span><span class="n">long_holt</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">   damped = </span><span class="si">{</span><span class="n">long_damped</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">phi</span> <span class="o">=</span> <span class="n">holt_damped</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;damping_trend&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Damped asymptote as h -&gt; infinity: &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">holt_damped</span><span class="o">.</span><span class="n">level</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">phi</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">phi</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">holt_damped</span><span class="o">.</span><span class="n">trend</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../11_exponential_smoothing_files/11_exponential_smoothing_30_0.png" /></p>
+<div class="highlight"><pre><span></span><code>At h = 60:  undamped = 450.4   damped = 402.9
+Damped asymptote as h -&gt; infinity: 554.0
+</code></pre></div>
+<p>By month 60 the undamped forecast has reached 450.4 while the damped one sits at 402.9 — a gap of nearly
+48 thousand passengers opened up purely by the choice of <span class="arithmatex">\(\phi\)</span>, and that gap widens without limit as the
+horizon grows. The printed asymptote is where the damped forecast eventually settles; the undamped
+forecast has no asymptote at all.</p>
+<blockquote>
+<p><strong>The further out you forecast, the more the trend assumption dominates the answer.</strong> At <span class="arithmatex">\(h=1\)</span> the
+level does the work and <span class="arithmatex">\(\phi\)</span> barely matters. At <span class="arithmatex">\(h=60\)</span> almost the entire forecast is the accumulated
+trend, and <span class="arithmatex">\(\phi\)</span> <em>is</em> the forecast.</p>
+</blockquote>
+<p>Damped trend is the default recommendation for automated forecasting for exactly this reason. But neither
+version can help with our actual problem, which is the seasonal swing. Time for the third equation.</p>
+<hr />
+<h2 id="4-holt-winters-seasonal-method">4. Holt-Winters seasonal method</h2>
+<p>Peter Winters added the third component in 1960, completing the method that still carries both names. The
+pattern is by now familiar: a new component <span class="arithmatex">\(s_t\)</span>, a new smoothing parameter <span class="arithmatex">\(\gamma\)</span>, a new line in the
+forecast equation. For a series with seasonal period <span class="arithmatex">\(m\)</span>, the <strong>additive</strong> form is</p>
+<div class="arithmatex">\[\hat{y}_{t+h|t} = \ell_t + h b_t + s_{t+h-m(k+1)}$$
+$$\ell_t = \alpha(y_t - s_{t-m}) + (1-\alpha)(\ell_{t-1}+b_{t-1})$$
+$$b_t = \beta^*(\ell_t - \ell_{t-1}) + (1-\beta^*)b_{t-1}$$
+$$s_t = \gamma(y_t - \ell_{t-1} - b_{t-1}) + (1-\gamma)s_{t-m}\]</div>
+<p>where <span class="arithmatex">\(k = \lfloor (h-1)/m \rfloor\)</span> is bookkeeping that simply means <em>reuse the seasonal index from the
+most recent complete cycle</em>. The seasonal equation is SES again, this time applied to the seasonal
+component and — crucially — updating <span class="arithmatex">\(s_t\)</span> from <span class="arithmatex">\(s_{t-m}\)</span>, the same month last year, rather than from
+<span class="arithmatex">\(s_{t-1}\)</span>.</p>
+<p>Note what happened to the level equation: it now smooths <span class="arithmatex">\(y_t - s_{t-m}\)</span>, the <strong>deseasonalised</strong>
+observation. The level no longer jumps every July. Each component gets to concentrate on its own job,
+which is the whole architectural point of the component form.</p>
+<h3 id="additive-or-multiplicative">Additive or multiplicative?</h3>
+<p>Module 10 established that Air Passengers is <strong>multiplicative</strong>: the seasonal swing is a roughly constant
+<em>percentage</em> of the level, not a constant number of passengers, which is why the series fans outwards. The
+seasonal factors we extracted there were multipliers around 1.0 — July about 22–23% above trend, November
+about 20% below.</p>
+<p>Holt-Winters has a matching multiplicative form, in which the seasonal component multiplies instead of
+adding:</p>
+<div class="arithmatex">\[\hat{y}_{t+h|t} = (\ell_t + h b_t)\,s_{t+h-m(k+1)}$$
+$$\ell_t = \alpha \frac{y_t}{s_{t-m}} + (1-\alpha)(\ell_{t-1}+b_{t-1}), \qquad
+s_t = \gamma \frac{y_t}{\ell_{t-1}+b_{t-1}} + (1-\gamma)s_{t-m}\]</div>
+<p>The division does the same job the subtraction did — deseasonalise before updating the level — but
+proportionally. In statsmodels the only change is <code>seasonal="mul"</code> instead of <code>seasonal="add"</code>. Fit both
+and let the data adjudicate.</p>
+<div class="highlight"><pre><span></span><code><span class="n">hw_add</span> <span class="o">=</span> <span class="n">ExponentialSmoothing</span><span class="p">(</span>
+    <span class="n">train</span><span class="p">,</span> <span class="n">trend</span><span class="o">=</span><span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="n">seasonal</span><span class="o">=</span><span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="n">seasonal_periods</span><span class="o">=</span><span class="n">m</span><span class="p">,</span> <span class="n">initialization_method</span><span class="o">=</span><span class="s2">&quot;estimated&quot;</span>
+<span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+
+<span class="n">hw_mul</span> <span class="o">=</span> <span class="n">ExponentialSmoothing</span><span class="p">(</span>
+    <span class="n">train</span><span class="p">,</span> <span class="n">trend</span><span class="o">=</span><span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="n">seasonal</span><span class="o">=</span><span class="s2">&quot;mul&quot;</span><span class="p">,</span> <span class="n">seasonal_periods</span><span class="o">=</span><span class="n">m</span><span class="p">,</span> <span class="n">initialization_method</span><span class="o">=</span><span class="s2">&quot;estimated&quot;</span>
+<span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;&#39;</span><span class="si">:</span><span class="s2">&lt;22</span><span class="si">}{</span><span class="s1">&#39;additive&#39;</span><span class="si">:</span><span class="s2">&gt;12</span><span class="si">}{</span><span class="s1">&#39;multiplicative&#39;</span><span class="si">:</span><span class="s2">&gt;16</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;alpha (level)&quot;</span><span class="p">,</span> <span class="s2">&quot;smoothing_level&quot;</span><span class="p">),</span>
+                   <span class="p">(</span><span class="s2">&quot;beta* (trend)&quot;</span><span class="p">,</span> <span class="s2">&quot;smoothing_trend&quot;</span><span class="p">),</span>
+                   <span class="p">(</span><span class="s2">&quot;gamma (seasonal)&quot;</span><span class="p">,</span> <span class="s2">&quot;smoothing_seasonal&quot;</span><span class="p">)]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">:</span><span class="s2">&lt;22</span><span class="si">}{</span><span class="n">hw_add</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;12.4f</span><span class="si">}{</span><span class="n">hw_mul</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;16.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Training SSE&#39;</span><span class="si">:</span><span class="s2">&lt;22</span><span class="si">}{</span><span class="n">hw_add</span><span class="o">.</span><span class="n">sse</span><span class="si">:</span><span class="s2">&gt;12.1f</span><span class="si">}{</span><span class="n">hw_mul</span><span class="o">.</span><span class="n">sse</span><span class="si">:</span><span class="s2">&gt;16.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;AIC&#39;</span><span class="si">:</span><span class="s2">&lt;22</span><span class="si">}{</span><span class="n">hw_add</span><span class="o">.</span><span class="n">aic</span><span class="si">:</span><span class="s2">&gt;12.1f</span><span class="si">}{</span><span class="n">hw_mul</span><span class="o">.</span><span class="n">aic</span><span class="si">:</span><span class="s2">&gt;16.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>                          additive  multiplicative
+alpha (level)               0.2367          0.3642
+beta* (trend)               0.0000          0.0000
+gamma (seasonal)            0.7633          0.6358
+Training SSE               16033.6         10764.2
+AIC                          619.4           571.6
+</code></pre></div>
+<p>The multiplicative form wins decisively on the training data: SSE of 10764.2 against 16033.6, and AIC of
+571.6 against 619.4. Both criteria point the same way, and the margin is not subtle — the additive fit
+carries about 49% more squared error. <strong>The visual diagnostic from module 10 and the numerical criterion
+here agree</strong>, which is the comfortable case. When they disagree, trust the plot and check whether your
+seasonal period is right.</p>
+<p>The smoothing parameters are also worth reading, because none of them is pinned at a boundary this time
+except one. For the multiplicative fit, <span class="arithmatex">\(\alpha = 0.3642\)</span> is a genuinely interior value — the level is
+being smoothed, not merely copied, which is the first time in this notebook that has happened.
+<span class="arithmatex">\(\gamma = 0.6358\)</span> is high: the seasonal profile is being allowed to evolve fairly quickly from year to
+year, consistent with the STL finding in module 10 that the seasonal amplitude grows across the decade.</p>
+<p>And <span class="arithmatex">\(\beta^* = 0.0000\)</span> is pinned at zero again — the slope is frozen at its initial estimate. This is
+extremely common for Holt-Winters and not a cause for alarm. With a level that updates freely and a
+seasonal component absorbing the annual pattern, a constant long-run growth rate is genuinely all the
+trend this series needs.</p>
+<p>Now the forecast.</p>
+<div class="highlight"><pre><span></span><code><span class="n">hw_add_fc</span> <span class="o">=</span> <span class="n">hw_add</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+<span class="n">hw_mul_fc</span> <span class="o">=</span> <span class="n">hw_mul</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">train</span><span class="p">[</span><span class="o">-</span><span class="mi">48</span><span class="p">:],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C0&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Train&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">2.2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Actual&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">hw_add_fc</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C2&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.8</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Holt-Winters (additive)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">hw_mul_fc</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C3&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.8</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Holt-Winters (multiplicative)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Three components: the forecast finally has the right shape&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Passengers (thousands)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;            &quot;</span> <span class="o">+</span> <span class="s2">&quot;  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">:</span><span class="s2">&gt;8</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;MAE&quot;</span><span class="p">,</span> <span class="s2">&quot;RMSE&quot;</span><span class="p">,</span> <span class="s2">&quot;MAPE&quot;</span><span class="p">,</span> <span class="s2">&quot;MASE&quot;</span><span class="p">]))</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">fc</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;HW additive&quot;</span><span class="p">,</span> <span class="n">hw_add_fc</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;HW multipl.&quot;</span><span class="p">,</span> <span class="n">hw_mul_fc</span><span class="p">)]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="s2">&quot;  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">&gt;8.2f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">fc</span><span class="p">,</span> <span class="n">train</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+</code></pre></div>
+<p><img alt="png" src="../11_exponential_smoothing_files/11_exponential_smoothing_35_0.png" /></p>
+<div class="highlight"><pre><span></span><code>                 MAE      RMSE      MAPE      MASE
+HW additive     31.08     35.76      6.64      1.09
+HW multipl.     28.98     32.49      6.39      1.01
+</code></pre></div>
+<p>After three sections of flat lines and sloped lines, here is a forecast that actually <em>looks like the
+data</em>: rising, oscillating, peaking in the summers, dipping in the autumns, and doing all of it with
+increasing amplitude.</p>
+<p>The multiplicative version scores MAE 28.98 against the additive version's 31.08 — a 6.8% improvement,
+smaller than the training-SSE gap suggested but in the same direction, and it wins on all four metrics.
+Look at the summer peaks in the plot to see why: the additive forecast applies the <em>same absolute</em> July
+bump it learned from the early 1950s to the much larger series of 1959–60, so it undershoots the peaks.
+The multiplicative version applies a percentage and scales with the level.</p>
+<p>Both are enormous improvements on everything before them. Recall the target: seasonal naive scored MAE
+71.25. Let us confirm the improvement rather than eyeball it, and see the fitted components that produced
+it.</p>
+<div class="highlight"><pre><span></span><code><span class="n">sn_fc</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="n">m</span><span class="p">:]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="o">%</span> <span class="n">m</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="n">idx</span><span class="p">)</span>
+<span class="n">sn_mae</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">sn_fc</span><span class="p">,</span> <span class="n">train</span><span class="p">)[</span><span class="s2">&quot;MAE&quot;</span><span class="p">]</span>
+<span class="n">hw_mae</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">hw_mul_fc</span><span class="p">,</span> <span class="n">train</span><span class="p">)[</span><span class="s2">&quot;MAE&quot;</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Seasonal naive MAE          : </span><span class="si">{</span><span class="n">sn_mae</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Holt-Winters (mult) MAE     : </span><span class="si">{</span><span class="n">hw_mae</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reduction in MAE            : </span><span class="si">{</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">hw_mae</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">sn_mae</span><span class="p">)</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mf">6.5</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">hw_mul</span><span class="o">.</span><span class="n">level</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C0&quot;</span><span class="p">);</span>    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Level $</span><span class="se">\\</span><span class="s2">ell_t$&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">hw_mul</span><span class="o">.</span><span class="n">trend</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C3&quot;</span><span class="p">);</span>    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Trend $b_t$&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">hw_mul</span><span class="o">.</span><span class="n">season</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C2&quot;</span><span class="p">);</span>   <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Seasonal $s_t$&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;The three fitted components of Holt-Winters (multiplicative)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Seasonal naive MAE          : 71.25
+Holt-Winters (mult) MAE     : 28.98
+Reduction in MAE            : 59.3%
+</code></pre></div>
+<p><img alt="png" src="../11_exponential_smoothing_files/11_exponential_smoothing_37_1.png" /></p>
+<p>Holt-Winters cuts seasonal naive's MAE by <strong>59.3%</strong> — the module 10 champion beaten by better than half,
+which is a large margin by forecasting standards.</p>
+<p>The three component panels are the model's internal state, and they are readable in exactly the same way
+as module 10's decomposition panels. The <strong>level</strong> is a smooth, deseasonalised climb — this is the series
+with its annual pattern surgically removed, and it is what the level equation was always trying to
+estimate. The <strong>trend</strong> panel is a flat horizontal line, which is <span class="arithmatex">\(\beta^* = 0\)</span> made visible: the slope
+never moves off <span class="arithmatex">\(b_0\)</span>. The <strong>seasonal</strong> panel oscillates around 1.0, the multiplicative baseline, with the
+same summer-peak/autumn-trough profile module 10 recovered by decomposition.</p>
+<p>That is the point worth carrying away from this section. <code>seasonal_decompose</code> and STL <em>describe</em> a series
+by splitting it into components; Holt-Winters splits it into components in order to <em>forecast</em> it, using
+the same vocabulary. A fitted Holt-Winters model is a decomposition that knows how to extrapolate itself.</p>
+<p>The seasonal panel is easier to read one cycle at a time, so let us pull out the twelve monthly factors.</p>
+<div class="highlight"><pre><span></span><code><span class="n">last_cycle</span> <span class="o">=</span> <span class="n">hw_mul</span><span class="o">.</span><span class="n">season</span><span class="p">[</span><span class="o">-</span><span class="n">m</span><span class="p">:]</span>                     <span class="c1"># one full cycle of fitted seasonal factors</span>
+<span class="n">factors</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">last_cycle</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%b&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">last_cycle</span><span class="o">.</span><span class="n">index</span><span class="p">])</span><span class="o">.</span><span class="n">sort_index</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">[</span><span class="s2">&quot;Jan&quot;</span><span class="p">,</span><span class="s2">&quot;Feb&quot;</span><span class="p">,</span><span class="s2">&quot;Mar&quot;</span><span class="p">,</span><span class="s2">&quot;Apr&quot;</span><span class="p">,</span><span class="s2">&quot;May&quot;</span><span class="p">,</span><span class="s2">&quot;Jun&quot;</span><span class="p">,</span><span class="s2">&quot;Jul&quot;</span><span class="p">,</span><span class="s2">&quot;Aug&quot;</span><span class="p">,</span><span class="s2">&quot;Sep&quot;</span><span class="p">,</span><span class="s2">&quot;Oct&quot;</span><span class="p">,</span><span class="s2">&quot;Nov&quot;</span><span class="p">,</span><span class="s2">&quot;Dec&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">i</span><span class="p">])</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;C3&quot;</span> <span class="k">if</span> <span class="n">v</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;C0&quot;</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">factors</span><span class="p">]</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">factors</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">factors</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Holt-Winters seasonal factors (final fitted cycle)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Multiplier - 1&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">v</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">+.0%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Highest : </span><span class="si">{</span><span class="n">factors</span><span class="o">.</span><span class="n">idxmax</span><span class="p">()</span><span class="si">}</span><span class="s2">  (</span><span class="si">{</span><span class="n">factors</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">factors</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">:</span><span class="s2">+.1%</span><span class="si">}</span><span class="s2"> vs the level)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Lowest  : </span><span class="si">{</span><span class="n">factors</span><span class="o">.</span><span class="n">idxmin</span><span class="p">()</span><span class="si">}</span><span class="s2">  (</span><span class="si">{</span><span class="n">factors</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">factors</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">:</span><span class="s2">+.1%</span><span class="si">}</span><span class="s2"> vs the level)&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../11_exponential_smoothing_files/11_exponential_smoothing_40_0.png" /></p>
+<div class="highlight"><pre><span></span><code>Highest : Aug  (1.193 -&gt; +19.3% vs the level)
+Lowest  : Nov  (0.724 -&gt; -27.6% vs the level)
+</code></pre></div>
+<p>August runs 19.3% above the level and November 27.6% below — a summer-holiday profile, recovered without
+being told anything about calendars, holidays or the airline business. Compare it to module 10's classical
+decomposition, which put the peak in July at about +22% and the November trough at about <span class="arithmatex">\(-20\%\)</span>. The
+shapes agree; the exact numbers do not, and the reason is <span class="arithmatex">\(\gamma = 0.6358\)</span>. Classical decomposition
+averages every January together and reports <strong>one</strong> profile for the whole decade. Holt-Winters with a high
+<span class="arithmatex">\(\gamma\)</span> lets the profile drift, and what we have printed here is the <strong>final</strong> fitted cycle — the 1958
+seasonality, not the 1949–58 average. Module 10's STL panel showed exactly this drift; here the forecast
+is built from it.</p>
+<p>The model has not been told any of this — no calendar, no holiday dummies, no domain knowledge. It has
+inferred an interpretable annual profile purely from the recursion in the seasonal equation, and that
+interpretability is a large part of why this family remains so widely used.</p>
+<hr />
+<h2 id="5-comparison-and-diagnostics">5. Comparison and diagnostics</h2>
+<p>Time to put everything on one table. Same series, same 24-month hold-out, same four metrics, module 10's
+four baselines alongside this module's five models. This is the only comparison that means anything:
+different methods on <strong>identical</strong> test data.</p>
+<div class="highlight"><pre><span></span><code><span class="n">forecasts</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># --- module 10 baselines ---</span>
+    <span class="s2">&quot;Mean&quot;</span><span class="p">:</span>                 <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">index</span><span class="o">=</span><span class="n">idx</span><span class="p">),</span>
+    <span class="s2">&quot;Naive&quot;</span><span class="p">:</span>                <span class="n">naive_fc</span><span class="p">,</span>
+    <span class="s2">&quot;Seasonal naive&quot;</span><span class="p">:</span>       <span class="n">sn_fc</span><span class="p">,</span>
+    <span class="s2">&quot;Drift&quot;</span><span class="p">:</span>                <span class="n">drift_fc</span><span class="p">,</span>
+    <span class="c1"># --- this module ---</span>
+    <span class="s2">&quot;SES&quot;</span><span class="p">:</span>                  <span class="n">ses_fc</span><span class="p">,</span>
+    <span class="s2">&quot;Holt&quot;</span><span class="p">:</span>                 <span class="n">holt_fc</span><span class="p">,</span>
+    <span class="s2">&quot;Holt (damped)&quot;</span><span class="p">:</span>        <span class="n">damped_fc</span><span class="p">,</span>
+    <span class="s2">&quot;Holt-Winters (add)&quot;</span><span class="p">:</span>   <span class="n">hw_add_fc</span><span class="p">,</span>
+    <span class="s2">&quot;Holt-Winters (mult)&quot;</span><span class="p">:</span>  <span class="n">hw_mul_fc</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">scores</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="n">name</span><span class="p">:</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">fc</span><span class="p">,</span> <span class="n">train</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">fc</span> <span class="ow">in</span> <span class="n">forecasts</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span><span class="o">.</span><span class="n">T</span>
+<span class="n">scores</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;MASE&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">scores</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>                        MAE    RMSE   MAPE  MASE
+Holt-Winters (mult)   28.98   32.49   6.39  1.01
+Holt-Winters (add)    31.08   35.76   6.64  1.09
+Seasonal naive        71.25   76.99  15.52  2.49
+Drift                 91.62  115.70  18.41  3.21
+Holt                  91.62  115.70  18.41  3.21
+Holt (damped)         99.67  122.85  20.17  3.49
+Naive                115.25  137.33  23.58  4.03
+SES                  115.25  137.33  23.58  4.03
+Mean                 206.34  219.44  44.23  7.22
+</code></pre></div>
+<p>Read this table from the bottom up; the story is in the ordering.</p>
+<p><strong>The mean forecast is last</strong>, as it was in module 10, and by a wide margin — it is the only method here
+that ignores both the trend and the level.</p>
+<p><strong>Naive and SES are tied to the penny</strong> (MAE 115.25 for both), because Section 2 showed they are the same
+forecast once <span class="arithmatex">\(\alpha\)</span> is estimated at 1.</p>
+<p><strong>Drift and Holt are likewise tied</strong> (MAE 91.62), for the reason Section 3 verified: with <span class="arithmatex">\(\beta^*\)</span>
+estimated at 0, Holt <em>is</em> drift. Damped Holt sits just behind them at 99.67.</p>
+<p><strong>Seasonal naive at MAE 71.25 beats all four of those</strong>, and this is the single most useful line in the
+table. Three of the methods below it are more sophisticated models with fitted parameters; the fourth is
+"copy last year". On a strongly seasonal series, a method that captures the seasonality with no
+parameters at all beats methods that capture the trend beautifully and the seasonality not at all.
+<strong>Match the model to the structure that dominates your series.</strong></p>
+<p><strong>The two Holt-Winters variants take the top two places</strong> — and they are the only two methods in the table
+that model all three components. Multiplicative wins, at MAE 28.98 and MASE 1.01, with additive close
+behind at 31.08.</p>
+<p>That MASE of 1.01 is worth a moment, because module 10 warned that its reference point needs care. The
+denominator is seasonal naive's <em>in-sample, one-season-ahead</em> MAE of about 28.6. A MASE of 1.01 therefore
+says something quite strong: <strong>forecasting up to two years ahead into data the model has never seen is now
+about as accurate as seasonal naive was at predicting one season ahead inside its own training data.</strong>
+That is the qualitative jump this module was for.</p>
+<div class="highlight"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">train</span><span class="p">[</span><span class="o">-</span><span class="mi">36</span><span class="p">:],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Train&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Actual&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;Seasonal naive&quot;</span><span class="p">,</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="s2">&quot;C0&quot;</span><span class="p">),</span>
+                           <span class="p">(</span><span class="s2">&quot;Holt&quot;</span><span class="p">,</span>           <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="s2">&quot;C1&quot;</span><span class="p">),</span>
+                           <span class="p">(</span><span class="s2">&quot;Holt-Winters (add)&quot;</span><span class="p">,</span>  <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="s2">&quot;C2&quot;</span><span class="p">),</span>
+                           <span class="p">(</span><span class="s2">&quot;Holt-Winters (mult)&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span>  <span class="s2">&quot;C3&quot;</span><span class="p">)]:</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">forecasts</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="n">ls</span><span class="o">=</span><span class="n">style</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.8</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;The contenders on the final two years&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Passengers (thousands)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../11_exponential_smoothing_files/11_exponential_smoothing_45_0.png" /></p>
+<p>The plot makes the table's ordering visible. Holt (orange) has the right <em>level</em> and the wrong <em>shape</em> —
+a straight line through oscillating data. Seasonal naive (blue) has the right <em>shape</em> and the wrong
+<em>level</em> — the correct profile, sitting stubbornly below the truth at every single month, because it is
+replaying a smaller year.
+Holt-Winters combines the two, and the multiplicative version (red) hugs the black line closely enough
+that you have to look at the peaks to separate them.</p>
+<p>Notice specifically where seasonal naive's blue line sits relative to the black one: <strong>below it,
+everywhere</strong> — all 24 of its residuals are positive. That is module 10's systematic under-forecast, drawn rather than tabulated. So: has
+Holt-Winters fixed it? A score cannot answer that. Residuals can.</p>
+<div class="highlight"><pre><span></span><code><span class="n">best</span> <span class="o">=</span> <span class="n">forecasts</span><span class="p">[</span><span class="s2">&quot;Holt-Winters (mult)&quot;</span><span class="p">]</span>
+<span class="n">resid</span> <span class="o">=</span> <span class="n">test</span> <span class="o">-</span> <span class="n">best</span>
+<span class="n">resid_sn</span> <span class="o">=</span> <span class="n">test</span> <span class="o">-</span> <span class="n">forecasts</span><span class="p">[</span><span class="s2">&quot;Seasonal naive&quot;</span><span class="p">]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mf">3.4</span><span class="p">))</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">resid</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C3&quot;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Holt-Winters (mult)&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">resid_sn</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C0&quot;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Seasonal naive&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Residuals over time&quot;</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">resid</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C3&quot;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Residual distribution&quot;</span><span class="p">)</span>
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">resid</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Residual ACF&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;&#39;</span><span class="si">:</span><span class="s2">&lt;22</span><span class="si">}{</span><span class="s1">&#39;mean resid&#39;</span><span class="si">:</span><span class="s2">&gt;12</span><span class="si">}{</span><span class="s1">&#39;std&#39;</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}{</span><span class="s1">&#39;% positive&#39;</span><span class="si">:</span><span class="s2">&gt;13</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;Seasonal naive&quot;</span><span class="p">,</span> <span class="n">resid_sn</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;Holt-Winters (mult)&quot;</span><span class="p">,</span> <span class="n">resid</span><span class="p">)]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">&lt;22</span><span class="si">}{</span><span class="n">r</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">&gt;+12.2f</span><span class="si">}{</span><span class="n">r</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">:</span><span class="s2">&gt;10.2f</span><span class="si">}{</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">r</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">&gt;12.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+<span class="n">band</span> <span class="o">=</span> <span class="mf">1.96</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">resid</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">95% ACF band for </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">resid</span><span class="p">)</span><span class="si">}</span><span class="s2"> residuals: +/- </span><span class="si">{</span><span class="n">band</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">r_acf</span> <span class="o">=</span> <span class="n">sm_acf</span><span class="p">(</span><span class="n">resid</span><span class="p">,</span> <span class="n">nlags</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Residual ACF, lags 1-6: &quot;</span> <span class="o">+</span> <span class="s2">&quot;  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">+.3f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">r_acf</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Lags outside the band:  </span><span class="si">{</span><span class="p">[</span><span class="n">k</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">)</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">abs</span><span class="p">(</span><span class="n">r_acf</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">band</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../11_exponential_smoothing_files/11_exponential_smoothing_47_0.png" /></p>
+<div class="highlight"><pre><span></span><code>                        mean resid       std   % positive
+Seasonal naive              +71.25     29.81       100.0%
+Holt-Winters (mult)         +28.66     15.63        95.8%
+
+95% ACF band for 24 residuals: +/- 0.400
+Residual ACF, lags 1-6: +0.335  +0.295  +0.429  +0.203  +0.328  +0.056
+Lags outside the band:  [3]
+</code></pre></div>
+<p>Now we can answer the question honestly, and the honest answer is <strong>mostly, but not entirely</strong>.</p>
+<p>The mean residual falls from <span class="arithmatex">\(+71.25\)</span> to <span class="arithmatex">\(+28.66\)</span> — a 60% reduction in bias, and the spread has collapsed
+too, from a standard deviation of 29.81 to 15.63. The left panel shows it plainly: the blue seasonal-naive
+residuals wander far above zero and swing wildly; the red Holt-Winters residuals sit in a tight band much
+closer to it.</p>
+<p>But 95.8% of the Holt-Winters residuals are still positive, and a mean residual of <span class="arithmatex">\(+28.66\)</span> against a
+standard deviation of 15.63 is not a small bias. <strong>The model still under-forecasts, just far less.</strong> The
+histogram confirms it — the distribution is shifted bodily to the right of zero rather than centred on it.
+The residual ACF shows the same thing from another angle: the lag-3 spike at 0.429 pokes just outside the
+<span class="arithmatex">\(\pm 0.400\)</span> band, and with only 24 residuals that band is wide, so we should not over-interpret a single
+spike. The persistent positive mean is the real finding.</p>
+<p>Why does it persist? The same reason as before, one level deeper. Air Passengers grows roughly
+<em>exponentially</em>, and Holt's trend component is <strong>linear</strong>. Over 24 months a straight line fitted to
+exponential growth will fall progressively behind. The fix is the one module 10 recommended for exactly
+this shape of problem: model <span class="arithmatex">\(\log y_t\)</span>, where exponential growth becomes linear growth, then exponentiate
+the forecast back. That is Exercise 3.</p>
+<p>This is the residual-diagnostics loop doing its job for the second time in two modules. Module 10's
+residuals said "you are missing a trend" and pointed us at Holt-Winters. Holt-Winters' residuals say "your
+trend is the wrong <em>functional form</em>" and point us at logs. The score tells you which model is best; the
+residuals tell you what to build next.</p>
+<h3 id="the-ets-taxonomy">The ETS taxonomy</h3>
+<p>One piece of vocabulary before the exercises, because you will meet it immediately in any forecasting
+package. Everything in this module belongs to a single family, usually labelled <strong>ETS</strong> for
+<strong>Error, Trend, Seasonal</strong>. Each model is named by a three-letter code giving the form of each component:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Options</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>E</strong>rror</td>
+<td><strong>A</strong>dditive, <strong>M</strong>ultiplicative</td>
+</tr>
+<tr>
+<td><strong>T</strong>rend</td>
+<td><strong>N</strong>one, <strong>A</strong>dditive, <strong>A</strong>dditive <strong>d</strong>amped</td>
+</tr>
+<tr>
+<td><strong>S</strong>easonal</td>
+<td><strong>N</strong>one, <strong>A</strong>dditive, <strong>M</strong>ultiplicative</td>
+</tr>
+</tbody>
+</table>
+<p>So SES is <strong>ETS(A,N,N)</strong>, Holt is <strong>ETS(A,A,N)</strong>, damped Holt is <strong>ETS(A,A<span class="arithmatex">\(_d\)</span>,N)</strong>, additive
+Holt-Winters is <strong>ETS(A,A,A)</strong> and our winner is <strong>ETS(A,A,M)</strong>. Thirty combinations exist; a handful are
+numerically unstable and the rest are all fittable. This is exactly what R's celebrated <code>ets()</code> function
+and statsmodels' <code>statsmodels.tsa.exponential_smoothing.ets.ETSModel</code> do automatically: fit the sensible
+combinations and pick by <strong>AIC</strong>, the same criterion we used to choose multiplicative over additive above.</p>
+<p>The framing also buys something the smoothing recursions alone do not. ETS attaches a full <strong>statistical
+model</strong> — with an explicit error term — to each set of equations, which is what makes <strong>prediction
+intervals</strong>, likelihoods and information criteria available. The point forecasts are identical; the
+inference is not.</p>
+<p>Worth knowing where this family sits: ETS models describe a series through <strong>components you can name and
+plot</strong>. Module 12's ARIMA family describes it through <strong>autocorrelations</strong> instead. They overlap without
+nesting — some ETS models have ARIMA equivalents, others do not — and on a given dataset either may win.
+Two different languages for the same problem, and it is genuinely useful to be fluent in both.</p>
+<hr />
+<h2 id="6-your-turn">6. Your turn</h2>
+<p>Add cells below each exercise. Exercises 3 and 5 are the ones that will change how you forecast.</p>
+<p><strong>Exercise 1 — Find a series SES is actually good at.</strong>
+SES failed here because Air Passengers trends. Construct a series it should handle well: 200 observations
+of a constant level 50 plus <span class="arithmatex">\(N(0, 5)\)</span> noise, using <code>rng</code>. Fit <code>SimpleExpSmoothing</code> with
+<code>initialization_method="estimated"</code> and report the fitted <span class="arithmatex">\(\alpha\)</span>. Then repeat with a series whose level
+<em>shifts</em> from 50 to 70 at observation 100. How does the fitted <span class="arithmatex">\(\alpha\)</span> change, and why does a series with
+a structural break want a shorter memory?</p>
+<p><strong>Exercise 2 — Map the SSE surface properly.</strong>
+Section 2 varied <span class="arithmatex">\(\alpha\)</span> with <span class="arithmatex">\(\ell_0\)</span> held fixed at <span class="arithmatex">\(y_1\)</span>. Using <code>ses_from_scratch</code>, compute the
+training SSE over a 2-D grid of <span class="arithmatex">\(\alpha \in [0.05, 0.95]\)</span> and <span class="arithmatex">\(\ell_0 \in [80, 160]\)</span> and draw it with
+<code>plt.contourf</code>. Is the surface well-behaved? Which of the two parameters does the SSE care about more, and
+how does that relate to the <span class="arithmatex">\((1-\alpha)^t\)</span> decay of <span class="arithmatex">\(\ell_0\)</span>'s influence?</p>
+<p><strong>Exercise 3 — Fix the remaining bias with logs.</strong>
+Section 5 diagnosed the residual <span class="arithmatex">\(+28.66\)</span> bias as linear trend fitted to exponential growth. Fit
+<code>ExponentialSmoothing(np.log(train), trend="add", seasonal="add", seasonal_periods=12,
+initialization_method="estimated")</code>, forecast 24 months, and exponentiate with <code>np.exp</code>. Score it with
+<code>evaluate()</code> and compute the mean residual. Does it beat ETS(A,A,M), and is the bias closer to zero?
+(Additive seasonality on the log scale is the multiplicative model in disguise — explain why.)</p>
+<p><strong>Exercise 4 — Does damping pay off at longer horizons?</strong>
+Section 3 found damping hurt over 24 months. Rerun the whole comparison with <code>TEST_MONTHS = 12</code> and again
+with <code>TEST_MONTHS = 36</code>, refitting every model on the shortened training set each time. Plot the MAE gap
+between <code>Holt</code> and <code>Holt (damped)</code> against horizon. At what horizon, if any, does damping start to win —
+and does the ranking of the top two methods change?</p>
+<p><strong>Exercise 5 — Rolling-origin validation of the winner.</strong>
+The table rests on <em>one</em> split from <em>one</em> origin. Write a loop that, for origins from month 96 to month
+131, fits Holt-Winters (mult) and seasonal naive on <code>passengers[:origin]</code> and forecasts 12 months ahead.
+Report mean ± std of MASE across origins for each. Does Holt-Winters win at every origin, and what does
+the spread tell you about how much confidence the single-split table deserves?</p>
+<hr />
+<h2 id="7-if-you-remember-nothing-else">7. If you remember nothing else</h2>
+<ol>
+<li>
+<p><strong>Exponential smoothing is a weighted average that forgets geometrically.</strong> The weight on the
+   observation <span class="arithmatex">\(h\)</span> steps back is <span class="arithmatex">\(\alpha(1-\alpha)^h\)</span>, and those weights sum to 1. The naive forecast
+   (<span class="arithmatex">\(\alpha \to 1\)</span>) and the mean forecast (<span class="arithmatex">\(\alpha \to 0\)</span>) are its two limiting cases; everything useful
+   lives in between. <span class="arithmatex">\(\alpha\)</span> is a memory dial, not a fudge factor.</p>
+</li>
+<li>
+<p><strong>One component, one smoothing parameter, one line in the forecast equation.</strong> SES has a level and
+   forecasts a flat line. Holt adds a slope <span class="arithmatex">\(b_t\)</span> with parameter <span class="arithmatex">\(\beta^*\)</span> and forecasts a sloped line.
+   Holt-Winters adds a seasonal component <span class="arithmatex">\(s_t\)</span> with parameter <span class="arithmatex">\(\gamma\)</span> and forecasts an oscillating
+   line. Understand the pattern and you can write down any member of the family from its name.</p>
+</li>
+<li>
+<p><strong>Parameters are fitted by minimising one-step SSE, and the fitted values are diagnostics.</strong> An
+   <span class="arithmatex">\(\alpha\)</span> pinned at 1 means the series contains structure the model cannot represent, so it has been
+   reduced to copying the last observation. Here that made SES <em>identical</em> to naive and Holt <em>identical</em>
+   to drift — the module 10 baselines turned out to be degenerate corners of real models.</p>
+</li>
+<li>
+<p><strong>Match the model to the structure that dominates.</strong> Seasonal naive (MAE 71.25) beat SES, Holt and
+   damped Holt on this series, because on strongly seasonal data getting the seasonality right with zero
+   parameters beats getting the trend right with three. Only the methods with all three components —
+   both Holt-Winters variants — beat it.</p>
+</li>
+<li>
+<p><strong>Multiplicative when the swings scale with the level.</strong> Air Passengers fans out, so ETS(A,A,M) beat
+   ETS(A,A,A) on training SSE (10764.2 vs 16033.6), on AIC (571.6 vs 619.4) and on test MAE (28.98 vs 31.08).
+   Damp the trend (<span class="arithmatex">\(\phi &lt; 1\)</span>) when you forecast far out: over 60 months undamped reached 450.4 against
+   damped's 402.9, and only the damped forecast has a finite asymptote.</p>
+</li>
+<li>
+<p><strong>Always read the residuals, then build what they tell you to.</strong> Module 10's residuals showed a
+   systematic <span class="arithmatex">\(+71.25\)</span> under-forecast and pointed at Holt-Winters; Holt-Winters cut it by 59.3% on MAE and
+   reduced the bias to <span class="arithmatex">\(+28.66\)</span> — but 95.8% of residuals are still positive, because a linear trend cannot
+   track exponential growth. That residual points at the log transform. The score picks the winner; the
+   residuals write the next module.</p>
+</li>
+</ol>
+<hr />
+<h2 id="8-further-reading-and-glossary">8. Further reading and glossary</h2>
+<h3 id="further-reading">Further reading</h3>
+<ul>
+<li>Hyndman &amp; Athanasopoulos, <a href="https://otexts.com/fpp3/expsmooth.html"><em>Forecasting: Principles and Practice</em>, Chapter 8 — Exponential
+  smoothing</a> — free online, and the definitive treatment of
+  everything in this module. Sections 8.1–8.3 are SES, Holt and Holt-Winters in that order; 8.4 gives the
+  full ETS taxonomy and 8.5–8.7 add the statistical model and prediction intervals.</li>
+<li><a href="https://www.statsmodels.org/stable/examples/notebooks/generated/exponential_smoothing.html">statsmodels: Exponential smoothing</a>
+  — the official worked notebook for <code>SimpleExpSmoothing</code>, <code>Holt</code> and <code>ExponentialSmoothing</code>, including
+  the Box-Cox and initialisation options we did not use.</li>
+<li><a href="https://www.statsmodels.org/stable/generated/statsmodels.tsa.exponential_smoothing.ets.ETSModel.html">statsmodels <code>ETSModel</code> documentation</a>
+  — the state-space version of this family, which gives likelihoods, AIC and prediction intervals.</li>
+<li>Gardner, <a href="https://www.sciencedirect.com/science/article/abs/pii/S0169207006000392">Exponential smoothing: The state of the art — Part II</a>
+  (2006) — a survey of the first fifty years of the method, and the standard citation for damped trend.</li>
+<li>Hyndman et al., <em>Forecasting with Exponential Smoothing: The State Space Approach</em> (2008) — the book
+  that unified the whole family under ETS.</li>
+</ul>
+<h3 id="glossary">Glossary</h3>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Exponential smoothing</strong></td>
+<td>Forecasting by a weighted average with geometrically decaying weights</td>
+</tr>
+<tr>
+<td><strong>Smoothing parameter (<span class="arithmatex">\(\alpha\)</span>)</strong></td>
+<td>Weight on the newest observation in the level equation; the memory dial</td>
+</tr>
+<tr>
+<td><strong>Level (<span class="arithmatex">\(\ell_t\)</span>)</strong></td>
+<td>The model's current estimate of where the series is, net of season and noise</td>
+</tr>
+<tr>
+<td><strong>Trend / slope (<span class="arithmatex">\(b_t\)</span>)</strong></td>
+<td>The model's current estimate of how fast the level is moving per period</td>
+</tr>
+<tr>
+<td><strong>Seasonal component (<span class="arithmatex">\(s_t\)</span>)</strong></td>
+<td>The repeating within-cycle deviation, additive or multiplicative</td>
+</tr>
+<tr>
+<td><strong><span class="arithmatex">\(\beta^*\)</span>, <span class="arithmatex">\(\gamma\)</span></strong></td>
+<td>Smoothing parameters for the trend and seasonal components</td>
+</tr>
+<tr>
+<td><strong>Component form</strong></td>
+<td>Writing a model as a forecast equation plus one equation per component</td>
+</tr>
+<tr>
+<td><strong>SES</strong></td>
+<td>Simple Exponential Smoothing: level only, flat forecast; ETS(A,N,N)</td>
+</tr>
+<tr>
+<td><strong>Holt's linear trend</strong></td>
+<td>SES plus a slope equation; forecast is a straight line; ETS(A,A,N)</td>
+</tr>
+<tr>
+<td><strong>Damped trend (<span class="arithmatex">\(\phi\)</span>)</strong></td>
+<td>Shrinks each successive step of the trend by <span class="arithmatex">\(\phi\)</span>, giving a finite asymptote</td>
+</tr>
+<tr>
+<td><strong>Holt-Winters</strong></td>
+<td>Holt plus a seasonal equation; ETS(A,A,A) or ETS(A,A,M)</td>
+</tr>
+<tr>
+<td><strong>SSE criterion</strong></td>
+<td>Sum of squared one-step-ahead errors, minimised numerically to fit the parameters</td>
+</tr>
+<tr>
+<td><strong>ETS</strong></td>
+<td>Error-Trend-Seasonal: the taxonomy naming each model by its three components</td>
+</tr>
+<tr>
+<td><strong>AIC</strong></td>
+<td>Information criterion trading fit against parameter count; used to choose within ETS</td>
+</tr>
+<tr>
+<td><strong>Prediction interval</strong></td>
+<td>Range in which a future observation should fall; needs the ETS statistical model</td>
+</tr>
+<tr>
+<td><strong>Systematic bias</strong></td>
+<td>A mean residual far from zero: the model is wrong in a consistent direction</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../10_time_series_foundations/" class="btn btn-neutral float-left" title="Time Series Foundations"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../12_arima_models/" class="btn btn-neutral float-right" title="ARIMA and SARIMA Models">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright &copy; 2026 - Aayush Raj Regmi</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../10_time_series_foundations/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../12_arima_models/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../javascripts/mathjax.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

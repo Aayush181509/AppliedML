@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Decision Trees - DCS 404</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Decision Trees";
+        var mkdocs_page_input_path = "DCS404/07_decision_trees.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> DCS 404
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Welcome</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../InstallationGuide/">Installation Guide</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Machine Learning and AI</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../01_introduction_to_machine_learning/">Introduction to Machine Learning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02_ml_workflow/">ML Workflow</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../03_regression/">Regression</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04_gradient_descent/">Gradient Descent</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../05_regularization/">Regularization</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../06_logistic_regression/">Classification & Logistic Regression</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Decision Trees</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-work-through-this">How to work through this</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#learning-objectives">Learning objectives</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#1-what-is-a-decision-tree">1. What is a decision tree?</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-impurity-how-a-tree-scores-its-questions">2. Impurity: how a tree scores its questions</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#gini-impurity">Gini impurity</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#entropy">Entropy</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#from-impurity-to-choosing-a-split-information-gain">From impurity to choosing a split: information gain</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#a-flaw-and-its-fix-gain-ratio">A flaw, and its fix: gain ratio</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#seeing-a-split-chosen">Seeing a split chosen</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-the-growing-algorithm">3. The growing algorithm</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-decision-trees-in-scikit-learn">4. Decision trees in scikit-learn</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#reading-the-tree-itself">Reading the tree itself</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#the-decision-boundary-rectangles-all-the-way-down">The decision boundary: rectangles all the way down</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-overfitting-the-tree-that-memorized-the-noise">5. Overfitting: the tree that memorized the noise</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#occams-razor">Occam's razor</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-early-stopping-three-brakes-on-growth">6. Early stopping: three brakes on growth</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#brake-1-depth-limitation-max_depth">Brake 1 — depth limitation (max_depth)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#brake-2-impurity-threshold-min_impurity_decrease">Brake 2 — impurity threshold (min_impurity_decrease)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#brake-3-minimum-samples-to-split-min_samples_split">Brake 3 — minimum samples to split (min_samples_split)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#the-catch-in-all-three-cases">The catch, in all three cases</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-when-early-stopping-fails-the-xor-problem">7. When early stopping fails: the XOR problem</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#8-pruning-grow-first-cut-later">8. Pruning: grow first, cut later</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#the-idea-put-a-price-on-leaves">The idea: put a price on leaves</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#the-weakest-link">The weakest link</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#doing-it-in-scikit-learn">Doing it in scikit-learn</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#9-a-short-history-id3-c45-cart">9. A short history: ID3, C4.5, CART</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#10-finishing-the-evaluation-toolkit">10. Finishing the evaluation toolkit</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#101-the-confusion-matrix-goes-multiclass">10.1 The confusion matrix goes multiclass</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#102-metrics-across-all-thresholds-pr-curves-roc-and-auc">10.2 Metrics across all thresholds: PR curves, ROC, and AUC</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#103-the-rematch-decision-tree-vs-logistic-regression">10.3 The rematch: decision tree vs. logistic regression</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#11-your-turn">11. Your turn</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#12-if-you-remember-nothing-else">12. If you remember nothing else</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#13-further-reading-and-glossary">13. Further reading and glossary</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#further-reading">Further reading</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#glossary">Glossary</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../08_evaluation_metrics/">Evaluation Metrics</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../09_knn/">K-Nearest Neighbors</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Time Series Analysis</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../10_time_series_foundations/">Time Series Foundations</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../11_exponential_smoothing/">Exponential Smoothing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../12_arima_models/">ARIMA and SARIMA Models</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Final Project</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../project/00_final_project/">Project Work</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">DCS 404</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Machine Learning and AI</li>
+      <li class="breadcrumb-item active">Decision Trees</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="decision-trees-learning-to-ask-the-right-questions">Decision Trees: Learning to Ask the Right Questions</h1>
+<p><strong>DCS 404 · Data Science and Machine Learning</strong></p>
+<hr />
+<p>Every model so far has been an equation. Linear regression drew a line, logistic regression bent that line
+into a probability — but under the hood it was always <em>weights times features</em>, and explaining a prediction
+meant talking about coefficients.</p>
+<p>Today's model doesn't compute; it <em>asks questions</em>. Is the glucose level above 127? Is the petal shorter
+than 2.5 cm? Each answer narrows things down, exactly like a game of twenty questions, until the model is
+confident enough to commit to an answer. The result is a <strong>decision tree</strong> — a flowchart learned from data,
+and the first model in this course that a domain expert can read top-to-bottom and <em>audit</em> without knowing
+any mathematics.</p>
+<p>That readability comes at a price, and the price is the theme of this module: <strong>decision trees are
+chronically prone to overfitting</strong>. Left alone, a tree will keep asking ever-pickier questions until it has
+memorized every quirk of the training set — the tree-shaped version of the degree-14 polynomial from the
+Regularization module. So after building trees up (how they choose questions, how to grow one in
+scikit-learn), we spend the second half reining them in: early stopping, its failure mode, and pruning.
+We close by finishing the evaluation toolkit we started last module — multiclass metrics, ROC curves,
+and AUC.</p>
+<h2 id="how-to-work-through-this">How to work through this</h2>
+<p>The usual rhythm: run every code cell (<code>Shift + Enter</code>), study the output, <em>then</em> read the commentary.
+Cells build on each other, so if something errors, run from the top.</p>
+<p>The module is in three acts:</p>
+<ol>
+<li><strong>Sections 1–4</strong> build the machinery: what a tree is, how it measures the "quality" of a question
+   (impurity), the growing algorithm, and trees in scikit-learn on the iris dataset.</li>
+<li><strong>Sections 5–8</strong> are the drama: watching a tree overfit a small noisy dataset, then two rescue
+   strategies — early stopping (and the XOR problem that defeats it) and cost-complexity pruning.</li>
+<li><strong>Sections 9–10</strong> zoom out: the classic tree-building algorithms (ID3, C4.5, CART), and the missing
+   pieces of classifier evaluation — multiclass F1 averaging, the ROC curve, and AUC — demonstrated on
+   the diabetes dataset from the Logistic Regression module.</li>
+</ol>
+<h2 id="learning-objectives">Learning objectives</h2>
+<p>After completing this module you will be able to:</p>
+<ul>
+<li>Describe the anatomy of a decision tree (root, internal nodes, leaves, branches, depth) and trace a
+  prediction through one by hand.</li>
+<li>Compute <strong>Gini impurity</strong> and <strong>entropy</strong> for a class distribution, and <strong>information gain</strong> for a
+  split; explain why gain ratio corrects information gain's bias.</li>
+<li>Fit a <code>DecisionTreeClassifier</code>, visualize the fitted tree and its <strong>axis-aligned decision boundary</strong>,
+  and interpret the information in each node.</li>
+<li>Demonstrate why fully grown trees <strong>overfit</strong>, using train/test accuracy gaps and decision-surface
+  complexity.</li>
+<li>Apply the three main <strong>early-stopping</strong> controls (<code>max_depth</code>, <code>min_impurity_decrease</code>,
+  <code>min_samples_split</code>) and explain, via the XOR problem, why early stopping can fail.</li>
+<li>Explain and apply <strong>cost-complexity pruning</strong>: the <span class="arithmatex">\(\alpha\)</span> trade-off, <code>cost_complexity_pruning_path</code>,
+  and choosing the final tree with Occam's razor.</li>
+<li>Compare the classic tree <strong>inducers</strong> — ID3, C4.5, CART — and state which one scikit-learn implements.</li>
+<li>Evaluate multiclass classifiers with <strong>macro / weighted / micro F1</strong>, and binary classifiers with
+  <strong>precision–recall curves</strong>, <strong>ROC curves</strong>, and <strong>AUC</strong>.</li>
+</ul>
+<h2 id="setup">Setup</h2>
+<p>Run this once. Libraries, the usual plotting style, and the diabetes dataset (which returns for the
+ROC-curve finale in Section 10).</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_classification</span><span class="p">,</span> <span class="n">load_iris</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">DecisionTreeClassifier</span><span class="p">,</span> <span class="n">plot_tree</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogisticRegression</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">StandardScaler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_pipeline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.inspection</span><span class="w"> </span><span class="kn">import</span> <span class="n">DecisionBoundaryDisplay</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">accuracy_score</span><span class="p">,</span> <span class="n">confusion_matrix</span><span class="p">,</span> <span class="n">ConfusionMatrixDisplay</span><span class="p">,</span>
+                             <span class="n">classification_report</span><span class="p">,</span> <span class="n">f1_score</span><span class="p">,</span> <span class="n">roc_auc_score</span><span class="p">,</span>
+                             <span class="n">RocCurveDisplay</span><span class="p">,</span> <span class="n">PrecisionRecallDisplay</span><span class="p">)</span>
+
+<span class="c1"># A consistent look for every plot in this notebook</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+    <span class="s2">&quot;figure.figsize&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">),</span>
+    <span class="s2">&quot;figure.dpi&quot;</span><span class="p">:</span> <span class="mi">110</span><span class="p">,</span>
+    <span class="s2">&quot;axes.grid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">&quot;grid.alpha&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="s2">&quot;axes.spines.top&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;axes.spines.right&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;font.size&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_palette</span><span class="p">(</span><span class="s2">&quot;deep&quot;</span><span class="p">)</span>
+<span class="n">RANDOM_STATE</span> <span class="o">=</span> <span class="mi">12</span>
+
+<span class="c1"># Load the Pima Indians Diabetes dataset (used in Section 10)</span>
+<span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data/diabetes.csv&quot;</span><span class="p">),</span>
+                  <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;notebooks/data/diabetes.csv&quot;</span><span class="p">)]:</span>
+    <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">diabetes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded diabetes dataset from: </span><span class="si">{</span><span class="n">candidate</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">break</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;Could not find diabetes.csv. Expected it in a data/ folder next to the notebook.&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape: </span><span class="si">{</span><span class="n">diabetes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> patients, </span><span class="si">{</span><span class="n">diabetes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> columns&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Loaded diabetes dataset from: data/diabetes.csv
+Shape: 768 patients, 9 columns
+</code></pre></div>
+<hr />
+<h2 id="1-what-is-a-decision-tree">1. What is a decision tree?</h2>
+<p>A decision tree solves a complex problem the way people naturally do: <strong>divide it into small questions and
+answer them one at a time</strong>. For a given input, the tree estimates the unknown property (the label) through
+a cascade of simple tests.</p>
+<p>Say we want a model that decides whether an animal is a <strong>fish</strong>. A biologist might reason: does it live in
+water? If not — done, not a fish. If yes, we can't conclude yet (dolphins live in water too), so we ask a
+sharper follow-up: can it <em>also</em> live outside water? Each question splits the world into smaller, purer
+groups:</p>
+<div align="center">
+<img src="../assets/dt_fish_tree.png" width="720">
+
+*Figure 1 — Growing a decision tree for fish classification: (a) start with a first test, (b) one answer
+already gives a verdict, (c) the other answer needs a follow-up test.*
+</div>
+
+<p>The vocabulary, reading Figure 1(c) top to bottom:</p>
+<ul>
+<li><strong>Root node</strong> — where the first test happens (<em>Lives in water</em>). Every prediction starts here.</li>
+<li><strong>Internal (decision) nodes</strong> — nodes that perform further tests (<em>Can live outside water</em>).</li>
+<li><strong>Leaf (terminal) nodes</strong> — the green boxes; no more questions, just a <strong>verdict</strong> (<em>Fish</em> / <em>Not a fish</em>).</li>
+<li><strong>Branches</strong> — the Yes/No arrows; each answer routes the sample down exactly one path.</li>
+<li><strong>Depth</strong> — the length of the longest path from root to leaf (here: 2).</li>
+</ul>
+<p>Here is a second tree, diagnosing a disease from symptoms — same anatomy, different domain:</p>
+<div align="center">
+<img src="../assets/dt_cough_fever_tree.png" width="520">
+
+*Figure 2 — A diagnosis tree: two tests route every patient to one of three leaves.*
+</div>
+
+<p>To classify a new sample, you <em>drop it in at the root</em> and follow the answers until it lands in a leaf.
+That's the entire prediction algorithm — no arithmetic, just routing. The machine-learning question is:
+<strong>given a dataset, which questions should the tree ask, and in what order?</strong> That is what the rest of the
+module answers.</p>
+<hr />
+<h2 id="2-impurity-how-a-tree-scores-its-questions">2. Impurity: how a tree scores its questions</h2>
+<p>A good question is one whose answers separate the classes well. After asking <em>Lives in water?</em>, the "No"
+group is 100% not-fish — perfectly sorted. A useless question leaves each group as mixed as before. To
+<em>learn</em> good questions, we need a number that measures "how mixed is this group?" That number is called
+<strong>impurity</strong>, and there are two classic recipes.</p>
+<h3 id="gini-impurity">Gini impurity</h3>
+<p>The Gini impurity is the probability of <em>misclassifying</em> a randomly chosen sample from a group, if we
+labelled it randomly according to the group's class proportions:</p>
+<div class="arithmatex">\[\text{Gini} = 1 - \sum_{i=1}^{c} P_i^{\,2}\]</div>
+<p>where <span class="arithmatex">\(c\)</span> is the number of classes and <span class="arithmatex">\(P_i\)</span> is the fraction of samples belonging to class <span class="arithmatex">\(i\)</span>. A pure
+group scores 0; maximum mixing scores highest. Let's code it — three lines:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute_gini</span><span class="p">(</span><span class="n">class_counts</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gini impurity from a list of per-class sample counts.&quot;&quot;&quot;</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">class_counts</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">class_counts</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">p</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># Sanity check: a pure node and a 50:50 node</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gini of [10, 0]: </span><span class="si">{</span><span class="n">compute_gini</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">])</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gini of [5, 5]:  </span><span class="si">{</span><span class="n">compute_gini</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">])</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Gini of [10, 0]: 0.000
+Gini of [5, 5]:  0.500
+</code></pre></div>
+<p>Now apply it to four different samples of fish-classification data:</p>
+<div align="center">
+<img src="../assets/dt_gini_table.png" width="560">
+
+*Figure 3 — Four class distributions, from perfectly pure to perfectly mixed.*
+</div>
+
+<div class="highlight"><pre><span></span><code><span class="n">class_distributions</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)]</span>
+
+<span class="k">for</span> <span class="n">dist</span> <span class="ow">in</span> <span class="n">class_distributions</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fish = </span><span class="si">{</span><span class="n">dist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">2d</span><span class="si">}</span><span class="s2">, Not a fish = </span><span class="si">{</span><span class="n">dist</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">  →  Gini = </span><span class="si">{</span><span class="n">compute_gini</span><span class="p">(</span><span class="n">dist</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Fish = 10, Not a fish = 0  →  Gini = 0.00
+Fish =  1, Not a fish = 9  →  Gini = 0.18
+Fish =  7, Not a fish = 3  →  Gini = 0.42
+Fish =  5, Not a fish = 5  →  Gini = 0.50
+</code></pre></div>
+<p>Read the pattern: <strong>a pure set has zero impurity; impurity peaks when the classes are evenly mixed</strong>
+(0.5 for two classes). In between, the more lopsided the distribution, the lower the impurity. The curve
+below shows this for every possible class proportion:</p>
+<div align="center">
+<img src="../assets/dt_impurity_curve.png" width="380">
+
+*Figure 4 — Impurity as a function of the class-A proportion: zero at the pure extremes, maximal at 50:50.*
+</div>
+
+<h3 id="entropy">Entropy</h3>
+<p>The second classic impurity measure comes from information theory. <strong>Entropy</strong> quantifies the disorder in
+a group:</p>
+<div class="arithmatex">\[\text{Entropy} = -\sum_{i=1}^{c} P_i \log_2 P_i\]</div>
+<p>It behaves like Gini — 0 for pure groups, maximal (1 bit, for two classes) at 50:50 — and in practice the
+two usually pick the same splits. Gini is marginally cheaper to compute (no logarithm), which is why it is
+scikit-learn's default.</p>
+<h3 id="from-impurity-to-choosing-a-split-information-gain">From impurity to choosing a split: information gain</h3>
+<p>A split is good if the children are <em>purer than the parent</em>. <strong>Information gain</strong> makes that precise —
+it is the impurity drop achieved by a split:</p>
+<div class="arithmatex">\[\text{Gain} = \text{Entropy}(\text{parent}) \;-\; \sum_{\text{children } k} \frac{m_k}{m}\,\text{Entropy}(\text{child}_k)\]</div>
+<p>where each child's entropy is weighted by the fraction of samples <span class="arithmatex">\(m_k/m\)</span> that flow into it. (The same
+recipe works with Gini in place of entropy.) The tree evaluates every candidate question and <strong>keeps the
+one with the largest gain</strong>.</p>
+<p>Let's work one example fully. A tiny loan dataset:</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Is Married</th>
+<th>Is House Owner</th>
+<th>Will Repay Loan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>false</td>
+<td>true</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td>2</td>
+<td>true</td>
+<td>true</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td>3</td>
+<td>true</td>
+<td>false</td>
+<td><strong>no</strong></td>
+</tr>
+<tr>
+<td>4</td>
+<td>true</td>
+<td>false</td>
+<td><strong>yes</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Candidate question: <em>Is House Owner?</em> It sends rows 1–2 (both <strong>yes</strong>) one way and rows 3–4 (one <strong>yes</strong>,
+one <strong>no</strong>) the other.</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute_entropy</span><span class="p">(</span><span class="n">class_counts</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Entropy (bits) from a list of per-class sample counts.&quot;&quot;&quot;</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">class_counts</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">class_counts</span><span class="p">)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="n">p</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>                       <span class="c1"># 0 log 0 = 0, so drop empty classes</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">p</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">p</span><span class="p">))</span> <span class="o">+</span> <span class="mf">0.0</span>   <span class="c1"># +0.0 turns -0.0 into 0.0</span>
+
+<span class="c1"># Parent: 3 &#39;yes&#39;, 1 &#39;no&#39;</span>
+<span class="n">parent</span> <span class="o">=</span> <span class="n">compute_entropy</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+<span class="c1"># Split on &#39;Is House Owner&#39;: owners -&gt; [2 yes, 0 no], non-owners -&gt; [1 yes, 1 no]</span>
+<span class="n">owners</span>     <span class="o">=</span> <span class="n">compute_entropy</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">non_owners</span> <span class="o">=</span> <span class="n">compute_entropy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">weighted_children</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="n">owners</span> <span class="o">+</span> <span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="n">non_owners</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Entropy(parent)        = </span><span class="si">{</span><span class="n">parent</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> bits&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Entropy(owners)        = </span><span class="si">{</span><span class="n">owners</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> bits&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Entropy(non-owners)    = </span><span class="si">{</span><span class="n">non_owners</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> bits&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Weighted child entropy = </span><span class="si">{</span><span class="n">weighted_children</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> bits&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Information gain       = </span><span class="si">{</span><span class="n">parent</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">weighted_children</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> bits&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Entropy(parent)        = 0.811 bits
+Entropy(owners)        = 0.000 bits
+Entropy(non-owners)    = 1.000 bits
+Weighted child entropy = 0.500 bits
+Information gain       = 0.311 bits
+</code></pre></div>
+<p>A positive gain: asking about home ownership genuinely sorts the borrowers. The tree would compare this
+gain against the <em>Is Married</em> split (try it — Exercise 1) and keep the better question.</p>
+<h3 id="a-flaw-and-its-fix-gain-ratio">A flaw, and its fix: gain ratio</h3>
+<p>Information gain has a bias: it <em>loves attributes with many distinct values</em>. The pathological case is the
+<strong>ID column</strong> — splitting on it creates one child per row, every child trivially pure, information gain
+maximal:</p>
+<div align="center">
+<img src="../assets/dt_id_split.png" width="640">
+
+*Figure 5 — Splitting on ID: four "perfectly pure" children, and a model that has learned precisely
+nothing.*
+</div>
+
+<p>An ID-split generalizes to new data not at all — it's memorization dressed up as purity (a first taste of
+this module's overfitting theme). The fix is the <strong>gain ratio</strong>: divide the information gain by the <em>split
+information</em> — the entropy of the split itself, which is large when a question shatters the data into many
+small pieces:</p>
+<div class="arithmatex">\[\text{Gain ratio} = \frac{\text{Information gain}}{-\sum_k \frac{m_k}{m}\log_2 \frac{m_k}{m}}\]</div>
+<p>Many-way splits pay a large denominator, so the ID column stops looking clever.</p>
+<h3 id="seeing-a-split-chosen">Seeing a split chosen</h3>
+<p>Here is the whole machinery at work on real-looking data. Two candidate splits of the same parent node —
+a vertical cut on <span class="arithmatex">\(x_0\)</span> and a horizontal cut on <span class="arithmatex">\(x_1\)</span> — with the class histograms of the resulting
+children:</p>
+<div align="center">
+<img src="../assets/dt_split_selection.png" width="680">
+
+*Figure 6 — (a) the parent node's data, evenly mixed across three classes. (b) A vertical split isolates
+the blue class perfectly — weighted Gini 0.334. (c) A horizontal split leaves both children mixed —
+weighted Gini 0.532. The tree picks (b).*
+</div>
+
+<p>One last note: nothing here is classification-specific. For <strong>regression trees</strong>, swap the impurity metric
+for MSE/variance of the target within a node — the machinery is otherwise identical (that is
+scikit-learn's <code>DecisionTreeRegressor</code>).</p>
+<hr />
+<h2 id="3-the-growing-algorithm">3. The growing algorithm</h2>
+<p>All the pieces are on the table; the algorithm that assembles them is disarmingly simple — <strong>recursive
+partitioning</strong>, greedy at every step:</p>
+<ol>
+<li>Start at the root with the full training set.</li>
+<li><strong>If</strong> all samples in the node share one class (the node is <em>pure</em>), or another stopping criterion is
+   met — make it a <strong>leaf</strong>, labelled with the majority class. Stop.</li>
+<li><strong>Otherwise</strong>, evaluate every candidate split (every feature, every threshold), and keep the one with
+   the best impurity reduction.</li>
+<li>Split the data into children accordingly, and <strong>recurse</strong> into each child (go to 2).</li>
+</ol>
+<p>Two properties of this procedure will matter enormously in Section 5:</p>
+<ul>
+<li>It is <strong>greedy</strong> — it picks the best <em>immediate</em> split, never looking ahead. (Remember this when we hit
+  the XOR problem.)</li>
+<li>With no stopping criterion beyond purity, <strong>it doesn't stop until every leaf is pure</strong> — even if
+  achieving purity means carving out a leaf for every noisy, mislabelled straggler in the training set.</li>
+</ul>
+<hr />
+<h2 id="4-decision-trees-in-scikit-learn">4. Decision trees in scikit-learn</h2>
+<p>Scikit-learn implements all of this in <code>DecisionTreeClassifier</code> (and <code>DecisionTreeRegressor</code> for continuous
+targets), with the same <code>fit</code>/<code>predict</code> interface as every model so far. We'll use the <strong>iris dataset</strong> —
+150 flowers, 4 measurements (sepal length &amp; width, petal length &amp; width), 3 species (<em>setosa</em>,
+<em>versicolor</em>, <em>virginica</em>).</p>
+<div class="highlight"><pre><span></span><code><span class="n">iris</span> <span class="o">=</span> <span class="n">load_iris</span><span class="p">()</span>
+<span class="n">X_ir</span><span class="p">,</span> <span class="n">y_ir</span> <span class="o">=</span> <span class="n">iris</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">iris</span><span class="o">.</span><span class="n">target</span>
+
+<span class="n">X_ir_train</span><span class="p">,</span> <span class="n">X_ir_test</span><span class="p">,</span> <span class="n">y_ir_train</span><span class="p">,</span> <span class="n">y_ir_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">X_ir</span><span class="p">,</span> <span class="n">y_ir</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y_ir</span><span class="p">)</span>
+
+<span class="n">tree_iris</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">max_depth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">tree_iris</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_ir_train</span><span class="p">,</span> <span class="n">y_ir_train</span><span class="p">)</span>
+
+<span class="n">y_ir_pred</span> <span class="o">=</span> <span class="n">tree_iris</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_ir_test</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Test accuracy: </span><span class="si">{</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_ir_test</span><span class="p">,</span><span class="w"> </span><span class="n">y_ir_pred</span><span class="p">)</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">ConfusionMatrixDisplay</span><span class="o">.</span><span class="n">from_estimator</span><span class="p">(</span><span class="n">tree_iris</span><span class="p">,</span> <span class="n">X_ir_test</span><span class="p">,</span> <span class="n">y_ir_test</span><span class="p">,</span>
+                                      <span class="n">display_labels</span><span class="o">=</span><span class="n">iris</span><span class="o">.</span><span class="n">target_names</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Blues&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Iris test set — decision tree (depth 2)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Test accuracy: 93.3%
+</code></pre></div>
+<p><img alt="png" src="../07_decision_trees_files/07_decision_trees_15_1.png" /></p>
+<p>A depth-2 tree — at most two questions per flower — already classifies nearly every test sample. Notice
+<em>setosa</em> is predicted perfectly: its flowers form a tight, well-separated cluster, so a single question
+isolates them. The rare confusions are all between <em>versicolor</em> and <em>virginica</em>, whose measurements
+overlap.</p>
+<h3 id="reading-the-tree-itself">Reading the tree itself</h3>
+<p>Here is the model's biggest selling point: we can simply <em>draw it and read it</em>. Scikit-learn ships a
+<code>plot_tree</code> function.</p>
+<div class="highlight"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">130</span><span class="p">)</span>
+<span class="n">plot_tree</span><span class="p">(</span><span class="n">tree_iris</span><span class="p">,</span>
+          <span class="n">feature_names</span><span class="o">=</span><span class="n">iris</span><span class="o">.</span><span class="n">feature_names</span><span class="p">,</span>
+          <span class="n">class_names</span><span class="o">=</span><span class="n">iris</span><span class="o">.</span><span class="n">target_names</span><span class="p">,</span>
+          <span class="n">filled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rounded</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../07_decision_trees_files/07_decision_trees_17_0.png" /></p>
+<p>Take any node and unpack its four lines (left branch = test is <strong>True</strong>, right = <strong>False</strong>):</p>
+<ul>
+<li>the <strong>test</strong> at the top (e.g. <code>petal length (cm) &lt;= 2.45</code>) — the question this node asks;</li>
+<li><strong>gini</strong> — the node's impurity, straight from Section 2;</li>
+<li><strong>samples</strong> — how many training samples reached this node;</li>
+<li><strong>value</strong> — those samples' class distribution <code>[setosa, versicolor, virginica]</code>; the majority class
+  (also shown as <code>class=</code>) is what the node would predict if it were a leaf.</li>
+</ul>
+<p>Follow the root's left branch: every <em>setosa</em> in the training set has petal length ≤ 2.45 cm, so one
+question yields a perfectly pure leaf (<code>gini = 0.0</code>). The right branch holds the two entangled species,
+which the second question (on petal <em>width</em>) mostly separates. <strong>A botanist could check this logic line by
+line</strong> — try doing that with logistic regression coefficients.</p>
+<h3 id="the-decision-boundary-rectangles-all-the-way-down">The decision boundary: rectangles all the way down</h3>
+<p>Each test compares <em>one feature against one threshold</em>, so each split draws a line <strong>perpendicular to a
+feature axis</strong>. Stacked tests carve the feature space into nested rectangles. Let's see it, using only the
+two petal measurements so we can plot the plane:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Two features only, for a plottable 2-D feature space</span>
+<span class="n">X_petal</span> <span class="o">=</span> <span class="n">iris</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]]</span>           <span class="c1"># petal length, petal width</span>
+<span class="n">tree_petal</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">max_depth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_petal</span><span class="p">,</span> <span class="n">y_ir</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">DecisionBoundaryDisplay</span><span class="o">.</span><span class="n">from_estimator</span><span class="p">(</span><span class="n">tree_petal</span><span class="p">,</span> <span class="n">X_petal</span><span class="p">,</span> <span class="n">response_method</span><span class="o">=</span><span class="s2">&quot;predict&quot;</span><span class="p">,</span>
+                                       <span class="n">multiclass_colors</span><span class="o">=</span><span class="s2">&quot;Pastel2&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">scatter</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X_petal</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">X_petal</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">y_ir</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Dark2&quot;</span><span class="p">,</span>
+                     <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">scatter</span><span class="o">.</span><span class="n">legend_elements</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">iris</span><span class="o">.</span><span class="n">target_names</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Species&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Petal length (cm)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Petal width (cm)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Decision tree boundary — axis-aligned rectangles&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../07_decision_trees_files/07_decision_trees_19_0.png" /></p>
+<p>Compare this with logistic regression's single straight (possibly diagonal) line from last module: the
+tree's boundary is a set of <strong>axis-parallel fences</strong>. One vertical fence walls off <em>setosa</em>; one horizontal
+fence splits the remaining two species. Depth 2, two fences, three regions.</p>
+<p>Now — what happens if we <em>don't</em> cap the depth at 2? The tree will keep fencing until every training point
+sits in a region of its own colour. Time to watch that go wrong.</p>
+<hr />
+<h2 id="5-overfitting-the-tree-that-memorized-the-noise">5. Overfitting: the tree that memorized the noise</h2>
+<p>We'll stage the failure on a synthetic dataset small enough to see every point: <strong>100 samples, 2 features,
+3 classes</strong>, generated with <code>make_classification</code> (the same tool as the admission datasets last module) —
+including its default sprinkle of label noise, just like real data.</p>
+<div class="highlight"><pre><span></span><code><span class="n">X_syn</span><span class="p">,</span> <span class="n">y_syn</span> <span class="o">=</span> <span class="n">make_classification</span><span class="p">(</span>
+    <span class="n">n_samples</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">n_features</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_informative</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_redundant</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_repeated</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">n_classes</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">n_clusters_per_class</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">class_sep</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">X_syn</span><span class="p">,</span> <span class="n">y_syn</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X_syn</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">X_syn</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">y_syn</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Dark2&quot;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;$x_0$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;$x_1$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Synthetic data: 3 classes, some stragglers on the wrong side&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../07_decision_trees_files/07_decision_trees_22_0.png" /></p>
+<p>Three clouds with genuinely fuzzy borders — a few points sit deep inside a neighbouring class's
+territory. Keep an eye on those stragglers.</p>
+<p>Fit a tree with <strong>all defaults</strong> — which, remember from Section 3, means <em>grow until every leaf is pure</em>:</p>
+<div class="highlight"><pre><span></span><code><span class="n">tree_full</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+<span class="n">tree_full</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tree depth: </span><span class="si">{</span><span class="n">tree_full</span><span class="o">.</span><span class="n">get_depth</span><span class="p">()</span><span class="si">}</span><span class="s2">,  leaves: </span><span class="si">{</span><span class="n">tree_full</span><span class="o">.</span><span class="n">get_n_leaves</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training accuracy: </span><span class="si">{</span><span class="n">tree_full</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="w"> </span><span class="n">y_train</span><span class="p">)</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Test accuracy:     </span><span class="si">{</span><span class="n">tree_full</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span><span class="w"> </span><span class="n">y_test</span><span class="p">)</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Tree depth: 9,  leaves: 15
+Training accuracy: 100.0%
+Test accuracy:     85.0%
+</code></pre></div>
+<p>There's the signature: <strong>perfect on the training set, mediocre on the test set</strong>. The tree isn't
+generalizing — it's reciting. This is precisely the overfitting we met in the Regularization module, only
+the complexity dial isn't polynomial degree anymore; it's <strong>depth</strong>. And depth is an exponential dial: a
+binary tree of depth <span class="arithmatex">\(d\)</span> can hold up to</p>
+<div class="arithmatex">\[\textbf{Number of nodes} = 2^{d+1} - 1\]</div>
+<p>so capacity roughly <em>doubles with every extra level</em>. Let's sweep the dial and watch both accuracies:</p>
+<div class="highlight"><pre><span></span><code><span class="n">max_depth_range</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">clfs</span><span class="p">,</span> <span class="n">train_acc</span><span class="p">,</span> <span class="n">test_acc</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">max_depth_range</span><span class="p">:</span>
+    <span class="n">clf</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">max_depth</span><span class="o">=</span><span class="n">d</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+    <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+    <span class="n">clfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">clf</span><span class="p">)</span>
+    <span class="n">train_acc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">clf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">))</span>
+    <span class="n">test_acc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">clf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">max_depth_range</span><span class="p">,</span> <span class="n">train_acc</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;training accuracy&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">max_depth_range</span><span class="p">,</span> <span class="n">test_acc</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;test accuracy&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;max_depth&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Accuracy&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Accuracy vs. tree depth&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">best_d</span> <span class="o">=</span> <span class="n">max_depth_range</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">test_acc</span><span class="p">))]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Best test accuracy: </span><span class="si">{</span><span class="nb">max</span><span class="p">(</span><span class="n">test_acc</span><span class="p">)</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2"> at depth </span><span class="si">{</span><span class="n">best_d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training accuracy saturates at 100% from depth </span><span class="si">{</span><span class="n">tree_full</span><span class="o">.</span><span class="n">get_depth</span><span class="p">()</span><span class="si">}</span><span class="s2"> &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;(the tree can&#39;t grow further — every leaf is pure).&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../07_decision_trees_files/07_decision_trees_26_0.png" /></p>
+<div class="highlight"><pre><span></span><code>Best test accuracy: 90.0% at depth 3
+Training accuracy saturates at 100% from depth 9 (the tree can&#39;t grow further — every leaf is pure).
+</code></pre></div>
+<p>Read the two curves like a diagnosis chart:</p>
+<ul>
+<li><strong>Training accuracy climbs monotonically to 100%</strong> and pins there — more depth never hurts on data you're
+  allowed to memorize.</li>
+<li><strong>Test accuracy peaks early, at a shallow depth</strong>, then drifts <em>down</em> as depth grows. Every level beyond
+  the peak buys training accuracy only, by fitting noise.</li>
+</ul>
+<p>The widening gap between the curves <em>is</em> overfitting, made visible. And we can make it even more visible —
+let's draw the decision boundary at increasing depths and watch the fences multiply:</p>
+<div class="highlight"><pre><span></span><code><span class="n">depths_to_show</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="n">tree_full</span><span class="o">.</span><span class="n">get_depth</span><span class="p">()]</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mf">7.5</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">depths_to_show</span><span class="p">):</span>
+    <span class="n">clf</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">max_depth</span><span class="o">=</span><span class="n">d</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+    <span class="n">DecisionBoundaryDisplay</span><span class="o">.</span><span class="n">from_estimator</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">response_method</span><span class="o">=</span><span class="s2">&quot;predict&quot;</span><span class="p">,</span>
+                                           <span class="n">multiclass_colors</span><span class="o">=</span><span class="s2">&quot;Pastel2&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X_train</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">X_train</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">y_train</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Dark2&quot;</span><span class="p">,</span>
+               <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;max_depth = </span><span class="si">{</span><span class="n">d</span><span class="si">}</span><span class="s2">  (test acc </span><span class="si">{</span><span class="n">clf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span><span class="w"> </span><span class="n">y_test</span><span class="p">)</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;The decision boundary grows fences as the tree deepens&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.02</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../07_decision_trees_files/07_decision_trees_28_0.png" /></p>
+<p>At depth 1 and 2 the regions are broad and sensible. By the final panel, the tree has carved <strong>tiny
+one-point enclaves</strong> deep inside foreign territory — a private rectangle for each straggler. Those
+stragglers sit at the fuzzy class borders; they are noise, or at best unrepeatable edge cases, and the tree
+has spent most of its depth budget building fences around them. New data will not repeat that noise, which
+is exactly why test accuracy fell.</p>
+<p>There's a structural reason deep trees chase noise so readily: <strong>every split thins the data</strong>. Each level
+partitions the samples among more nodes, so decisions near the bottom rest on a handful of points —
+statistically flimsy evidence for any fence:</p>
+<div align="center">
+<img src="../assets/dt_sample_size_reduction.png" width="360">
+
+*Figure 7 — Sample size shrinks at every level; deep splits are decided by very few samples.*
+</div>
+
+<h3 id="occams-razor">Occam's razor</h3>
+<p>Which depth should we keep, then? The accuracy sweep showed several depths sharing (or nearly sharing) the
+best test accuracy. <strong>Occam's razor</strong> — <em>when multiple solutions perform alike, prefer the simplest</em> — says
+take the shallowest of them. Simpler trees are cheaper, more interpretable, and rest their decisions on more
+samples per node.</p>
+<p>Two families of techniques put this principle into practice:</p>
+<ol>
+<li><strong>Early stopping</strong> (top-down): refuse to grow the tree past preset limits — Section 6.</li>
+<li><strong>Pruning</strong> (bottom-up): grow the tree fully, then cut back the branches that don't pay their way —
+   Section 8. <em>(A third strategy — ensembles of trees, i.e. random forests — is a story for a future
+   module.)</em></li>
+</ol>
+<hr />
+<h2 id="6-early-stopping-three-brakes-on-growth">6. Early stopping: three brakes on growth</h2>
+<p>Early stopping bolts stopping criteria onto step 2 of the growing algorithm: make a leaf not only when
+pure, but also when a growth budget runs out. <code>DecisionTreeClassifier</code> exposes each budget as a
+constructor argument. We'll try the three classics on our synthetic data and watch both the <em>tree
+structure</em> and the <em>test accuracy</em> respond. (Baseline to beat, from Section 5: the full tree's test
+accuracy.)</p>
+<h3 id="brake-1-depth-limitation-max_depth">Brake 1 — depth limitation (<code>max_depth</code>)</h3>
+<p>The bluntest brake: no path may exceed a fixed number of questions.</p>
+<div class="highlight"><pre><span></span><code><span class="n">tree_depth3</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">max_depth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+<span class="n">tree_depth3</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+<span class="n">plot_tree</span><span class="p">(</span><span class="n">tree_depth3</span><span class="p">,</span> <span class="n">filled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rounded</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+          <span class="n">feature_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x0&quot;</span><span class="p">,</span> <span class="s2">&quot;x1&quot;</span><span class="p">],</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Leaves: </span><span class="si">{</span><span class="n">tree_depth3</span><span class="o">.</span><span class="n">get_n_leaves</span><span class="p">()</span><span class="si">}</span><span class="s2">   (full tree had </span><span class="si">{</span><span class="n">tree_full</span><span class="o">.</span><span class="n">get_n_leaves</span><span class="p">()</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training accuracy: </span><span class="si">{</span><span class="n">tree_depth3</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="w"> </span><span class="n">y_train</span><span class="p">)</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Test accuracy:     </span><span class="si">{</span><span class="n">tree_depth3</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span><span class="w"> </span><span class="n">y_test</span><span class="p">)</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">  &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;(full tree: </span><span class="si">{</span><span class="n">tree_full</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span><span class="w"> </span><span class="n">y_test</span><span class="p">)</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../07_decision_trees_files/07_decision_trees_31_0.png" /></p>
+<div class="highlight"><pre><span></span><code>Leaves: 5   (full tree had 15)
+Training accuracy: 91.2%
+Test accuracy:     90.0%  (full tree: 85.0%)
+</code></pre></div>
+<p>A third of the leaves, <em>better</em> test accuracy — the fences around the stragglers are gone and nothing of
+value was lost. But note the leaves that are still impure: the tree wanted to keep splitting and we cut it
+off mid-thought. Setting the number requires care: too low and the tree underfits; and there's no way to
+know the right value in advance.</p>
+<h3 id="brake-2-impurity-threshold-min_impurity_decrease">Brake 2 — impurity threshold (<code>min_impurity_decrease</code>)</h3>
+<p>Subtler: allow a split only if it <em>reduces impurity by at least a threshold</em>. Splits with negligible
+payoff are refused, wherever in the tree they occur. The impurity reduction that scikit-learn computes for
+a node split is the weighted version from Section 2:</p>
+<div class="arithmatex">\[\Delta = \frac{m_{\text{node}}}{m}\left(\text{impurity} - \frac{m_{\text{left}}}{m_{\text{node}}}\,\text{impurity}_{\text{left}} - \frac{m_{\text{right}}}{m_{\text{node}}}\,\text{impurity}_{\text{right}}\right)\]</div>
+<div class="highlight"><pre><span></span><code><span class="n">tree_impurity</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">min_impurity_decrease</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+<span class="n">tree_impurity</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+<span class="n">plot_tree</span><span class="p">(</span><span class="n">tree_impurity</span><span class="p">,</span> <span class="n">filled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rounded</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+          <span class="n">feature_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x0&quot;</span><span class="p">,</span> <span class="s2">&quot;x1&quot;</span><span class="p">],</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Leaves: </span><span class="si">{</span><span class="n">tree_impurity</span><span class="o">.</span><span class="n">get_n_leaves</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training accuracy: </span><span class="si">{</span><span class="n">tree_impurity</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="w"> </span><span class="n">y_train</span><span class="p">)</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Test accuracy:     </span><span class="si">{</span><span class="n">tree_impurity</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span><span class="w"> </span><span class="n">y_test</span><span class="p">)</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../07_decision_trees_files/07_decision_trees_33_0.png" /></p>
+<div class="highlight"><pre><span></span><code>Leaves: 3
+Training accuracy: 86.2%
+Test accuracy:     85.0%
+</code></pre></div>
+<p>Only the splits that pay ≥ 0.1 in impurity reduction survived — a very small tree. The remaining impure
+leaves wanted to split, but each candidate split offered less than the threshold, so growth stopped there.</p>
+<h3 id="brake-3-minimum-samples-to-split-min_samples_split">Brake 3 — minimum samples to split (<code>min_samples_split</code>)</h3>
+<p>Attack the Figure-7 problem directly: <strong>refuse to split thin nodes</strong>. If a node holds fewer than the
+minimum, it becomes a leaf regardless of purity — decisions must rest on a respectable amount of
+evidence.</p>
+<div class="highlight"><pre><span></span><code><span class="n">tree_minsamples</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">min_samples_split</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+<span class="n">tree_minsamples</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+<span class="n">plot_tree</span><span class="p">(</span><span class="n">tree_minsamples</span><span class="p">,</span> <span class="n">filled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rounded</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+          <span class="n">feature_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x0&quot;</span><span class="p">,</span> <span class="s2">&quot;x1&quot;</span><span class="p">],</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Leaves: </span><span class="si">{</span><span class="n">tree_minsamples</span><span class="o">.</span><span class="n">get_n_leaves</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training accuracy: </span><span class="si">{</span><span class="n">tree_minsamples</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="w"> </span><span class="n">y_train</span><span class="p">)</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Test accuracy:     </span><span class="si">{</span><span class="n">tree_minsamples</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span><span class="w"> </span><span class="n">y_test</span><span class="p">)</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../07_decision_trees_files/07_decision_trees_35_0.png" /></p>
+<div class="highlight"><pre><span></span><code>Leaves: 9
+Training accuracy: 95.0%
+Test accuracy:     85.0%
+</code></pre></div>
+<p>The tiny nodes (fewer than 10 samples) stopped splitting; note this brake has <strong>no direct grip on depth</strong>
+— a well-populated branch may still grow deep.</p>
+<h3 id="the-catch-in-all-three-cases">The catch, in all three cases</h3>
+<p>Every brake needed a <em>number</em> — 3, 0.1, 10 — and we set each <strong>before training, essentially by guessing</strong>.
+Set it too aggressive and the tree underfits; too lenient and overfitting returns. On this dataset,
+<code>max_depth=3</code> happened to work nicely — but we only know that because we peeked at test accuracy
+afterwards. Worse, early stopping has a structural blind spot, which the next section demonstrates with a
+famously nasty four-point dataset.</p>
+<hr />
+<h2 id="7-when-early-stopping-fails-the-xor-problem">7. When early stopping fails: the XOR problem</h2>
+<p>The <strong>XOR</strong> (exclusive-or) dataset is four points: the label is 1 when <em>exactly one</em> of the two features
+is 1.</p>
+<table>
+<thead>
+<tr>
+<th><span class="arithmatex">\(x_1\)</span></th>
+<th><span class="arithmatex">\(x_2\)</span></th>
+<th><span class="arithmatex">\(y\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>The trap: <strong>no single split helps</strong>. Cut on <span class="arithmatex">\(x_1\)</span> (or <span class="arithmatex">\(x_2\)</span>) and each child still holds one 0 and one 1 —
+impurity doesn't budge. The first question is worthless <em>on its own</em>; it only pays off in combination with
+the second. Watch what an impurity-threshold brake does here — we demand a tiny minimum reduction of just
+0.01:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># The XOR dataset</span>
+<span class="n">X_xor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="n">y_xor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+
+<span class="n">tree_xor_stopped</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">min_impurity_decrease</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+<span class="n">tree_xor_stopped</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_xor</span><span class="p">,</span> <span class="n">y_xor</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+<span class="n">plot_tree</span><span class="p">(</span><span class="n">tree_xor_stopped</span><span class="p">,</span> <span class="n">filled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rounded</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+          <span class="n">feature_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x1&quot;</span><span class="p">,</span> <span class="s2">&quot;x2&quot;</span><span class="p">],</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Nodes: </span><span class="si">{</span><span class="n">tree_xor_stopped</span><span class="o">.</span><span class="n">tree_</span><span class="o">.</span><span class="n">node_count</span><span class="si">}</span><span class="s2"> — the tree refused to grow at all.&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training accuracy: </span><span class="si">{</span><span class="n">tree_xor_stopped</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_xor</span><span class="p">,</span><span class="w"> </span><span class="n">y_xor</span><span class="p">)</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../07_decision_trees_files/07_decision_trees_38_0.png" /></p>
+<div class="highlight"><pre><span></span><code>Nodes: 1 — the tree refused to grow at all.
+Training accuracy: 50%
+</code></pre></div>
+<p>A single node — a stump. The first split reduces impurity by (essentially) zero, that's below our
+threshold, so the brake slammed on <em>at the root</em>. The model predicts one class for everything: coin-flip
+accuracy on a dataset that is <strong>perfectly learnable</strong>. Remove the brake:</p>
+<div class="highlight"><pre><span></span><code><span class="n">tree_xor_full</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+<span class="n">tree_xor_full</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_xor</span><span class="p">,</span> <span class="n">y_xor</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+<span class="n">plot_tree</span><span class="p">(</span><span class="n">tree_xor_full</span><span class="p">,</span> <span class="n">filled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rounded</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+          <span class="n">feature_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x1&quot;</span><span class="p">,</span> <span class="s2">&quot;x2&quot;</span><span class="p">],</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Nodes: </span><span class="si">{</span><span class="n">tree_xor_full</span><span class="o">.</span><span class="n">tree_</span><span class="o">.</span><span class="n">node_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training accuracy: </span><span class="si">{</span><span class="n">tree_xor_full</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_xor</span><span class="p">,</span><span class="w"> </span><span class="n">y_xor</span><span class="p">)</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../07_decision_trees_files/07_decision_trees_40_0.png" /></p>
+<div class="highlight"><pre><span></span><code>Nodes: 7
+Training accuracy: 100%
+</code></pre></div>
+<p>Allowed to make that first "useless" split, the tree solves XOR perfectly two levels later. Look at the
+root's children: the first split bought <em>zero</em> impurity reduction, exactly as predicted — but it set up
+the second round of splits that finish the job.</p>
+<p>This is the <strong>horizon effect</strong>: early stopping judges each split by its <em>immediate</em> payoff, but some splits
+only pay off one level beyond the horizon. A greedy brake can't see that far. The remedy is to stop
+judging splits on the way down, and instead judge <em>finished subtrees</em> on the way back up: grow the whole
+tree first, then remove the parts that didn't earn their keep. That is <strong>pruning</strong>.</p>
+<hr />
+<h2 id="8-pruning-grow-first-cut-later">8. Pruning: grow first, cut later</h2>
+<p>Pruning inverts early stopping's philosophy. <strong>Grow the tree to its entirety — noise fences, XOR detours
+and all — then remove the branches that don't justify their complexity.</strong> Because judgment happens after
+the fact, a branch that looked useless at birth (XOR's first split) but proved essential gets kept, while
+a branch that fenced one noisy point gets cut.</p>
+<p>Of the several pruning techniques in the literature (reduced-error pruning, minimum-error pruning,
+error-based pruning…), we focus on the most widely used — the one scikit-learn implements:
+<strong>cost-complexity pruning</strong>, from the CART family.</p>
+<h3 id="the-idea-put-a-price-on-leaves">The idea: put a price on leaves</h3>
+<p>Cost-complexity pruning scores a tree <span class="arithmatex">\(T\)</span> by its error <em>plus rent on its size</em>:</p>
+<div class="arithmatex">\[R_\alpha(T) = R(T) + \alpha \, |T|\]</div>
+<p>where <span class="arithmatex">\(R(T)\)</span> is the tree's total impurity-weighted error on the training data, <span class="arithmatex">\(|T|\)</span> is its number of
+leaves, and <span class="arithmatex">\(\alpha \geq 0\)</span> is the <strong>price per leaf</strong>. If this looks familiar, it should — it is <em>exactly</em>
+the regularization pattern from the Regularization module: <span class="arithmatex">\(\text{cost} = \text{fit} + \lambda \cdot
+\text{complexity}\)</span>, with leaves in place of coefficients.</p>
+<ul>
+<li><span class="arithmatex">\(\alpha = 0\)</span>: leaves are free → the fully grown tree wins.</li>
+<li><span class="arithmatex">\(\alpha \to \infty\)</span>: leaves are ruinous → a single-node stump wins.</li>
+<li>In between, each <span class="arithmatex">\(\alpha\)</span> picks out one best sub-tree.</li>
+</ul>
+<h3 id="the-weakest-link">The weakest link</h3>
+<p>Which branch goes first as <span class="arithmatex">\(\alpha\)</span> rises? For each internal node <span class="arithmatex">\(t\)</span>, ask: how much error does its
+subtree save us, per extra leaf it costs? The break-even price is</p>
+<div class="arithmatex">\[\alpha_{\text{eff}}(t) = \frac{R(t) - R(T_t)}{|T_t| - 1}\]</div>
+<p>where <span class="arithmatex">\(R(t)\)</span> is the error if node <span class="arithmatex">\(t\)</span> were collapsed to a leaf, and <span class="arithmatex">\(R(T_t)\)</span>, <span class="arithmatex">\(|T_t|\)</span> are the error and
+leaf-count of the subtree hanging from <span class="arithmatex">\(t\)</span>. The node with the <strong>smallest</strong> <span class="arithmatex">\(\alpha_{\text{eff}}\)</span> — the
+<em>weakest link</em> — is the worst deal in the tree, and is pruned first. Collapsing weakest links one after
+another produces a nested sequence of ever-simpler trees:</p>
+<div align="center">
+<img src="../assets/dt_pruning_sequence.png" width="620">
+
+*Figure 8 — Sequential pruning: collapse the weakest link (red), rescore, repeat, down to the root.*
+</div>
+
+<p><strong>A worked <span class="arithmatex">\(\alpha_{\text{eff}}\)</span>.</strong> Take the subtree below (from a tree trained on 80 samples), rooted at
+node #4:</p>
+<div align="center">
+<img src="../assets/dt_alpha_subtree.png" width="300">
+
+*Figure 9 — A candidate for pruning: node #4 and its two leaves.*
+</div>
+
+<p>With impurity-weighted error <span class="arithmatex">\(R = \text{gini} \times \frac{\text{samples}}{\text{total}}\)</span>:</p>
+<ul>
+<li>Collapsed: <span class="arithmatex">\(R(t) = 0.245 \times \frac{29}{80} \approx 0.0888\)</span></li>
+<li>Kept: <span class="arithmatex">\(R(T_t) = \underbrace{0.594 \times \tfrac{8}{80}}_{\text{node \#5}} + \underbrace{0.0 \times \tfrac{21}{80}}_{\text{node \#6}} \approx 0.0594\)</span>, with <span class="arithmatex">\(|T_t| = 2\)</span> leaves</li>
+</ul>
+<div class="arithmatex">\[\alpha_{\text{eff}} = \frac{0.0888 - 0.0594}{2 - 1} \approx 0.0294\]</div>
+<p>If the price per leaf rises above 0.0294, this subtree stops being worth its rent and is collapsed.</p>
+<h3 id="doing-it-in-scikit-learn">Doing it in scikit-learn</h3>
+<p><code>cost_complexity_pruning_path</code> runs the weakest-link procedure and returns every break-even <span class="arithmatex">\(\alpha\)</span> —
+the full menu of candidate trees. The parameter <code>ccp_alpha</code> then trains a tree pruned at a given price:</p>
+<div class="highlight"><pre><span></span><code><span class="n">tree_for_path</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+<span class="n">path</span> <span class="o">=</span> <span class="n">tree_for_path</span><span class="o">.</span><span class="n">cost_complexity_pruning_path</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="n">ccp_alphas</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">ccp_alphas</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Break-even alphas (one per candidate tree):&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">ccp_alphas</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Break-even alphas (one per candidate tree):
+[0.      0.01071 0.0125  0.01272 0.01562 0.02036 0.02353 0.05143 0.1592
+ 0.27884]
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># One tree per alpha, scored on train and test</span>
+<span class="n">pruned_trees</span> <span class="o">=</span> <span class="p">[</span><span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">,</span> <span class="n">ccp_alpha</span><span class="o">=</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">ccp_alphas</span><span class="p">]</span>
+<span class="n">train_scores</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">pruned_trees</span><span class="p">]</span>
+<span class="n">test_scores</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">pruned_trees</span><span class="p">]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">ccp_alphas</span><span class="p">,</span> <span class="n">train_scores</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="s2">&quot;post&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;training accuracy&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">ccp_alphas</span><span class="p">,</span> <span class="n">test_scores</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="s2">&quot;post&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;test accuracy&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;ccp_alpha  (price per leaf, $\alpha$)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Accuracy&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Cost-complexity pruning: accuracy along the pruning path&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">te</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ccp_alphas</span><span class="p">,</span> <span class="n">pruned_trees</span><span class="p">,</span> <span class="n">train_scores</span><span class="p">,</span> <span class="n">test_scores</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;alpha=</span><span class="si">{</span><span class="n">a</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">  leaves=</span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">get_n_leaves</span><span class="p">()</span><span class="si">:</span><span class="s2">2d</span><span class="si">}</span><span class="s2">  depth=</span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">get_depth</span><span class="p">()</span><span class="si">}</span><span class="s2">  &quot;</span>
+          <span class="sa">f</span><span class="s2">&quot;train=</span><span class="si">{</span><span class="n">tr</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">  test=</span><span class="si">{</span><span class="n">te</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../07_decision_trees_files/07_decision_trees_44_0.png" /></p>
+<div class="highlight"><pre><span></span><code>alpha=0.0000  leaves=15  depth=9  train=1.00  test=0.85
+alpha=0.0107  leaves=13  depth=8  train=0.99  test=0.85
+alpha=0.0125  leaves=11  depth=7  train=0.96  test=0.85
+alpha=0.0127  leaves= 9  depth=6  train=0.95  test=0.85
+alpha=0.0156  leaves= 8  depth=5  train=0.95  test=0.85
+alpha=0.0204  leaves= 5  depth=3  train=0.91  test=0.90
+alpha=0.0235  leaves= 4  depth=3  train=0.90  test=0.90
+alpha=0.0514  leaves= 3  depth=2  train=0.86  test=0.85
+alpha=0.1592  leaves= 2  depth=1  train=0.68  test=0.50
+alpha=0.2788  leaves= 1  depth=0  train=0.36  test=0.20
+</code></pre></div>
+<p>Read the table right to left is also instructive, but the headline reads left to right: as <span class="arithmatex">\(\alpha\)</span>
+rises, leaves fall away, training accuracy erodes gently — and <strong>test accuracy actually climbs</strong> before
+collapsing when pruning starts amputating real structure. The best test accuracy is shared by more than
+one <span class="arithmatex">\(\alpha\)</span>; <strong>Occam's razor says take the largest of them</strong> (the smallest tree). Let's select it
+programmatically and look at the survivor:</p>
+<div class="highlight"><pre><span></span><code><span class="n">best</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ccp_alphas</span><span class="p">)),</span>
+           <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="p">(</span><span class="n">test_scores</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">ccp_alphas</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>   <span class="c1"># best test acc, ties -&gt; larger alpha</span>
+<span class="n">best_alpha</span> <span class="o">=</span> <span class="n">ccp_alphas</span><span class="p">[</span><span class="n">best</span><span class="p">]</span>
+<span class="n">tree_pruned</span> <span class="o">=</span> <span class="n">pruned_trees</span><span class="p">[</span><span class="n">best</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Chosen alpha: </span><span class="si">{</span><span class="n">best_alpha</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pruned tree:  </span><span class="si">{</span><span class="n">tree_pruned</span><span class="o">.</span><span class="n">get_n_leaves</span><span class="p">()</span><span class="si">}</span><span class="s2"> leaves, depth </span><span class="si">{</span><span class="n">tree_pruned</span><span class="o">.</span><span class="n">get_depth</span><span class="p">()</span><span class="si">}</span><span class="s2"> &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;(full tree: </span><span class="si">{</span><span class="n">tree_full</span><span class="o">.</span><span class="n">get_n_leaves</span><span class="p">()</span><span class="si">}</span><span class="s2"> leaves, depth </span><span class="si">{</span><span class="n">tree_full</span><span class="o">.</span><span class="n">get_depth</span><span class="p">()</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Test accuracy: </span><span class="si">{</span><span class="n">tree_pruned</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span><span class="w"> </span><span class="n">y_test</span><span class="p">)</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2"> &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;(full tree: </span><span class="si">{</span><span class="n">tree_full</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span><span class="w"> </span><span class="n">y_test</span><span class="p">)</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+<span class="n">plot_tree</span><span class="p">(</span><span class="n">tree_pruned</span><span class="p">,</span> <span class="n">filled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rounded</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+          <span class="n">feature_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x0&quot;</span><span class="p">,</span> <span class="s2">&quot;x1&quot;</span><span class="p">],</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Chosen alpha: 0.0235
+Pruned tree:  4 leaves, depth 3 (full tree: 15 leaves, depth 9)
+Test accuracy: 90.0% (full tree: 85.0%)
+</code></pre></div>
+<p><img alt="png" src="../07_decision_trees_files/07_decision_trees_46_1.png" /></p>
+<p>From fifteen leaves to a handful, <em>and</em> better test accuracy. Compare how we got here with Section 6:
+early stopping asked us to guess magic numbers before training; pruning <strong>derived its candidate
+<span class="arithmatex">\(\alpha\)</span> values from the tree itself</strong> and let held-out accuracy pick among them. That is why pruning —
+specifically cost-complexity pruning with the <span class="arithmatex">\(\alpha\)</span> grid from <code>cost_complexity_pruning_path</code> — is the
+standard recommendation. (In a production workflow you'd pick <span class="arithmatex">\(\alpha\)</span> on a <em>validation</em> split or by
+cross-validation, keeping the test set untouched for the final report — the protocol from the ML Workflow
+module.)</p>
+<hr />
+<h2 id="9-a-short-history-id3-c45-cart">9. A short history: ID3, C4.5, CART</h2>
+<p>"Decision tree" is a family, not a single algorithm. The members — called <strong>inducers</strong> — differ in which
+impurity metric they optimize, what data they accept, and how they fight overfitting. Three names matter:</p>
+<ul>
+<li><strong>ID3</strong> (<em>Iterative Dichotomiser 3</em>, Ross Quinlan): the original. Splits on <strong>information gain</strong>,
+  multiway splits on categorical attributes only, <strong>no pruning</strong> — so it inherits both of information
+  gain's flaws we met in Section 2 (the ID-column bias) and this module's disease (overfitting).</li>
+<li><strong>C4.5</strong> (Quinlan again): the fix-up release. Splits on <strong>gain ratio</strong> (Section 2's correction), handles
+  <strong>continuous attributes</strong> by thresholding them, tolerates missing values, and prunes (error-based
+  pruning).</li>
+<li><strong>CART</strong> (<em>Classification and Regression Trees</em>, Breiman et al.): strictly <strong>binary</strong> splits, <strong>Gini</strong>
+  (classification) or <strong>MSE/variance</strong> (regression), <strong>cost-complexity pruning</strong> — Section 8. Because it
+  covers regression too, it is the most versatile, and it is the algorithm behind scikit-learn's
+  <code>DecisionTreeClassifier</code> and <code>DecisionTreeRegressor</code> (an optimized version of it).</li>
+</ul>
+<div align="center">
+<img src="../assets/dt_inducers_table.png" width="700">
+
+*Figure 10 — The three classic inducers at a glance.*
+</div>
+
+<p>(That "CART builds binary trees" detail explains a curiosity from Section 7: on the XOR data, the learned
+thresholds appear as <span class="arithmatex">\(x_1 \le 0.5\)</span> even though the feature only takes values 0 and 1 — CART always cuts a
+continuous range at a midpoint between observed values.)</p>
+<hr />
+<h2 id="10-finishing-the-evaluation-toolkit">10. Finishing the evaluation toolkit</h2>
+<p>Last module gave us the confusion matrix, precision, recall, and F1 — for <strong>two classes</strong> and a <strong>fixed
+threshold</strong>. Both restrictions come off now.</p>
+<h3 id="101-the-confusion-matrix-goes-multiclass">10.1 The confusion matrix goes multiclass</h3>
+<p>For <span class="arithmatex">\(K\)</span> classes the confusion matrix is <span class="arithmatex">\(K \times K\)</span>; here is one for a hypothetical fruit classifier:</p>
+<div align="center">
+<img src="../assets/dt_multiclass_cm.png" width="400">
+
+*Figure 11 — A 3-class confusion matrix (columns: actual, rows: predicted). The diagonal holds the correct
+predictions.*
+</div>
+
+<p>TP, FP, FN, TN are now defined <em>per class</em>. For the class <strong>Apple</strong>: TP is the Apple-Apple cell; FP is the
+rest of Apple's <em>predicted</em> row (called Apple, was something else); FN is the rest of Apple's <em>actual</em>
+column (was Apple, called something else); TN is everything remaining:</p>
+<div align="center">
+<img src="../assets/dt_multiclass_cm_apple.png" width="440">
+
+*Figure 12 — TP / FP / FN / TN from the class Apple's point of view.*
+</div>
+
+<p>With per-class TP/FP/FN in hand, precision, recall, and F1 follow for each class exactly as in the binary
+case:</p>
+<div align="center">
+<img src="../assets/dt_multiclass_prf.png" width="330">
+
+*Figure 13 — Per-class precision, recall, and F1 for the fruit classifier.*
+</div>
+
+<p>Three F1 scores for three classes — but a leaderboard needs <em>one</em> number. Three standard ways to average
+(imagine 1000 classes and the need becomes obvious):</p>
+<ul>
+<li><strong>Macro F1</strong> — the plain mean of per-class F1 scores. Every class counts equally, so rare classes weigh
+  as much as common ones.</li>
+<li><strong>Weighted F1</strong> — the mean weighted by each class's number of true instances (<em>support</em>). Big classes
+  dominate.</li>
+<li><strong>Micro F1</strong> — pool TP, FP, FN over all classes <em>first</em>, then compute F1 from the totals. For
+  single-label classification this equals plain accuracy.</li>
+</ul>
+<p>Scikit-learn exposes all three through the <code>average</code> parameter — and its <code>classification_report</code> (which we
+read for two classes last module) simply grows one row per class. Let's evaluate our pruned iris tree
+properly:</p>
+<div class="highlight"><pre><span></span><code><span class="n">y_ir_pred</span> <span class="o">=</span> <span class="n">tree_iris</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_ir_test</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">classification_report</span><span class="p">(</span><span class="n">y_ir_test</span><span class="p">,</span> <span class="n">y_ir_pred</span><span class="p">,</span> <span class="n">target_names</span><span class="o">=</span><span class="n">iris</span><span class="o">.</span><span class="n">target_names</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">avg</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;macro&quot;</span><span class="p">,</span> <span class="s2">&quot;weighted&quot;</span><span class="p">,</span> <span class="s2">&quot;micro&quot;</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">avg</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2"> F1: </span><span class="si">{</span><span class="n">f1_score</span><span class="p">(</span><span class="n">y_ir_test</span><span class="p">,</span><span class="w"> </span><span class="n">y_ir_pred</span><span class="p">,</span><span class="w"> </span><span class="n">average</span><span class="o">=</span><span class="n">avg</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;accuracy&#39;</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2">   : </span><span class="si">{</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_ir_test</span><span class="p">,</span><span class="w"> </span><span class="n">y_ir_pred</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">   (= micro F1)&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>              precision    recall  f1-score   support
+
+      setosa       1.00      1.00      1.00        10
+  versicolor       0.90      0.90      0.90        10
+   virginica       0.90      0.90      0.90        10
+
+    accuracy                           0.93        30
+   macro avg       0.93      0.93      0.93        30
+weighted avg       0.93      0.93      0.93        30
+
+    macro F1: 0.9333
+ weighted F1: 0.9333
+    micro F1: 0.9333
+ accuracy   : 0.9333   (= micro F1)
+</code></pre></div>
+<p>On iris the three averages barely differ, because the classes are balanced and similarly easy. They
+diverge on <em>imbalanced</em> problems: macro F1 punishes a model that dumps its rare classes; weighted F1
+forgives it. Choose deliberately — it is the multiclass version of last module's "metric choice is a
+modelling decision".</p>
+<h3 id="102-metrics-across-all-thresholds-pr-curves-roc-and-auc">10.2 Metrics across all thresholds: PR curves, ROC, and AUC</h3>
+<p>Every metric so far was computed <strong>at one threshold</strong> (0.5 by default). But last module's Exercise 2
+showed the threshold is a <em>free dial</em>: lower it and recall rises while precision falls; raise it and the
+reverse. One threshold = one (precision, recall) pair:</p>
+<div align="center">
+<img src="../assets/dt_threshold_table.png" width="640">
+
+*Figure 14 — Six students, four thresholds: each threshold yields a different precision/recall pair.*
+</div>
+
+<p>Sweep the threshold over its whole range, plot every pair, and you get the <strong>precision–recall curve</strong> —
+the complete menu of trade-offs a classifier offers. The closer it hugs the top-right corner (precision
+<em>and</em> recall high), the better the classifier:</p>
+<div align="center">
+<img src="../assets/dt_pr_curve.png" width="380">
+
+*Figure 15 — A typical precision–recall curve; each point is one threshold.*
+</div>
+
+<p>The <strong>ROC curve</strong> (<em>Receiver Operating Characteristic</em>) applies the same sweep to a different pair of
+axes:</p>
+<div class="arithmatex">\[\text{TPR} = \frac{TP}{TP + FN} \;(= \text{recall}), \qquad \text{FPR} = \frac{FP}{FP + TN}\]</div>
+<p>— the benefit (catching positives) against the collateral damage (false alarms among the negatives). Three
+reference shapes to calibrate your eye:</p>
+<div align="center">
+<img src="../assets/dt_roc_curves.png" width="700">
+
+*Figure 16 — ROC curves: a perfect classifier hugs the top-left corner; a random one lies on the diagonal;
+real classifiers live in between.*
+</div>
+
+<p>Squashing the whole curve into one number gives the <strong>AUC</strong> (<em>Area Under the Curve</em>): 1.0 for a perfect
+classifier, 0.5 for coin-flipping. AUC measures ranking quality across <em>all</em> thresholds at once, which
+makes it ideal for comparing models before you've committed to an operating point.</p>
+<h3 id="103-the-rematch-decision-tree-vs-logistic-regression">10.3 The rematch: decision tree vs. logistic regression</h3>
+<p>Let's put the module together. Same diabetes data as last module, two challengers — our new pruned tree
+against the reigning logistic regression — judged on ROC curves and AUC:</p>
+<div class="highlight"><pre><span></span><code><span class="n">X_diab</span> <span class="o">=</span> <span class="n">diabetes</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">&quot;Outcome&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">y_diab</span> <span class="o">=</span> <span class="n">diabetes</span><span class="p">[</span><span class="s2">&quot;Outcome&quot;</span><span class="p">]</span>
+<span class="n">Xd_train</span><span class="p">,</span> <span class="n">Xd_test</span><span class="p">,</span> <span class="n">yd_train</span><span class="p">,</span> <span class="n">yd_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">X_diab</span><span class="p">,</span> <span class="n">y_diab</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="c1"># Challenger 1: logistic regression (scaled, as always)</span>
+<span class="n">logreg_diab</span> <span class="o">=</span> <span class="n">make_pipeline</span><span class="p">(</span><span class="n">StandardScaler</span><span class="p">(),</span> <span class="n">LogisticRegression</span><span class="p">())</span>
+<span class="n">logreg_diab</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Xd_train</span><span class="p">,</span> <span class="n">yd_train</span><span class="p">)</span>
+
+<span class="c1"># Challenger 2: a cost-complexity-pruned decision tree (alpha chosen on the training data&#39;s path)</span>
+<span class="n">path_d</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">)</span><span class="o">.</span><span class="n">cost_complexity_pruning_path</span><span class="p">(</span><span class="n">Xd_train</span><span class="p">,</span> <span class="n">yd_train</span><span class="p">)</span>
+<span class="n">tree_diab</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">,</span>
+                                   <span class="n">ccp_alpha</span><span class="o">=</span><span class="mf">0.005</span><span class="p">)</span>   <span class="c1"># a mid-path value; tune it in Exercise 5</span>
+<span class="n">tree_diab</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Xd_train</span><span class="p">,</span> <span class="n">yd_train</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">RocCurveDisplay</span><span class="o">.</span><span class="n">from_estimator</span><span class="p">(</span><span class="n">logreg_diab</span><span class="p">,</span> <span class="n">Xd_test</span><span class="p">,</span> <span class="n">yd_test</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Logistic regression&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">RocCurveDisplay</span><span class="o">.</span><span class="n">from_estimator</span><span class="p">(</span><span class="n">tree_diab</span><span class="p">,</span> <span class="n">Xd_test</span><span class="p">,</span> <span class="n">yd_test</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Pruned decision tree&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;k--&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Random classifier&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;ROC curves — diabetes test set&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;Logistic regression&quot;</span><span class="p">,</span> <span class="n">logreg_diab</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;Pruned decision tree&quot;</span><span class="p">,</span> <span class="n">tree_diab</span><span class="p">)]:</span>
+    <span class="n">auc</span> <span class="o">=</span> <span class="n">roc_auc_score</span><span class="p">(</span><span class="n">yd_test</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">Xd_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">&lt;22</span><span class="si">}</span><span class="s2"> AUC = </span><span class="si">{</span><span class="n">auc</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../07_decision_trees_files/07_decision_trees_52_0.png" /></p>
+<div class="highlight"><pre><span></span><code>Logistic regression    AUC = 0.798
+
+
+Pruned decision tree   AUC = 0.752
+</code></pre></div>
+<p>Both classifiers sit well above the random diagonal, with logistic regression's smooth probability
+ranking typically edging out the tree's chunkier one (a tree only outputs as many distinct probability
+values as it has leaves — hence its staircase ROC). The precision–recall view tells the same story with an
+imbalanced-data accent:</p>
+<div class="highlight"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">PrecisionRecallDisplay</span><span class="o">.</span><span class="n">from_estimator</span><span class="p">(</span><span class="n">logreg_diab</span><span class="p">,</span> <span class="n">Xd_test</span><span class="p">,</span> <span class="n">yd_test</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Logistic regression&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">PrecisionRecallDisplay</span><span class="o">.</span><span class="n">from_estimator</span><span class="p">(</span><span class="n">tree_diab</span><span class="p">,</span> <span class="n">Xd_test</span><span class="p">,</span> <span class="n">yd_test</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Pruned decision tree&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Precision-recall curves — diabetes test set&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../07_decision_trees_files/07_decision_trees_54_0.png" /></p>
+<p>So which model <em>should</em> a clinic deploy? The AUC verdict favours one; but the tree can be printed on one
+page and audited by a doctor, gets no benefit from feature scaling (its thresholds are scale-invariant —
+notice we never scaled its inputs), and handles the mixed-scale features natively. Model choice, like
+metric choice, is a decision about <em>what matters in the domain</em> — you now have the tools to make both
+honestly.</p>
+<hr />
+<h2 id="11-your-turn">11. Your turn</h2>
+<p>Add cells below each exercise. Exercises 3 and 5 consolidate the big ideas.</p>
+<p><strong>Exercise 1 — The other question.</strong>
+In the Section 2 loan example, compute the information gain for splitting on <em>Is Married</em> (row 1 goes one
+way, rows 2–4 the other). Compare with the <em>Is House Owner</em> gain we computed. Which question should the
+tree ask first?</p>
+<p><strong>Exercise 2 — Gini vs. entropy, empirically.</strong>
+Refit the Section 5 full tree with <code>criterion="entropy"</code> and compare depth, leaf count, and test accuracy
+against the Gini default. Do the two impurity metrics disagree much here?</p>
+<p><strong>Exercise 3 — The overfitting autopsy.</strong>
+Take the full tree from Section 5 and find a leaf with <code>samples = 1</code> (use the tree plot, or explore
+<code>tree_full.tree_.n_node_samples</code>). Locate that training point in the scatter plot. Is it a straggler inside
+another class's territory? Explain in two sentences why the pruned tree of Section 8 classifies that
+<em>region</em> differently — and why that's a good thing.</p>
+<p><strong>Exercise 4 — Regression trees exist too.</strong>
+Load the Advertising data from the Regression module (<code>data/Advertising.csv</code>) and fit a
+<code>DecisionTreeRegressor</code> (criterion: MSE) predicting sales from TV spend, with <code>max_depth</code> 2, 5, and None.
+Plot the three prediction curves over a scatter of the data. Where does the regression version of
+overfitting show up?</p>
+<p><strong>Exercise 5 — Prune the diabetes tree properly.</strong>
+In Section 10.3 we set <code>ccp_alpha=0.005</code> by fiat. Do it right: split the <em>training</em> data further into
+train/validation, evaluate every alpha from <code>cost_complexity_pruning_path</code> on the validation split, select
+the winner Occam-style, and report the final model's AUC on the untouched test set. Did the rematch verdict
+change?</p>
+<hr />
+<h2 id="12-if-you-remember-nothing-else">12. If you remember nothing else</h2>
+<ol>
+<li>
+<p><strong>A decision tree classifies by routing</strong>: a cascade of one-feature threshold tests from root to leaf.
+   Its boundary is axis-aligned rectangles; its superpower is that humans can read the fitted model.</p>
+</li>
+<li>
+<p><strong>Impurity is the currency of tree-growing.</strong> Gini (<span class="arithmatex">\(1 - \sum P_i^2\)</span>) and entropy
+   (<span class="arithmatex">\(-\sum P_i \log_2 P_i\)</span>) are both zero for pure nodes and maximal at even mixing; splits are chosen to
+   maximize the (weighted) impurity drop. Gain ratio divides by split information to stop many-valued
+   attributes from cheating. Regression trees swap in MSE.</p>
+</li>
+<li>
+<p><strong>Fully grown trees overfit, structurally.</strong> Node capacity doubles per level (<span class="arithmatex">\(2^{d+1}-1\)</span>), samples per
+   node shrink per level, and growth stops only at purity — so noise gets a private fence. Signature:
+   perfect training accuracy, decaying test accuracy.</p>
+</li>
+<li>
+<p><strong>Early stopping</strong> (<code>max_depth</code>, <code>min_impurity_decrease</code>, <code>min_samples_split</code>) is guesswork set before
+   training, and its greedy horizon is blind to splits that pay off later — XOR defeats it at the root.</p>
+</li>
+<li>
+<p><strong>Cost-complexity pruning</strong> grows fully, then charges rent per leaf (<span class="arithmatex">\(R_\alpha = R + \alpha|T|\)</span> — the
+   regularization pattern again), collapsing weakest links to build an <span class="arithmatex">\(\alpha\)</span>-indexed menu of subtrees;
+   pick by held-out accuracy, break ties with <strong>Occam's razor</strong>.</p>
+</li>
+<li>
+<p><strong>ID3 → C4.5 → CART</strong>: information gain → gain ratio → Gini/MSE with binary splits and cost-complexity
+   pruning. Scikit-learn's trees are optimized CART.</p>
+</li>
+<li>
+<p><strong>Multiclass F1 comes in macro / weighted / micro flavours</strong> (equal-class, size-weighted, pooled —
+   micro = accuracy); <strong>PR and ROC curves</strong> show a classifier at <em>every</em> threshold, and <strong>AUC</strong> condenses
+   ranking quality into one comparable number: 1.0 perfect, 0.5 random.</p>
+</li>
+</ol>
+<hr />
+<h2 id="13-further-reading-and-glossary">13. Further reading and glossary</h2>
+<h3 id="further-reading">Further reading</h3>
+<ul>
+<li>Tan, Steinbach, Karpatne &amp; Kumar, <em>Introduction to Data Mining</em> —
+  <a href="https://www-users.cs.umn.edu/~kumar001/dmbook/ch4.pdf">Chapter 4 (PDF)</a>: decision trees, impurity
+  metrics, and model evaluation in depth.</li>
+<li>Rokach &amp; Maimon, <a href="http://www.ise.bgu.ac.il/faculty/liorr/hbchap9.pdf"><em>Decision Trees</em> (PDF)</a> — the
+  survey chapter: inducers (§8) and the full menagerie of pruning techniques (§6).</li>
+<li>scikit-learn's <a href="https://scikit-learn.org/stable/modules/tree.html">Decision Trees guide</a> — including
+  §"Tips on practical use" and
+  <a href="https://scikit-learn.org/stable/auto_examples/tree/plot_cost_complexity_pruning.html">minimal cost-complexity pruning</a>.</li>
+<li>Terence Parr &amp; Prince Grover, <a href="https://explained.ai/decision-tree-viz/">How to visualize decision trees</a> —
+  beautiful and instructive tree renderings.</li>
+<li>Aurélien Géron, <em>Hands-On Machine Learning</em> — Chapter 6 (trees, CART, regularization hyperparameters)
+  and Chapter 3 (ROC/AUC, PR curves).</li>
+</ul>
+<h3 id="glossary">Glossary</h3>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Root / internal / leaf node</strong></td>
+<td>First test / subsequent tests / terminal verdict of a tree</td>
+</tr>
+<tr>
+<td><strong>Depth</strong></td>
+<td>Longest root-to-leaf path; capacity grows as <span class="arithmatex">\(2^{d+1}-1\)</span> nodes</td>
+</tr>
+<tr>
+<td><strong>Impurity</strong></td>
+<td>How mixed a node's classes are; 0 = pure</td>
+</tr>
+<tr>
+<td><strong>Gini impurity</strong></td>
+<td><span class="arithmatex">\(1-\sum P_i^2\)</span>; scikit-learn's default split criterion</td>
+</tr>
+<tr>
+<td><strong>Entropy / information gain</strong></td>
+<td><span class="arithmatex">\(-\sum P_i\log_2 P_i\)</span>; gain = entropy drop from a split</td>
+</tr>
+<tr>
+<td><strong>Gain ratio</strong></td>
+<td>Information gain ÷ split information; C4.5's fix for many-valued attributes</td>
+</tr>
+<tr>
+<td><strong>Recursive partitioning</strong></td>
+<td>Greedy grow-split-recurse algorithm behind all tree inducers</td>
+</tr>
+<tr>
+<td><strong>Early stopping</strong></td>
+<td>Pre-set growth limits (depth, impurity threshold, min samples)</td>
+</tr>
+<tr>
+<td><strong>Horizon effect</strong></td>
+<td>Greedy stopping misses splits whose payoff comes a level later (XOR)</td>
+</tr>
+<tr>
+<td><strong>Cost-complexity pruning</strong></td>
+<td>Grow fully, then minimize <span class="arithmatex">\(R(T)+\alpha\lvert T\rvert\)</span>; CART's pruning</td>
+</tr>
+<tr>
+<td><strong>Weakest link</strong></td>
+<td>Node with smallest <span class="arithmatex">\(\alpha_{\text{eff}}\)</span>; pruned first as <span class="arithmatex">\(\alpha\)</span> rises</td>
+</tr>
+<tr>
+<td><strong>Occam's razor</strong></td>
+<td>Among equally good models, prefer the simplest</td>
+</tr>
+<tr>
+<td><strong>ID3 / C4.5 / CART</strong></td>
+<td>The classic inducers; sklearn implements optimized CART</td>
+</tr>
+<tr>
+<td><strong>Macro / weighted / micro F1</strong></td>
+<td>Averaging schemes for multiclass F1 (micro = accuracy)</td>
+</tr>
+<tr>
+<td><strong>ROC curve / AUC</strong></td>
+<td>TPR vs. FPR across all thresholds / area under it (1 perfect, 0.5 random)</td>
+</tr>
+<tr>
+<td><strong>Precision-recall curve</strong></td>
+<td>Precision vs. recall across all thresholds</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../06_logistic_regression/" class="btn btn-neutral float-left" title="Classification & Logistic Regression"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../08_evaluation_metrics/" class="btn btn-neutral float-right" title="Evaluation Metrics">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright &copy; 2026 - Aayush Raj Regmi</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../06_logistic_regression/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../08_evaluation_metrics/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../javascripts/mathjax.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

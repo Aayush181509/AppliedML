@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Gradient Descent - DCS 404</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Gradient Descent";
+        var mkdocs_page_input_path = "DCS404/04_gradient_descent.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> DCS 404
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Welcome</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../InstallationGuide/">Installation Guide</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Machine Learning and AI</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../01_introduction_to_machine_learning/">Introduction to Machine Learning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02_ml_workflow/">ML Workflow</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../03_regression/">Regression</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Gradient Descent</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-work-through-this">How to work through this</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#learning-objectives">Learning objectives</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#1-why-walk-when-you-can-teleport-the-case-for-iteration">1. Why walk when you can teleport? The case for iteration</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-a-hiker-in-the-fog">2. A hiker in the fog</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#the-algorithm">The algorithm</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-gradient-descent-from-scratch-on-the-simplest-possible-hill">3. Gradient descent from scratch, on the simplest possible hill</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-the-learning-rate-the-one-knob-that-matters">4. The learning rate: the one knob that matters</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-valleys-with-false-bottoms-non-convex-functions">5. Valleys with false bottoms: non-convex functions</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-gradient-descent-for-linear-regression">6. Gradient descent for linear regression</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#61-the-cost-function">6.1 The cost function</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#62-the-gradient">6.2 The gradient</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#63-the-pieces-in-code">6.3 The pieces, in code</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#64-the-descent-loop">6.4 The descent loop</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-feature-scaling-the-fix">7. Feature scaling: the fix</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#71-but-did-it-learn-the-right-answer">7.1 But did it learn the right answer?</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#8-ols-versus-gradient-descent-when-to-use-which">8. OLS versus gradient descent: when to use which</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#9-your-turn">9. Your turn</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#10-if-you-remember-nothing-else">10. If you remember nothing else</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#11-further-reading-and-glossary">11. Further reading and glossary</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#further-reading">Further reading</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#glossary">Glossary</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../05_regularization/">Regularization</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../06_logistic_regression/">Classification & Logistic Regression</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07_decision_trees/">Decision Trees</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../08_evaluation_metrics/">Evaluation Metrics</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../09_knn/">K-Nearest Neighbors</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Time Series Analysis</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../10_time_series_foundations/">Time Series Foundations</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../11_exponential_smoothing/">Exponential Smoothing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../12_arima_models/">ARIMA and SARIMA Models</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Final Project</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../project/00_final_project/">Project Work</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">DCS 404</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Machine Learning and AI</li>
+      <li class="breadcrumb-item active">Gradient Descent</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="gradient-descent-how-machines-walk-downhill">Gradient Descent: How Machines Walk Downhill</h1>
+<p><strong>DCS 404 · Data Science and Machine Learning</strong></p>
+<hr />
+<p>At the end of the OLS derivation last module, I told you to enjoy the closed-form solution while it lasted —
+that for most models beyond linear regression, no tidy formula exists, and we'd eventually have to <em>walk
+downhill step by step</em>. This module is that walk.</p>
+<p><strong>Gradient descent</strong> is the single most important algorithm in machine learning. Not the most sophisticated —
+it's almost embarrassingly simple — but the most important, because it's the engine underneath nearly
+everything modern. The neural networks behind image recognition, the language models you've chatted with, the
+recommendation systems choosing your next video: at the bottom of every one of them, some version of gradient
+descent is nudging millions (or billions) of parameters downhill, a little at a time.</p>
+<p>Today we build it from nothing. We'll minimise a simple function by hand, watch what the learning rate does
+when we get it right and when we get it wrong, then point the algorithm at our linear regression problem from
+last module and watch it <em>learn</em> the same coefficients that OLS computed in one shot. Along the way we'll hit a
+genuine, instructive failure — gradient descent blowing up to infinity on raw data — and fix it with feature
+scaling, one of the most practical tricks in the book.</p>
+<p>Boots on. Let's find the bottom of this valley.</p>
+<h2 id="how-to-work-through-this">How to work through this</h2>
+<p>Same rhythm as always: run every code cell (<code>Shift + Enter</code>), look at the output, <em>then</em> read the commentary.
+Cells build on each other in order — the linear regression part reuses functions defined earlier — so if
+something errors, run from the top.</p>
+<p>Today's mathematics is lighter than last module's OLS derivation, but it <em>builds on it</em>: we reuse the cost
+function idea, the convex bowl, and the Advertising dataset (bundled in <code>data/</code>, so everything runs offline).
+If the phrase "partial derivative of the SSE" makes you nervous, skim Sections 4–5 of the Regression module
+before starting.</p>
+<p>One heads-up: in Section 6 we will run code that <strong>deliberately fails</strong> — the cost will race off to infinity.
+That's not a bug in your setup; it's the lesson. Watch it happen, then watch us fix it.</p>
+<h2 id="learning-objectives">Learning objectives</h2>
+<p>After completing this module you will be able to:</p>
+<ul>
+<li>Explain when and why we need an iterative optimiser instead of the closed-form OLS solution.</li>
+<li>Describe the gradient descent algorithm: random initialisation, the update rule
+  <span class="arithmatex">\(x := x - \alpha \, \nabla f(x)\)</span>, and convergence.</li>
+<li>Implement gradient descent from scratch and use it to minimise an arbitrary function.</li>
+<li>Explain the role of the learning rate, and diagnose the symptoms of one that is too small or too large.</li>
+<li>Explain why non-convex functions can trap gradient descent in a local minimum.</li>
+<li>Derive the gradient of the linear regression cost function and write it as one matrix expression,
+  <span class="arithmatex">\(\mathbf{X}^\top(\hat{\mathbf{y}} - \mathbf{y})\)</span>.</li>
+<li>Train a multiple linear regression with gradient descent and compare the result against OLS.</li>
+<li>Use feature scaling (standardisation, min-max scaling) to make gradient descent converge dramatically
+  faster.</li>
+</ul>
+<h2 id="setup">Setup</h2>
+<p>Run this once. Same libraries and plotting style as before, plus the Advertising dataset from last module.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+
+<span class="c1"># A consistent look for every plot in this notebook</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+    <span class="s2">&quot;figure.figsize&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">),</span>
+    <span class="s2">&quot;figure.dpi&quot;</span><span class="p">:</span> <span class="mi">110</span><span class="p">,</span>
+    <span class="s2">&quot;axes.grid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">&quot;grid.alpha&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="s2">&quot;axes.spines.top&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;axes.spines.right&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;font.size&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_palette</span><span class="p">(</span><span class="s2">&quot;deep&quot;</span><span class="p">)</span>
+<span class="n">RANDOM_STATE</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># Load the Advertising dataset, checking the usual likely locations.</span>
+<span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data/Advertising.csv&quot;</span><span class="p">),</span>
+                  <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;notebooks/data/Advertising.csv&quot;</span><span class="p">),</span>
+                  <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;resources/dataset/Advertising.csv&quot;</span><span class="p">)]:</span>
+    <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">ads</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded dataset from: </span><span class="si">{</span><span class="n">candidate</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">break</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;Could not find Advertising.csv. Expected it in a data/ folder next to the notebook.&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape: </span><span class="si">{</span><span class="n">ads</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> markets, </span><span class="si">{</span><span class="n">ads</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> columns&quot;</span><span class="p">)</span>
+<span class="n">ads</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Loaded dataset from: data/Advertising.csv
+Shape: 200 markets, 4 columns
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>TV</th>
+      <th>radio</th>
+      <th>newspaper</th>
+      <th>sales</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>230.1</td>
+      <td>37.8</td>
+      <td>69.2</td>
+      <td>22.1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>44.5</td>
+      <td>39.3</td>
+      <td>45.1</td>
+      <td>10.4</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>17.2</td>
+      <td>45.9</td>
+      <td>69.3</td>
+      <td>9.3</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>151.5</td>
+      <td>41.3</td>
+      <td>58.5</td>
+      <td>18.5</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>180.8</td>
+      <td>10.8</td>
+      <td>58.4</td>
+      <td>12.9</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<hr />
+<h2 id="1-why-walk-when-you-can-teleport-the-case-for-iteration">1. Why walk when you can teleport? The case for iteration</h2>
+<p>Last module, OLS felt like magic: write down the loss, take derivatives, and out drops a <em>formula</em> for the
+best parameters. For multiple regression the formula is the <strong>normal equation</strong>,</p>
+<div class="arithmatex">\[\hat{\boldsymbol\beta} = (\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top\mathbf{y}\]</div>
+<p>— plug in the data, do a fixed amount of arithmetic, and the optimal parameters appear in a single shot. No
+searching. Teleportation.</p>
+<p>So why would anyone ever do it differently? Three reasons, and they matter more each year:</p>
+<ul>
+<li><strong>The inverse may not exist.</strong> The normal equation needs <span class="arithmatex">\((\mathbf{X}^\top\mathbf{X})^{-1}\)</span>, and that
+  breaks exactly when our old enemy from last module — perfect multicollinearity — shows up, or when you have
+  more features than samples (<span class="arithmatex">\(d &gt; n\)</span>). No inverse, no teleport.</li>
+<li><strong>The inverse is expensive.</strong> Inverting that matrix costs on the order of <span class="arithmatex">\(O(d^3)\)</span> operations in the number
+  of features <span class="arithmatex">\(d\)</span>. At <span class="arithmatex">\(d = 3\)</span> that's nothing. At <span class="arithmatex">\(d = 100{,}000\)</span> — routine for text or image models — it's
+  hopeless.</li>
+<li><strong>Most models have no formula at all.</strong> Linear regression is the lucky special case. For logistic
+  regression, neural networks, and nearly everything else ahead of us, no amount of algebra produces a
+  closed-form solution. Iteration isn't an alternative there; it's the only game in town.</li>
+</ul>
+<p>The <strong>iterative approach</strong> trades the teleport for a walk: start from a <em>random guess</em>, then repeatedly apply
+an <em>update rule</em> that makes the guess a little better, until the improvements dry up. Gradient descent is the
+simplest and most popular member of this family — a <em>first-order</em> method, meaning the only information it
+needs about the function is its first derivative.</p>
+<hr />
+<h2 id="2-a-hiker-in-the-fog">2. A hiker in the fog</h2>
+<p>The classic picture, and honestly the one professionals still think in. You're standing on a hillside in fog
+so thick you can see nothing — but you can <em>feel the slope under your feet</em>. How do you reach the valley
+floor? Feel which direction is steepest downhill, take a step that way. Steep slope, confident stride; gentle
+slope, cautious shuffle. Repeat. When the ground feels flat in every direction, you're at the bottom — or at
+least at <em>a</em> bottom (hold that worry until Section 5).</p>
+<p>Now translate every piece. The hill is the function <span class="arithmatex">\(f\)</span> we want to minimise. Your position is the current
+parameter value. And the slope under your feet is the <strong>gradient</strong>: at any point, the gradient of a function
+points in the direction of <em>steepest ascent</em>, and its magnitude says how steep the function is there. So the
+<em>negative</em> gradient points steepest-downhill — and taking steps proportional to it is exactly the fog
+strategy, formalised.</p>
+<h3 id="the-algorithm">The algorithm</h3>
+<p>To minimise a function <span class="arithmatex">\(f\)</span>:</p>
+<ol>
+<li><strong>Initialise</strong> <span class="arithmatex">\(x\)</span> randomly — anywhere on the hill.</li>
+<li><strong>Compute the gradient</strong> at the current position, <span class="arithmatex">\(\frac{\partial f(x)}{\partial x}\)</span>.</li>
+<li><strong>Update</strong> the position by stepping against the gradient:</li>
+</ol>
+<div class="arithmatex">\[x := x - \alpha \, \frac{\partial f(x)}{\partial x}\]</div>
+<p>where <span class="arithmatex">\(\alpha\)</span> (alpha) is the <strong>learning rate</strong> — a small constant controlling the step size — and <span class="arithmatex">\(:=\)</span>
+   means "assign" (the new <span class="arithmatex">\(x\)</span> is computed from the old one).</p>
+<ol>
+<li><strong>Repeat</strong> steps 2–3 until <span class="arithmatex">\(f(x)\)</span> stops improving.</li>
+</ol>
+<p>Notice the built-in braking system: as we approach a minimum, the gradient shrinks toward zero, so the steps
+shrink too — long confident strides on the steep upper slopes, tiny careful ones near the flat bottom. At the
+minimum itself <span class="arithmatex">\(\frac{\partial f}{\partial x} \approx 0\)</span> and the updates effectively stop. That's
+<strong>convergence</strong>.</p>
+<hr />
+<h2 id="3-gradient-descent-from-scratch-on-the-simplest-possible-hill">3. Gradient descent from scratch, on the simplest possible hill</h2>
+<p>Ten lines of Python. That's the whole engine of modern machine learning:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">gradient_descent_1d</span><span class="p">(</span><span class="n">gradient</span><span class="p">,</span> <span class="n">x_init</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">max_iters</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Minimise a 1-D function by gradient descent, keeping the path for plotting.&quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x_init</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span>
+    <span class="k">while</span> <span class="nb">abs</span><span class="p">(</span><span class="n">gradient</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">&gt;</span> <span class="n">precision</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">max_iters</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">gradient</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>      <span class="c1"># the update rule: step against the gradient</span>
+        <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">path</span>
+</code></pre></div>
+<p>Our test hill is the parabola <span class="arithmatex">\(f(x) = x^2 + 3x - 5\)</span>. Its gradient is <span class="arithmatex">\(\frac{df}{dx} = 2x + 3\)</span>, which we can
+differentiate in our heads — and we can also solve <span class="arithmatex">\(2x + 3 = 0\)</span> in our heads, so we know the true answer is
+<span class="arithmatex">\(x = -1.5\)</span> with <span class="arithmatex">\(f(-1.5) = -7.25\)</span>. That's the point: we're testing the algorithm on a problem where we already
+know the answer, exactly like checking our hand-rolled OLS against scikit-learn.</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">3</span><span class="o">*</span><span class="n">x</span> <span class="o">-</span> <span class="mi">5</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">gradient_f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="mi">3</span>
+
+<span class="n">x_init</span> <span class="o">=</span> <span class="mf">2.4</span>     <span class="c1"># an arbitrary starting guess</span>
+<span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.25</span>
+
+<span class="n">x_optimal</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">gradient_descent_1d</span><span class="p">(</span><span class="n">gradient_f</span><span class="p">,</span> <span class="n">x_init</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;optimal x:    </span><span class="si">{</span><span class="n">x_optimal</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">   (true answer: -1.5)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;min f(x):     </span><span class="si">{</span><span class="n">f</span><span class="p">(</span><span class="n">x_optimal</span><span class="p">)</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">   (true answer: -7.25)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;no. of steps: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>optimal x:    -1.500000   (true answer: -1.5)
+min f(x):     -7.250000   (true answer: -7.25)
+no. of steps: 30
+</code></pre></div>
+<p>Starting from a blind guess of <span class="arithmatex">\(x = 2.4\)</span>, the algorithm walked to the true minimum in a few dozen steps.
+Because our function kept the whole <code>path</code>, we can watch every step of the descent — the computational version
+of the animation below.</p>
+<center>
+<img src="../assets/gd_animation.gif" width="420">
+
+Fig: Gradient descent walking down a convex function, step by step
+</center>
+
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_descent</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Overlay a descent path on the graph of f.&quot;&quot;&quot;</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span> <span class="ow">or</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="n">xs</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:red&quot;</span><span class="p">,</span>
+            <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">f</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:green&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">f</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:blue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;end&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;$x$&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;$f(x)$&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">title</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+
+<span class="n">plot_descent</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;$</span><span class="se">\\</span><span class="s2">alpha = </span><span class="si">{</span><span class="n">alpha</span><span class="si">}</span><span class="s2">$: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="si">}</span><span class="s2"> steps to the bottom&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../04_gradient_descent_files/04_gradient_descent_12_0.png" /></p>
+<p>Exactly the fog strategy: big early strides where the parabola is steep, then progressively daintier steps as
+the gradient fades near the bottom, until the updates are too small to matter. Each red dot is one iteration
+of the update rule — nothing more than <code>x = x - alpha * gradient(x)</code>, repeated.</p>
+<hr />
+<h2 id="4-the-learning-rate-the-one-knob-that-matters">4. The learning rate: the one knob that matters</h2>
+<p>The learning rate <span class="arithmatex">\(\alpha\)</span> is the first <strong>hyperparameter</strong> you've met — a setting <em>we</em> choose rather than a
+value the algorithm learns. It scales every step, it stays fixed throughout the run, and getting it wrong is
+the number-one way gradient descent goes bad. There are exactly two ways to get it wrong.</p>
+<p><strong>Too small</strong>, and every step is a timid shuffle: the algorithm still converges, but takes ages doing it.</p>
+<center>
+<img src="../assets/gd_small_lr.gif" width="420">
+
+Fig: A too-small learning rate — shuffling down the hill
+</center>
+
+<p><strong>Too large</strong>, and the algorithm overshoots the minimum and lands on the <em>opposite slope</em> — then overshoots
+back. It zig-zags across the valley, and if <span class="arithmatex">\(\alpha\)</span> is large enough, each jump lands <em>higher</em> than the last
+and the whole thing diverges.</p>
+<center>
+<img src="../assets/gd_large_lr.gif" width="420">
+
+Fig: A too-large learning rate — overshooting from slope to slope
+</center>
+
+<p>Don't take the animations' word for it. Same function, same starting point, three learning rates:</p>
+<div class="highlight"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mf">4.2</span><span class="p">),</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">]):</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">gradient_descent_1d</span><span class="p">(</span><span class="n">gradient_f</span><span class="p">,</span> <span class="n">x_init</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">plot_descent</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;$</span><span class="se">\\</span><span class="s2">alpha = </span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s2">$: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="si">}</span><span class="s2"> steps&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;$f(x)$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../04_gradient_descent_files/04_gradient_descent_15_0.png" /></p>
+<p>Read the three panels as a fable:</p>
+<ul>
+<li><strong><span class="arithmatex">\(\alpha = 0.01\)</span></strong> creeps down the hill in over a thousand tiny steps — so many that the red dots blur into
+  a solid line. It gets there, eventually. (In real projects where each step means a pass over millions of data
+  points, "eventually" is a budget problem.)</li>
+<li><strong><span class="arithmatex">\(\alpha = 0.25\)</span></strong> is the porridge that's just right: a few dozen decisive steps.</li>
+<li><strong><span class="arithmatex">\(\alpha = 0.95\)</span></strong> never walks downhill at all — it <em>ricochets</em> across the valley, from one slope to the
+  other, each bounce a little lower, and takes more steps than <span class="arithmatex">\(0.25\)</span> despite moving four times as boldly.
+  Nudge it a little higher still and the bounces grow instead of shrinking: divergence. Try <span class="arithmatex">\(\alpha = 1.05\)</span> in
+  the cell above and watch (then put it back).</li>
+</ul>
+<p>There's no formula for the right <span class="arithmatex">\(\alpha\)</span> — in practice you try a few values spaced by factors of ~10 (0.001,
+0.01, 0.1) and watch the cost curve. Fancier <em>adaptive learning rate</em> methods (Adam and friends) adjust the
+step size on the fly, and they await you in any deep learning course. The intuition you just built is exactly
+the one they automate.</p>
+<hr />
+<h2 id="5-valleys-with-false-bottoms-non-convex-functions">5. Valleys with false bottoms: non-convex functions</h2>
+<p>Everything so far worked because our parabola — like last module's SSE bowl — is <strong>convex</strong>: one valley, one
+bottom, and every downhill walk ends at the same global minimum. Gradient descent literally cannot fail on
+such a function (with a sane <span class="arithmatex">\(\alpha\)</span>).</p>
+<center>
+<img src="../assets/convex_function.png" width="440">
+
+Fig: A convex function — the only minimum is the global one
+</center>
+
+<p>But nothing guarantees the functions we'll meet later are convex. A non-convex function has <strong>multiple
+valleys</strong>: one true <em>global minimum</em> and any number of shallower <em>local minima</em>.</p>
+<center>
+<img src="../assets/nonconvex_function.png" width="440">
+
+Fig: A non-convex function — local minima can trap the walker
+</center>
+
+<p>And here's the trap: gradient descent only feels the slope under its feet. Walk downhill into a shallow
+valley, reach its floor, feel flat ground in every direction — and stop, satisfied, with no way to know that a
+much deeper valley lies over the next ridge. <strong>Where you start determines where you finish.</strong> Watch it happen:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># A non-convex hill: two valleys of different depths</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">g</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">**</span><span class="mi">4</span> <span class="o">-</span> <span class="mi">4</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">5</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">gradient_g</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">4</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="mi">3</span> <span class="o">-</span> <span class="mi">8</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">2.6</span><span class="p">,</span> <span class="mf">2.6</span><span class="p">,</span> <span class="mi">300</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mf">4.2</span><span class="p">),</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">start</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="p">[</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">]):</span>
+    <span class="n">x_end</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">gradient_descent_1d</span><span class="p">(</span><span class="n">gradient_g</span><span class="p">,</span> <span class="n">x_init</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">g</span><span class="p">(</span><span class="n">xs</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">g</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:red&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">g</span><span class="p">(</span><span class="n">start</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:green&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_end</span><span class="p">,</span> <span class="n">g</span><span class="p">(</span><span class="n">x_end</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:blue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;end&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;start at $x = </span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s2">$  $</span><span class="se">\\</span><span class="s2">rightarrow$  ends at $x = </span><span class="si">{</span><span class="n">x_end</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">$&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;$x$&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;$g(x)$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../04_gradient_descent_files/04_gradient_descent_18_0.png" /></p>
+<p>Same function, same learning rate, same algorithm — two different answers. The walker starting at <span class="arithmatex">\(x = 2.5\)</span>
+descends into the right-hand valley, feels flat ground at its floor, and stops — at a <em>local</em> minimum,
+blissfully unaware that a better answer exists a short climb away. The walker starting at <span class="arithmatex">\(x = -0.4\)</span> happens
+to roll leftward instead, into the deeper valley, and finds the true <em>global</em> minimum. Neither walker did
+anything wrong; one just started on the luckier slope. This is the honest weakness of gradient descent, and it's why practitioners
+sometimes run from several random initialisations and keep the best result.</p>
+<p>The good news for today: our linear regression cost function is convex — we proved as much last module when we
+met the SSE bowl. No false bottoms ahead. Let's go fit the model.</p>
+<hr />
+<h2 id="6-gradient-descent-for-linear-regression">6. Gradient descent for linear regression</h2>
+<p>Time to reunite with the Advertising dataset. Last module we fitted</p>
+<div class="arithmatex">\[\text{sales} = \beta_0 + \beta_1 \cdot \text{TV} + \beta_2 \cdot \text{radio} + \beta_3 \cdot \text{newspaper}\]</div>
+<p>by OLS. Now we'll make gradient descent <em>learn</em> those same four parameters — but first, a piece of
+housekeeping that pays for itself many times over: writing the problem in <strong>matrix form</strong>.</p>
+<p>Stack all <span class="arithmatex">\(n = 200\)</span> predictions into one vector equation:</p>
+<div class="arithmatex">\[\hat{\mathbf{y}} = \mathbf{X}\boldsymbol\beta
+\qquad\qquad
+\begin{bmatrix} \hat{y}_1 \\ \hat{y}_2 \\ \vdots \\ \hat{y}_{200} \end{bmatrix}
+=
+\begin{bmatrix}
+1 &amp; x_{1,1} &amp; x_{1,2} &amp; x_{1,3} \\
+1 &amp; x_{2,1} &amp; x_{2,2} &amp; x_{2,3} \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+1 &amp; x_{200,1} &amp; x_{200,2} &amp; x_{200,3}
+\end{bmatrix}
+\times
+\begin{bmatrix} \beta_0 \\ \beta_1 \\ \beta_2 \\ \beta_3 \end{bmatrix}\]</div>
+<p>The matrix <span class="arithmatex">\(\mathbf{X}\)</span> (the <em>design matrix</em>) holds one row per market and one column per feature — plus a
+first column of all 1s. That column is a lovely trick: it lets the intercept <span class="arithmatex">\(\beta_0\)</span> ride along as just
+another coefficient, "multiplying" a feature that always equals 1, so one matrix product computes every
+prediction for every market at once.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Design matrix: a column of ones, then the three feature columns</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">ads</span><span class="p">[[</span><span class="s2">&quot;TV&quot;</span><span class="p">,</span> <span class="s2">&quot;radio&quot;</span><span class="p">,</span> <span class="s2">&quot;newspaper&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">X</span><span class="p">]</span>
+
+<span class="n">y</span> <span class="o">=</span> <span class="n">ads</span><span class="p">[</span><span class="s2">&quot;sales&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>   <span class="c1"># 200 samples, 4 columns (ones + 3 features)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;n = </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> samples,  d = </span><span class="si">{</span><span class="n">d</span><span class="si">}</span><span class="s2"> columns&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;first two rows of X:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">X</span><span class="p">[:</span><span class="mi">2</span><span class="p">])</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>n = 200 samples,  d = 4 columns
+first two rows of X:
+[[  1.  230.1  37.8  69.2]
+ [  1.   44.5  39.3  45.1]]
+</code></pre></div>
+<h3 id="61-the-cost-function">6.1 The cost function</h3>
+<p>We'll minimise the same sum of squared errors as OLS, with one cosmetic tweak — a factor of <span class="arithmatex">\(\frac{1}{2}\)</span> out
+front:</p>
+<div class="arithmatex">\[J(\boldsymbol\beta) = \frac{1}{2}\sum_{i=1}^{n}(\hat{y}_i - y_i)^2\]</div>
+<p>Why the half? Pure convenience: differentiating the square brings down a 2, and the <span class="arithmatex">\(\frac{1}{2}\)</span> cancels it,
+leaving cleaner gradients. Scaling a function by a positive constant moves its <em>values</em> but not the location
+of its minimum, so the optimal <span class="arithmatex">\(\boldsymbol\beta\)</span> is untouched. (Note also that <span class="arithmatex">\(J\)</span> is a function of
+<span class="arithmatex">\(\boldsymbol\beta\)</span> alone — <span class="arithmatex">\(\mathbf{X}\)</span> and <span class="arithmatex">\(\mathbf{y}\)</span> are fixed by the dataset; the parameters are the only
+things that move.)</p>
+<h3 id="62-the-gradient">6.2 The gradient</h3>
+<p>We need <span class="arithmatex">\(\frac{\partial J}{\partial \beta_j}\)</span> for each parameter. The derivation is last module's, re-run with
+the chain rule doing the talking. For <span class="arithmatex">\(\beta_1\)</span>:</p>
+<div class="arithmatex">\[\frac{\partial J}{\partial \beta_1}
+= \frac{1}{2}\sum_{i=1}^{n}\frac{\partial}{\partial \beta_1}(\hat{y}_i - y_i)^2
+= \frac{1}{2}\sum_{i=1}^{n} 2(\hat{y}_i - y_i)\cdot\frac{\partial \hat{y}_i}{\partial \beta_1}
+= \sum_{i=1}^{n}(\hat{y}_i - y_i)\,x_{i,1}\]</div>
+<p>(the 2 and the <span class="arithmatex">\(\frac{1}{2}\)</span> cancel, exactly as promised, and <span class="arithmatex">\(\hat{y}_i\)</span> depends on <span class="arithmatex">\(\beta_1\)</span> only through
+the term <span class="arithmatex">\(\beta_1 x_{i,1}\)</span>). Nothing about that calculation was specific to <span class="arithmatex">\(\beta_1\)</span>, so for <em>every</em>
+parameter <span class="arithmatex">\(\beta_j\)</span>:</p>
+<div class="arithmatex">\[\frac{\partial J}{\partial \beta_j} = \sum_{i=1}^{n}(\hat{y}_i - y_i)\,x_{i,j}\]</div>
+<p>— and for <span class="arithmatex">\(\beta_0\)</span>, whose "feature" is the column of 1s, the gradient is simply the sum of the errors. Even
+better, all four partial derivatives collapse into a single matrix expression:</p>
+<div class="arithmatex">\[\frac{\partial J}{\partial \boldsymbol\beta} = \mathbf{X}^\top(\hat{\mathbf{y}} - \mathbf{y})\]</div>
+<p>One transpose, one subtraction, one matrix product — the entire gradient, for any number of features. This is
+why we bothered with matrix form.</p>
+<h3 id="63-the-pieces-in-code">6.3 The pieces, in code</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">initialize_betas</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Random starting parameters, drawn from a standard normal distribution.&quot;&quot;&quot;</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">((</span><span class="n">d</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_cost</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">betas</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;J(beta) = 1/2 * sum of squared errors.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">X</span> <span class="o">@</span> <span class="n">betas</span> <span class="o">-</span> <span class="n">y</span><span class="p">))</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_gradients</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">betas</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;dJ/dbeta = X^T (y_hat - y), all parameters at once.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="p">(</span><span class="n">X</span> <span class="o">@</span> <span class="n">betas</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="n">betas</span> <span class="o">=</span> <span class="n">initialize_betas</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;initial betas:&quot;</span><span class="p">,</span> <span class="n">betas</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;initial cost: </span><span class="si">{</span><span class="n">calculate_cost</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">betas</span><span class="p">)</span><span class="si">:</span><span class="s2">,.0f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;initial gradients:&quot;</span><span class="p">,</span> <span class="n">calculate_gradients</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">betas</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>initial betas: [ 0.1257 -0.1321  0.6404  0.1049]
+initial cost: 51,225
+initial gradients: [  -3044. -699922.  -51043.  -76447.]
+</code></pre></div>
+<p>Look at those gradients before moving on — the ledger tells a story. The gradient for the TV coefficient is
+around seven hundred <em>thousand</em>, while the one for the intercept is more than two hundred times smaller. Why? Look at the general
+formula: the gradient for <span class="arithmatex">\(\beta_j\)</span> is a sum of errors <em>times the feature values</em> <span class="arithmatex">\(x_{i,j}\)</span>. TV budgets run
+up to nearly 300, radio and newspaper only to about 50 and 114, and the ones column is stuck at 1 — so
+parameters attached to big-valued features get big gradients. File that observation away; it detonates in
+about two cells.</p>
+<h3 id="64-the-descent-loop">6.4 The descent loop</h3>
+<p>The update is the same rule as Section 2, applied to all four parameters at once:
+<span class="arithmatex">\(\boldsymbol\beta := \boldsymbol\beta - \alpha\,\frac{\partial J}{\partial \boldsymbol\beta}\)</span>. We stop when an
+update improves the cost by less than a small threshold (convergence) or when we run out of iterations — and,
+having been warned, we also bail out if the cost explodes.</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">gradient_descent</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.003</span><span class="p">,</span> <span class="n">max_iters</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fit linear regression by gradient descent. Returns (betas, n_iterations, cost_history).&quot;&quot;&quot;</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">betas</span> <span class="o">=</span> <span class="n">initialize_betas</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">costs</span> <span class="o">=</span> <span class="p">[</span><span class="n">calculate_cost</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">betas</span><span class="p">)]</span>
+
+    <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_iters</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">betas</span> <span class="o">=</span> <span class="n">betas</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">calculate_gradients</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">betas</span><span class="p">)</span>   <span class="c1"># the update rule</span>
+        <span class="n">cost</span> <span class="o">=</span> <span class="n">calculate_cost</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">betas</span><span class="p">)</span>
+        <span class="n">costs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cost</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">cost</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Diverged: cost reached infinity at iteration </span><span class="si">{</span><span class="n">iteration</span><span class="si">}</span><span class="s2">. Try a smaller learning rate.&quot;</span><span class="p">)</span>
+            <span class="k">break</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">costs</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">cost</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">precision</span><span class="p">:</span>                      <span class="c1"># converged: cost stopped improving</span>
+            <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">betas</span><span class="p">,</span> <span class="n">iteration</span><span class="p">,</span> <span class="n">costs</span>
+</code></pre></div>
+<p>Moment of truth. Let's train with a seemingly innocent learning rate, <span class="arithmatex">\(\alpha = 0.003\)</span>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">over</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">):</span>   <span class="c1"># we *expect* this to overflow</span>
+    <span class="n">betas_raw</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="n">costs</span> <span class="o">=</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.003</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;final cost: </span><span class="si">{</span><span class="n">costs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Diverged: cost reached infinity at iteration 36. Try a smaller learning rate.
+final cost: inf
+</code></pre></div>
+<p>Boom. A learning rate that would be considered <em>tiny</em> in most settings sent the cost to infinity within a
+few dozen iterations. This is the observation from Section 6.3 detonating: the gradients are in the millions
+because the TV feature has large values, so even multiplied by <span class="arithmatex">\(0.003\)</span>, each "step" hurls the parameters
+thousands of units across the loss surface — far past the minimum, onto ever-steeper slopes. Ricochet, but
+each bounce higher. Divergence.</p>
+<p>We can rescue the run by shrinking <span class="arithmatex">\(\alpha\)</span> until the steps are sane again. It takes an absurd-looking value:</p>
+<div class="highlight"><pre><span></span><code><span class="n">betas_raw</span><span class="p">,</span> <span class="n">steps_raw</span><span class="p">,</span> <span class="n">costs_raw</span> <span class="o">=</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.0000003</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;stopped after </span><span class="si">{</span><span class="n">steps_raw</span><span class="si">}</span><span class="s2"> iterations (the max_iters cap)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;final cost: </span><span class="si">{</span><span class="n">costs_raw</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> — and still improving by &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">abs</span><span class="p">(</span><span class="n">costs_raw</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">costs_raw</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> per step, so not yet converged&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;betas:&quot;</span><span class="p">,</span> <span class="n">betas_raw</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">costs_raw</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;iteration&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;cost $J$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;$</span><span class="se">\\</span><span class="s2">alpha = 0.0000003$: still creeping after </span><span class="si">{</span><span class="n">steps_raw</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> steps&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>stopped after 10000 iterations (the max_iters cap)
+final cost: 375.7 — and still improving by 0.0017 per step, so not yet converged
+betas: [0.3572 0.0528 0.2181 0.0146]
+</code></pre></div>
+<p><img alt="png" src="../04_gradient_descent_files/04_gradient_descent_29_1.png" /></p>
+<p>The cost curve slides down and flattens — the signature shape of a training run (you'll draw a thousand of
+these curves in your ML career; this is your first). But look closer at the printout: after <strong>ten thousand</strong>
+iterations the run hit its cap and the cost is <em>still</em> inching downward — it never actually converged. And we
+can't speed it up: nudge the learning rate up to just <span class="arithmatex">\(0.0000005\)</span> and the whole thing diverges to infinity
+again (try it). The usable window for <span class="arithmatex">\(\alpha\)</span> is razor-thin, and even its best value crawls. We're stuck in
+the worst-of-both-worlds from Section 4 — an <span class="arithmatex">\(\alpha\)</span> small enough not to explode on the huge TV gradients is
+far too small to make progress for everyone else.</p>
+<p>The root cause isn't the learning rate at all. It's that our features live on wildly different scales, so no
+single <span class="arithmatex">\(\alpha\)</span> suits them all. Fix the scales, fix the problem.</p>
+<hr />
+<h2 id="7-feature-scaling-the-fix">7. Feature scaling: the fix</h2>
+<p><strong>Feature scaling</strong> transforms every feature to a similar, small range. The step gradient descent takes for
+each parameter depends on two things — the learning rate (shared by all parameters) and the gradient (which,
+as we saw, scales with the feature's values). When features share a scale, their gradients share a scale, one
+sensible learning rate suits everyone, and the descent stops being a hostage to its largest feature.</p>
+<p>The two workhorse techniques:</p>
+<p><strong>Standardisation</strong> rescales each feature to have mean 0 and standard deviation 1:</p>
+<div class="arithmatex">\[x' = \frac{x - \mu}{\sigma}\]</div>
+<p>where <span class="arithmatex">\(\mu\)</span> and <span class="arithmatex">\(\sigma\)</span> are the feature's mean and standard deviation. It's the default choice for algorithms
+that like normally-distributed inputs (linear and logistic regression, PCA), and it handles outliers
+relatively gracefully.</p>
+<p><strong>Min-max scaling</strong> squashes each feature into the interval <span class="arithmatex">\([0, 1]\)</span>:</p>
+<div class="arithmatex">\[x' = \frac{x - \min(x)}{\max(x) - \min(x)}\]</div>
+<p>Useful when you want a bounded range and make no distributional assumptions — but because it's built from the
+two most extreme values in the data, a single wild outlier can crush every other value into a corner. We'll
+use standardisation.</p>
+<p>First, how bad is the scale mismatch?</p>
+<div class="highlight"><pre><span></span><code><span class="n">ads</span><span class="p">[[</span><span class="s2">&quot;TV&quot;</span><span class="p">,</span> <span class="s2">&quot;radio&quot;</span><span class="p">,</span> <span class="s2">&quot;newspaper&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="s2">&quot;std&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>TV</th>
+      <th>radio</th>
+      <th>newspaper</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>min</th>
+      <td>0.70</td>
+      <td>0.00</td>
+      <td>0.30</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>147.04</td>
+      <td>23.26</td>
+      <td>30.55</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>296.40</td>
+      <td>49.60</td>
+      <td>114.00</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>85.85</td>
+      <td>14.85</td>
+      <td>21.78</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>TV spans 0.7 to 296.4; radio never leaves 0 to 49.6. Let's standardise all three feature columns (leaving
+the ones column alone — it's doing its intercept job just fine) and confirm the result has mean 0 and standard
+deviation 1.</p>
+<div class="highlight"><pre><span></span><code><span class="n">X_scaled</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>                     <span class="c1"># columns 1..3; column 0 is the ones column</span>
+    <span class="n">X_scaled</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">X_scaled</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">X_scaled</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span> <span class="o">/</span> <span class="n">X_scaled</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+
+<span class="n">check</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">X_scaled</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;TV&quot;</span><span class="p">,</span> <span class="s2">&quot;radio&quot;</span><span class="p">,</span> <span class="s2">&quot;newspaper&quot;</span><span class="p">])</span>
+<span class="n">check</span><span class="o">.</span><span class="n">agg</span><span class="p">([</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;std&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>TV</th>
+      <th>radio</th>
+      <th>newspaper</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>mean</th>
+      <td>0.0</td>
+      <td>-0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>Every feature now speaks the same language. Rerun gradient descent — same code, same random initialisation,
+and the very learning rate that exploded a moment ago:</p>
+<div class="highlight"><pre><span></span><code><span class="n">betas_scaled</span><span class="p">,</span> <span class="n">steps_scaled</span><span class="p">,</span> <span class="n">costs_scaled</span> <span class="o">=</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">X_scaled</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.003</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;converged after </span><span class="si">{</span><span class="n">steps_scaled</span><span class="si">}</span><span class="s2"> iterations &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;(raw features: still unconverged after </span><span class="si">{</span><span class="n">steps_raw</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;final cost: </span><span class="si">{</span><span class="n">costs_scaled</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">  (raw features got to </span><span class="si">{</span><span class="n">costs_raw</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">costs_raw</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;raw features, $</span><span class="se">\\</span><span class="s2">alpha=3</span><span class="se">\\</span><span class="s2">times10^</span><span class="se">{{</span><span class="s2">-7</span><span class="se">}}</span><span class="s2">$ (unconverged at </span><span class="si">{</span><span class="n">steps_raw</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> steps)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">costs_scaled</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;standardised, $</span><span class="se">\\</span><span class="s2">alpha=0.003$ (</span><span class="si">{</span><span class="n">steps_scaled</span><span class="si">}</span><span class="s2"> steps)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;iteration&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;cost $J$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">550</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;The same algorithm, before and after feature scaling&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>converged after 13 iterations (raw features: still unconverged after 10,000)
+final cost: 278.4  (raw features got to 375.7)
+</code></pre></div>
+<p><img alt="png" src="../04_gradient_descent_files/04_gradient_descent_36_1.png" /></p>
+<p>Night and day. On standardised features the cost plummets and converges in <strong>thirteen</strong> iterations — where
+the raw-feature run was still unconverged after ten thousand — and it reaches a <em>lower</em> final cost, because
+the well-conditioned problem lets the optimiser actually arrive at the bottom instead of creeping toward it
+forever. Same algorithm, same stopping rule, same data; the only thing that changed is the units.</p>
+<p>This is the punchline to remember for the rest of the course: <strong>gradient-based learning wants scaled
+features</strong>. Almost every model we meet from here on — logistic regression, neural networks — trains by some
+descendant of gradient descent, and this same preprocessing step will matter every single time.</p>
+<h3 id="71-but-did-it-learn-the-right-answer">7.1 But did it learn the right answer?</h3>
+<p>Converging fast is nice; converging to the <em>correct place</em> is the point. One wrinkle: our coefficients are in
+"standardised units" — per <em>standard deviation</em> of TV spend, not per $1,000. To compare apples with apples,
+we fit scikit-learn's (OLS-based) <code>LinearRegression</code> on the same standardised features:</p>
+<div class="highlight"><pre><span></span><code><span class="n">sk</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_scaled</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:],</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="n">comparison</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span><span class="s2">&quot;gradient descent&quot;</span><span class="p">:</span> <span class="n">betas_scaled</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span>
+     <span class="s2">&quot;OLS (scikit-learn)&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="n">sk</span><span class="o">.</span><span class="n">intercept_</span><span class="p">,</span> <span class="n">sk</span><span class="o">.</span><span class="n">coef_</span><span class="o">.</span><span class="n">ravel</span><span class="p">()]},</span>
+    <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;intercept&quot;</span><span class="p">,</span> <span class="s2">&quot;TV&quot;</span><span class="p">,</span> <span class="s2">&quot;radio&quot;</span><span class="p">,</span> <span class="s2">&quot;newspaper&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="n">comparison</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>gradient descent</th>
+      <th>OLS (scikit-learn)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>intercept</th>
+      <td>14.0224</td>
+      <td>14.0225</td>
+    </tr>
+    <tr>
+      <th>TV</th>
+      <td>3.9192</td>
+      <td>3.9193</td>
+    </tr>
+    <tr>
+      <th>radio</th>
+      <td>2.7901</td>
+      <td>2.7921</td>
+    </tr>
+    <tr>
+      <th>newspaper</th>
+      <td>-0.0206</td>
+      <td>-0.0225</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>The walker and the teleporter arrive at the same spot, to a few decimal places. Gradient descent genuinely
+<em>learned</em> the regression — no normal equation, no closed form, just downhill steps — and it found the same
+story we discovered last module: strong roles for TV and radio, essentially nothing for newspaper.</p>
+<p>Why only <em>almost</em> identical? Because gradient descent stops when improvements fall below a threshold, not at
+the exact analytic minimum. Tighten <code>precision</code> or add iterations and the digits creep closer. The exactness
+of OLS is a luxury of linear regression; the <em>approach</em> of gradient descent is what generalises to everything
+else.</p>
+<hr />
+<h2 id="8-ols-versus-gradient-descent-when-to-use-which">8. OLS versus gradient descent: when to use which</h2>
+<p>Both minimise the same cost; the difference is the route.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>OLS (normal equation)</th>
+<th>Gradient descent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Approach</td>
+<td>Direct — one-shot formula</td>
+<td>Iterative — repeated update steps</td>
+</tr>
+<tr>
+<td>Hyperparameters</td>
+<td>None</td>
+<td>Learning rate <span class="arithmatex">\(\alpha\)</span>, iterations, stopping rule</td>
+</tr>
+<tr>
+<td>Requirements</td>
+<td><span class="arithmatex">\(n &gt; d\)</span> and <span class="arithmatex">\((\mathbf{X}^\top\mathbf{X})^{-1}\)</span> must exist</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Solution</td>
+<td>Exact (when it applies)</td>
+<td>Approximate — depends on <span class="arithmatex">\(\alpha\)</span> and iterations</td>
+</tr>
+<tr>
+<td>Feature scaling</td>
+<td>Not needed</td>
+<td>Practically essential</td>
+</tr>
+<tr>
+<td>Cost</td>
+<td><span class="arithmatex">\(O(d^3)\)</span> in the number of features</td>
+<td><span class="arithmatex">\(O(k\,d^2)\)</span> for <span class="arithmatex">\(k\)</span> iterations</td>
+</tr>
+<tr>
+<td>Reach</td>
+<td>Linear regression only</td>
+<td>Nearly every model in ML</td>
+</tr>
+</tbody>
+</table>
+<p>The practical rule of thumb: with few features (up to a few thousand), take the exact answer — use OLS. With
+huge feature counts (say, beyond <span class="arithmatex">\(10{,}000\)</span>), or the moment you step beyond linear regression to models with
+no closed form, gradient descent is the tool. Scikit-learn embodies the same split: <code>LinearRegression</code> solves
+the equations directly, while
+<a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDRegressor.html"><code>SGDRegressor</code></a>
+fits the identical model by (a stochastic cousin of) gradient descent, built for datasets too large for the
+direct solve.</p>
+<hr />
+<h2 id="9-your-turn">9. Your turn</h2>
+<p>Add cells below each exercise and have a go. Exercises 3 and 5 are the ones that will pay off later in the
+course.</p>
+<p><strong>Exercise 1 — A new hill.</strong>
+Minimise <span class="arithmatex">\(f(x) = (x-4)^2 + 10\)</span> with <code>gradient_descent_1d</code>. Work out the gradient by hand first, then check
+the algorithm lands at <span class="arithmatex">\(x = 4\)</span>. How many steps does it need with <span class="arithmatex">\(\alpha = 0.1\)</span> versus <span class="arithmatex">\(\alpha = 0.5\)</span>?</p>
+<p><strong>Exercise 2 — Find the cliff edge.</strong>
+Using the parabola from Section 3, hunt for the boundary of divergence: try <span class="arithmatex">\(\alpha\)</span> = 0.9, 1.0, 1.05... At
+what learning rate does the descent stop converging entirely? (For <span class="arithmatex">\(f(x) = x^2 + 3x - 5\)</span> there is an exact
+critical value — can you reason out what it is from the update rule?)</p>
+<p><strong>Exercise 3 — Escape the local minimum.</strong>
+In Section 5, the walker starting at <span class="arithmatex">\(x = -0.4\)</span> got stuck in the shallow valley. Keeping the start fixed at
+<span class="arithmatex">\(-0.4\)</span>, can you find a learning rate that makes it end up in the <em>deeper</em> valley instead? What does that tell
+you about the relationship between step size and local minima? (This "overshooting as a feature" intuition is
+real — it's part of why practitioners sometimes <em>like</em> a bit of noise in their optimiser.)</p>
+<p><strong>Exercise 4 — Min-max instead.</strong>
+Redo Section 7 using min-max scaling instead of standardisation. Does gradient descent still converge quickly
+with <span class="arithmatex">\(\alpha = 0.003\)</span>? Do you end up with the same final cost?</p>
+<p><strong>Exercise 5 — The students, one more time.</strong>
+Build a design matrix from the student dataset (<code>data/student-mat.csv</code>, <code>sep=";"</code>) using <code>G1</code>, <code>G2</code>, and
+<code>studytime</code> to predict <code>G3</code>. Standardise the features, fit with your <code>gradient_descent</code>, and compare the
+coefficients against <code>LinearRegression</code> on the same scaled features. Which of the three features carries the
+weight?</p>
+<hr />
+<h2 id="10-if-you-remember-nothing-else">10. If you remember nothing else</h2>
+<ol>
+<li>
+<p>When the closed-form OLS solution is unavailable (<span class="arithmatex">\(d &gt; n\)</span>, non-invertible <span class="arithmatex">\(\mathbf{X}^\top\mathbf{X}\)</span>) or
+   unaffordable (<span class="arithmatex">\(O(d^3)\)</span>), we optimise <em>iteratively</em>: random start, small improving steps, stop at
+   convergence.</p>
+</li>
+<li>
+<p>Gradient descent is that idea with the gradient as compass: the gradient points steepest-uphill, so step
+   the other way — <span class="arithmatex">\(x := x - \alpha\,\nabla f(x)\)</span> — with steps that naturally shrink as the slope flattens.</p>
+</li>
+<li>
+<p>The learning rate <span class="arithmatex">\(\alpha\)</span> is your first hyperparameter. Too small: thousands of creeping steps. Too
+   large: overshooting, ricochets, possibly divergence to infinity. There's no formula — you watch the cost
+   curve.</p>
+</li>
+<li>
+<p>On convex functions (like linear regression's cost), every descent reaches the one global minimum. On
+   non-convex functions, gradient descent can settle into a local minimum, and the starting point decides
+   which valley you end in.</p>
+</li>
+<li>
+<p>For linear regression the whole gradient is one matrix expression,
+   <span class="arithmatex">\(\partial J/\partial\boldsymbol\beta = \mathbf{X}^\top(\hat{\mathbf{y}} - \mathbf{y})\)</span>, thanks to the
+   design-matrix trick of a ones column standing in for the intercept.</p>
+</li>
+<li>
+<p>Unscaled features give wildly unequal gradients, forcing an absurdly small shared learning rate. Feature
+   scaling — standardisation (<span class="arithmatex">\(x' = (x-\mu)/\sigma\)</span>) or min-max — equalises the gradients and can cut
+   convergence from hundreds of iterations to dozens.</p>
+</li>
+<li>
+<p>Gradient descent found the same coefficients as OLS on the Advertising data. For linear regression it's
+   the scenic route; for nearly every model beyond it, it's the <em>only</em> route — which is why this module
+   matters more than any single model we'll fit with it.</p>
+</li>
+</ol>
+<hr />
+<h2 id="11-further-reading-and-glossary">11. Further reading and glossary</h2>
+<h3 id="further-reading">Further reading</h3>
+<ul>
+<li><em>An Introduction to Statistical Learning</em>, <a href="https://www.statlearning.com/">Chapter 3</a> — for the OLS side of
+  the comparison.</li>
+<li>The <a href="https://en.wikipedia.org/wiki/Gradient_descent">Gradient descent</a> Wikipedia article — a solid
+  reference for the general method, including the history (Cauchy, 1847 — this algorithm is older than the
+  light bulb).</li>
+<li>3Blue1Brown's <a href="https://www.youtube.com/watch?v=IHZwWFHWa-w">Gradient descent, how neural networks learn</a> —
+  a beautiful visual treatment that connects today's ideas directly to deep learning.</li>
+<li>scikit-learn's <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDRegressor.html"><code>SGDRegressor</code></a>
+  and <a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html"><code>StandardScaler</code></a>
+  — the production versions of what we hand-built today.</li>
+<li>Article, <a href="https://towardsdatascience.com/all-about-feature-scaling-bcc0ad75cb35">All about Feature Scaling</a>
+  — see especially the section "Why do we need scaling?".</li>
+</ul>
+<h3 id="glossary">Glossary</h3>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Optimisation</td>
+<td>Finding the input that minimises (or maximises) a function.</td>
+</tr>
+<tr>
+<td>Closed-form solution</td>
+<td>An exact formula for the answer (e.g. OLS's normal equation).</td>
+</tr>
+<tr>
+<td>Normal equation</td>
+<td><span class="arithmatex">\(\hat{\boldsymbol\beta} = (\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top\mathbf{y}\)</span> — OLS in matrix form.</td>
+</tr>
+<tr>
+<td>Iterative method</td>
+<td>Improving a random initial guess step by step with an update rule.</td>
+</tr>
+<tr>
+<td>Gradient</td>
+<td>Vector of partial derivatives; points in the direction of steepest ascent.</td>
+</tr>
+<tr>
+<td>Gradient descent</td>
+<td>Iterative minimisation by stepping against the gradient: <span class="arithmatex">\(x := x - \alpha\,\nabla f(x)\)</span>.</td>
+</tr>
+<tr>
+<td>Learning rate (<span class="arithmatex">\(\alpha\)</span>)</td>
+<td>Hyperparameter scaling each step; too small is slow, too large diverges.</td>
+</tr>
+<tr>
+<td>Hyperparameter</td>
+<td>A setting chosen by the practitioner rather than learned from data.</td>
+</tr>
+<tr>
+<td>Convergence</td>
+<td>The point where further iterations no longer meaningfully improve the cost.</td>
+</tr>
+<tr>
+<td>Divergence</td>
+<td>Steps that make the cost grow without bound (learning rate too large).</td>
+</tr>
+<tr>
+<td>Cost function (<span class="arithmatex">\(J\)</span>)</td>
+<td>The function being minimised; here <span class="arithmatex">\(\frac{1}{2}\,\)</span>SSE.</td>
+</tr>
+<tr>
+<td>Design matrix (<span class="arithmatex">\(\mathbf{X}\)</span>)</td>
+<td>Data matrix with one row per sample and a leading column of 1s for the intercept.</td>
+</tr>
+<tr>
+<td>Convex function</td>
+<td>Single-valley function — any local minimum is the global one.</td>
+</tr>
+<tr>
+<td>Local / global minimum</td>
+<td>The floor of one valley vs. the lowest point of the whole function.</td>
+</tr>
+<tr>
+<td>Feature scaling</td>
+<td>Transforming features to a similar range before training.</td>
+</tr>
+<tr>
+<td>Standardisation</td>
+<td>Rescaling to mean 0, standard deviation 1: <span class="arithmatex">\(x' = (x-\mu)/\sigma\)</span>.</td>
+</tr>
+<tr>
+<td>Min-max scaling</td>
+<td>Rescaling into <span class="arithmatex">\([0,1]\)</span>: <span class="arithmatex">\(x' = (x-\min)/(\max-\min)\)</span>.</td>
+</tr>
+<tr>
+<td>Cost curve</td>
+<td>Plot of cost against iteration — the standard health check of a training run.</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../03_regression/" class="btn btn-neutral float-left" title="Regression"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../05_regularization/" class="btn btn-neutral float-right" title="Regularization">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright &copy; 2026 - Aayush Raj Regmi</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../03_regression/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../05_regularization/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../javascripts/mathjax.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Regression - DCS 404</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Regression";
+        var mkdocs_page_input_path = "DCS404/03_regression.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> DCS 404
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Welcome</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../InstallationGuide/">Installation Guide</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Machine Learning and AI</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../01_introduction_to_machine_learning/">Introduction to Machine Learning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02_ml_workflow/">ML Workflow</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Regression</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-work-through-this">How to work through this</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#learning-objectives">Learning objectives</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#1-what-a-regression-model-actually-is">1. What a regression model actually is</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-first-look-does-a-line-even-make-sense">2. First look: does a line even make sense?</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-the-rules-of-the-game-assumptions-of-linear-regression">3. The rules of the game: assumptions of linear regression</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#31-the-model-must-be-linear-in-the-parameters">3.1 The model must be linear in the parameters</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#32-errors-should-have-constant-variance-and-no-autocorrelation">3.2 Errors should have constant variance and no autocorrelation</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#33-no-perfect-multicollinearity">3.3 No perfect multicollinearity</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#34-observations-should-be-randomly-sampled">3.4 Observations should be randomly sampled</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#35-so-how-do-we-actually-find-the-parameters">3.5 So how do we actually find the parameters?</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-the-best-line-what-best-means">4. The best line: what "best" means</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-the-derivation-ten-minutes-of-honest-calculus">5. The derivation: ten minutes of honest calculus</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#51-partial-derivative-with-respect-to-beta_0">5.1 Partial derivative with respect to \(\beta_0\)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#52-partial-derivative-with-respect-to-beta_1">5.2 Partial derivative with respect to \(\beta_1\)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#53-set-both-to-zero-and-solve">5.3 Set both to zero and solve</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#54-the-result">5.4 The result</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-ols-from-scratch">6. OLS from scratch</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-sanity-check-does-scikit-learn-agree">7. Sanity check: does scikit-learn agree?</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#8-multiple-linear-regression-the-mediums-together">8. Multiple linear regression: the mediums, together</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#9-when-a-straight-line-isnt-enough-polynomial-regression">9. When a straight line isn't enough: polynomial regression</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#10-underfitting-overfitting-and-the-u-shaped-curve">10. Underfitting, overfitting, and the U-shaped curve</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#11-your-turn">11. Your turn</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#12-if-you-remember-nothing-else">12. If you remember nothing else</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#13-further-reading-and-glossary">13. Further reading and glossary</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#further-reading">Further reading</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#glossary">Glossary</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04_gradient_descent/">Gradient Descent</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../05_regularization/">Regularization</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../06_logistic_regression/">Classification & Logistic Regression</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07_decision_trees/">Decision Trees</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../08_evaluation_metrics/">Evaluation Metrics</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../09_knn/">K-Nearest Neighbors</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Time Series Analysis</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../10_time_series_foundations/">Time Series Foundations</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../11_exponential_smoothing/">Exponential Smoothing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../12_arima_models/">ARIMA and SARIMA Models</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Final Project</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../project/00_final_project/">Project Work</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">DCS 404</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Machine Learning and AI</li>
+      <li class="breadcrumb-item active">Regression</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="regression-from-a-straight-line-to-polynomial-curves">Regression: From a Straight Line to Polynomial Curves</h1>
+<p><strong>DCS 404 · Data Science and Machine Learning</strong></p>
+<hr />
+<p>In the last module we walked the full CRISP-DM loop and, along the way, we casually dropped a
+<code>LinearRegression()</code> into our modelling phase and let scikit-learn do its thing. It worked. But if I asked you
+<em>how</em> it worked — how the machine actually chose that particular line out of the infinitely many lines it could
+have drawn — you'd have to shrug. Today we fix that.</p>
+<p>This module is where we open the hood on our first real algorithm. We'll take regression apart piece by piece:
+what the model equation actually says, what assumptions it quietly makes about your data, and — the centrepiece —
+the beautiful bit of calculus called <strong>Ordinary Least Squares</strong> that finds the best-fitting line. Then we'll
+implement it <em>from scratch</em> with nothing but NumPy, check that our hand-rolled version agrees with scikit-learn
+to the last decimal, and push beyond straight lines into <strong>polynomial regression</strong>, where we'll meet the most
+important tension in all of machine learning: underfitting versus overfitting.</p>
+<p>Fair warning: there is more mathematics in this module than in the previous two. Don't let that scare you off.
+Every equation is followed by code that <em>does</em> the equation, and seeing the two side by side is exactly how the
+maths stops being symbols and starts being obvious.</p>
+<p>Let's draw some lines.</p>
+<h2 id="how-to-work-through-this">How to work through this</h2>
+<p>Same rhythm as before: run every code cell (<code>Shift + Enter</code>), look at the output, <em>then</em> read my commentary
+underneath. The cells build on each other in order, so if something errors, run from the top.</p>
+<p>Two things specific to today. First, the derivation in Section 5 is the one place where I'll ask you to slow
+down and follow the algebra line by line — it's maybe ten minutes of careful reading, and it's the ten minutes
+that separates "I can call <code>.fit()</code>" from "I know what <code>.fit()</code> does". Second, this module uses the classic
+<strong>Advertising</strong> dataset from the textbook <em>An Introduction to Statistical Learning</em>. I've bundled a copy in the
+<code>data/</code> folder next to this notebook, so everything runs offline.</p>
+<p>As always, watch for the places where I stop and ask you to predict something before running the next cell.
+That tiny pause is where the learning happens.</p>
+<h2 id="learning-objectives">Learning objectives</h2>
+<p>After completing this module you will be able to:</p>
+<ul>
+<li>Write down and interpret the model equations for simple, multiple, and polynomial regression.</li>
+<li>State the key assumptions of linear regression — linearity in parameters, constant error variance
+  (homoscedasticity), no autocorrelation, no perfect multicollinearity, random sampling — and explain why each
+  one matters.</li>
+<li>Derive the Ordinary Least Squares estimates of the intercept and slope by minimising the sum of squared
+  errors.</li>
+<li>Implement OLS from scratch in NumPy and verify it against scikit-learn's <code>LinearRegression</code>.</li>
+<li>Fit and interpret a multiple linear regression, and explain why coefficients change when features are
+  modelled together.</li>
+<li>Use <code>PolynomialFeatures</code> to fit non-linear relationships with a linear model.</li>
+<li>Diagnose underfitting and overfitting by comparing training and test error as model complexity grows.</li>
+</ul>
+<h2 id="setup">Setup</h2>
+<p>Run this once. It loads our libraries, sets the same plotting style we've used all course, and reads in the
+Advertising dataset. If an import fails, install it with <code>pip install &lt;package&gt;</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">PolynomialFeatures</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">mean_absolute_error</span><span class="p">,</span> <span class="n">mean_squared_error</span><span class="p">,</span> <span class="n">r2_score</span>
+
+<span class="c1"># A consistent look for every plot in this notebook</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+    <span class="s2">&quot;figure.figsize&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">),</span>
+    <span class="s2">&quot;figure.dpi&quot;</span><span class="p">:</span> <span class="mi">110</span><span class="p">,</span>
+    <span class="s2">&quot;axes.grid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">&quot;grid.alpha&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="s2">&quot;axes.spines.top&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;axes.spines.right&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;font.size&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_palette</span><span class="p">(</span><span class="s2">&quot;deep&quot;</span><span class="p">)</span>
+<span class="n">RANDOM_STATE</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># Load the Advertising dataset. We look in a couple of likely locations so this runs</span>
+<span class="c1"># whether you launched Jupyter from the repo root or from inside the notebooks/ folder.</span>
+<span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data/Advertising.csv&quot;</span><span class="p">),</span>
+                  <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;notebooks/data/Advertising.csv&quot;</span><span class="p">),</span>
+                  <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;resources/dataset/Advertising.csv&quot;</span><span class="p">)]:</span>
+    <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">ads</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded dataset from: </span><span class="si">{</span><span class="n">candidate</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">break</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;Could not find Advertising.csv. Expected it in a data/ folder next to the notebook.&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape: </span><span class="si">{</span><span class="n">ads</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> markets, </span><span class="si">{</span><span class="n">ads</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> columns&quot;</span><span class="p">)</span>
+<span class="n">ads</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Loaded dataset from: data/Advertising.csv
+Shape: 200 markets, 4 columns
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>TV</th>
+      <th>radio</th>
+      <th>newspaper</th>
+      <th>sales</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>230.1</td>
+      <td>37.8</td>
+      <td>69.2</td>
+      <td>22.1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>44.5</td>
+      <td>39.3</td>
+      <td>45.1</td>
+      <td>10.4</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>17.2</td>
+      <td>45.9</td>
+      <td>69.3</td>
+      <td>9.3</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>151.5</td>
+      <td>41.3</td>
+      <td>58.5</td>
+      <td>18.5</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>180.8</td>
+      <td>10.8</td>
+      <td>58.4</td>
+      <td>12.9</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>Each of the 200 rows is a <em>market</em> — think of it as a city where the company sells its product. For every
+market we know the advertising budget spent on <strong>TV</strong>, <strong>radio</strong>, and <strong>newspaper</strong> (each in thousands of
+dollars) and the resulting <strong>sales</strong> (in thousands of units). The business question writes itself: <em>if I give
+you an advertising budget, how many units will we sell — and which medium is actually doing the work?</em></p>
+<p>Notice how naturally this fits the CRISP-DM framing from last time. Business understanding: maximise sales by
+spending the ad budget wisely. Data understanding: that's what we're about to do. And the target, <code>sales</code>, is a
+continuous number — so this is a <strong>regression</strong> problem.</p>
+<hr />
+<h2 id="1-what-a-regression-model-actually-is">1. What a regression model actually is</h2>
+<p>Let's fix the vocabulary and notation we'll use for the rest of the course.</p>
+<p><strong>The data.</strong> We observe pairs of inputs and outputs. The input <span class="arithmatex">\(x\)</span> goes by many names — <em>feature</em>, <em>predictor</em>,
+<em>covariate</em>, <em>independent variable</em> — and the output <span class="arithmatex">\(y\)</span> by a few too — <em>target</em>, <em>response</em>, <em>dependent
+variable</em>. Pick your favourite; they all mean the same thing.</p>
+<p><strong>The goal.</strong> We want a function that turns inputs into a prediction of the output:</p>
+<div class="arithmatex">\[y \approx f(x, \beta)\]</div>
+<p>where <span class="arithmatex">\(\beta\)</span> (the Greek letter <em>beta</em>) stands for the <strong>parameters</strong> — the numbers the machine must estimate
+from the data. Learning, in this chapter, literally means "finding good values of <span class="arithmatex">\(\beta\)</span>".</p>
+<p>The simplest choice of <span class="arithmatex">\(f\)</span> is a straight line, which gives us <strong>simple linear regression</strong> — one input, two
+parameters:</p>
+<div class="arithmatex">\[y = \beta_0 + \beta_1 x\]</div>
+<p>Here <span class="arithmatex">\(\beta_0\)</span> is the <strong>intercept</strong> (the predicted <span class="arithmatex">\(y\)</span> when <span class="arithmatex">\(x = 0\)</span>) and <span class="arithmatex">\(\beta_1\)</span> is the <strong>slope</strong> (how much
+<span class="arithmatex">\(y\)</span> changes when <span class="arithmatex">\(x\)</span> increases by one unit). With several inputs we get <strong>multiple linear regression</strong>:</p>
+<div class="arithmatex">\[y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_d x_d\]</div>
+<p>where <span class="arithmatex">\(d\)</span> is the number of features — for our dataset, <span class="arithmatex">\(d = 3\)</span> (TV, radio, newspaper).</p>
+<p>One subtlety that trips people up, so let's nail it now: a regression method is called <strong>linear</strong> if the
+prediction is a linear function <em>of the parameters</em> <span class="arithmatex">\(\beta\)</span> — not necessarily of the inputs <span class="arithmatex">\(x\)</span>. Keep that in
+your back pocket; it's the loophole that makes polynomial regression possible later, and it shows up as the very
+first assumption in the next section.</p>
+<hr />
+<h2 id="2-first-look-does-a-line-even-make-sense">2. First look: does a line even make sense?</h2>
+<p>Before fitting anything, we look. Always. One scatter plot of sales against each advertising medium tells us
+whether a straight-line relationship is even plausible.</p>
+<div class="highlight"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">medium</span><span class="p">,</span> <span class="n">colour</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;TV&quot;</span><span class="p">,</span> <span class="s2">&quot;radio&quot;</span><span class="p">,</span> <span class="s2">&quot;newspaper&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;tab:red&quot;</span><span class="p">,</span> <span class="s2">&quot;tab:green&quot;</span><span class="p">,</span> <span class="s2">&quot;tab:blue&quot;</span><span class="p">]):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">ads</span><span class="p">[</span><span class="n">medium</span><span class="p">],</span> <span class="n">ads</span><span class="p">[</span><span class="s2">&quot;sales&quot;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">colour</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">medium</span><span class="si">}</span><span class="s2"> budget ($1000s)&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;sales (1000s of units)&quot;</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Sales against advertising spend, by medium&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../03_regression_files/03_regression_8_0.png" /></p>
+<p>Three plots, three different stories. Sales rise sharply and fairly consistently as <strong>TV</strong> spend increases —
+a line through that cloud would clearly capture something real. <strong>Radio</strong> shows an upward trend too, though the
+cloud is fatter. <strong>Newspaper</strong>, on the other hand, is close to a shapeless blob: whatever newspaper advertising
+is doing, it isn't much.</p>
+<p>Keep these three pictures in mind. By the end of Section 8 we'll be able to say something precise — and
+genuinely surprising — about that newspaper panel.</p>
+<hr />
+<h2 id="3-the-rules-of-the-game-assumptions-of-linear-regression">3. The rules of the game: assumptions of linear regression</h2>
+<p>Every model is a bargain: it gives you predictive power in exchange for some assumptions about your data. If the
+assumptions hold, the estimates we derive below are provably excellent. If they're badly violated, the model
+will still happily produce numbers — they'll just quietly mean less than you think. So before we estimate
+anything, let's read the fine print.</p>
+<h3 id="31-the-model-must-be-linear-in-the-parameters">3.1 The model must be linear <em>in the parameters</em></h3>
+<p>The response <span class="arithmatex">\(y\)</span> is a function of inputs <span class="arithmatex">\(x\)</span> and parameters <span class="arithmatex">\(\beta\)</span>, and the linearity requirement applies to
+the <span class="arithmatex">\(\beta\)</span>'s, not the <span class="arithmatex">\(x\)</span>'s. Three examples make the boundary clear:</p>
+<div class="arithmatex">\[y = \beta_0 + \beta_1 x\]</div>
+<p>Linear in both inputs and parameters — obviously fine.</p>
+<div class="arithmatex">\[y = \beta_0 + \beta_1 x^2\]</div>
+<p><em>Not</em> linear in the input (there's an <span class="arithmatex">\(x^2\)</span>), but still linear in the parameters — so this <strong>is</strong> a legitimate
+linear regression model. Squaring <span class="arithmatex">\(x\)</span> before fitting is just a feature transformation.</p>
+<div class="arithmatex">\[y = \beta_0 + \beta_1^2 x\]</div>
+<p>Linear in the input but <em>not</em> in the parameter (the <span class="arithmatex">\(\beta_1\)</span> is squared) — this one <strong>violates</strong> the
+assumption and is not a linear regression model.</p>
+<p>That middle example is the loophole I promised: transform the features however you like, keep the parameters
+linear, and all the machinery of this module still works. Polynomial regression, coming in Section 9, is exactly
+this trick.</p>
+<h3 id="32-errors-should-have-constant-variance-and-no-autocorrelation">3.2 Errors should have constant variance and no autocorrelation</h3>
+<p>No line passes through every point; there's always a leftover error (a <em>residual</em>) at each observation. The
+model assumes those errors have the <strong>same variance everywhere</strong> — a property with the intimidating name
+<strong>homoscedasticity</strong>. If instead the errors fan out as <span class="arithmatex">\(x\)</span> grows (<strong>heteroscedasticity</strong>), the standard
+machinery can give misleading parameter estimates.</p>
+<center>
+<img src="../assets/homo_heteroscedasticity.png" width="700">
+
+Fig: Homoscedastic errors (constant spread) versus heteroscedastic errors (spread that grows with $x$)
+</center>
+
+<p>The errors should also be <strong>independent of each other</strong> — knowing one residual should tell you nothing about
+the next. This "no autocorrelation" condition is most famously violated by time-series data, where each
+observation leans on the one before it. Our 200 markets are separate places, so we're on safe ground here.</p>
+<h3 id="33-no-perfect-multicollinearity">3.3 No perfect multicollinearity</h3>
+<p>This one concerns the inputs: no feature should be an exact (or near-exact) combination of the others. The
+classic example: predicting house prices from <em>length</em>, <em>breadth</em>, <strong>and</strong> <em>area</em>. Since</p>
+<div class="arithmatex">\[\text{area} = \text{length} \times \text{breadth}\]</div>
+<p>the third feature adds no new information, and its perfect dependence on the others makes the parameter
+estimates unstable — mathematically, the feature matrix loses full rank and the estimation breaks down. The fix
+is simple: drop one of the redundant features.</p>
+<p>In simple linear regression, with just one input, this assumption can't even be violated. With multiple inputs
+it's the first thing to check, and the check is one line of pandas:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Correlations between the features (and the target, for good measure)</span>
+<span class="n">ads</span><span class="o">.</span><span class="n">corr</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>TV</th>
+      <th>radio</th>
+      <th>newspaper</th>
+      <th>sales</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>TV</th>
+      <td>1.00</td>
+      <td>0.05</td>
+      <td>0.06</td>
+      <td>0.78</td>
+    </tr>
+    <tr>
+      <th>radio</th>
+      <td>0.05</td>
+      <td>1.00</td>
+      <td>0.35</td>
+      <td>0.58</td>
+    </tr>
+    <tr>
+      <th>newspaper</th>
+      <td>0.06</td>
+      <td>0.35</td>
+      <td>1.00</td>
+      <td>0.23</td>
+    </tr>
+    <tr>
+      <th>sales</th>
+      <td>0.78</td>
+      <td>0.58</td>
+      <td>0.23</td>
+      <td>1.00</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>No feature pair is anywhere near perfectly correlated, so multiple regression is safe here. But file away one
+number from that table: <strong>radio and newspaper correlate at about 0.35</strong>. Markets that spend on radio tend to
+also spend on newspaper. That innocent-looking 0.35 is going to explain a mystery in Section 8.</p>
+<h3 id="34-observations-should-be-randomly-sampled">3.4 Observations should be randomly sampled</h3>
+<p>The data should be a random sample from the population you care about. If you're modelling house prices for a
+city but only collected houses from the one convenient neighbourhood, no amount of clever estimation will fix
+that. And you need more observations than parameters — you can't pin down four unknowns with three data points.</p>
+<h3 id="35-so-how-do-we-actually-find-the-parameters">3.5 So how do we actually find the parameters?</h3>
+<p>Assumptions read, bargain accepted. Now the real question: given 200 markets, what values of <span class="arithmatex">\(\beta_0\)</span> and
+<span class="arithmatex">\(\beta_1\)</span> should we pick? There are two classic families of answer:</p>
+<ul>
+<li><strong>Least Squares Estimation</strong> — choose the parameters that minimise the sum of squared errors. This family
+  includes Ordinary Least Squares (our topic), plus weighted and generalised variants for when the error
+  assumptions above are violated.</li>
+<li><strong>Maximum Likelihood Estimation</strong> — a probabilistic framing: choose the parameters that make the observed
+  data most probable. A beautiful idea, and one you'll meet properly later in the course; for linear regression
+  with normally distributed errors it actually lands on the <em>same answer</em> as least squares.</li>
+</ul>
+<p>We'll take the least-squares road. It's the one scikit-learn drives on.</p>
+<hr />
+<h2 id="4-the-best-line-what-best-means">4. The best line: what "best" means</h2>
+<p>Look at the TV panel again, now with a fitted line drawn through it:</p>
+<center>
+<img src="../assets/simple_linear_regression.png" width="620">
+
+Fig: A regression line through the sales-vs-TV cloud. Each vertical segment is one residual.
+</center>
+
+<p>For each market <span class="arithmatex">\(i\)</span>, the line makes a prediction</p>
+<div class="arithmatex">\[\hat{y}_i = \beta_0 + \beta_1 x_i\]</div>
+<p>(read <span class="arithmatex">\(\hat{y}\)</span> as "y-hat" — the hat always means <em>estimated</em>). The actual observed value is</p>
+<div class="arithmatex">\[y_i = \beta_0 + \beta_1 x_i + \epsilon_i\]</div>
+<p>where <span class="arithmatex">\(\epsilon_i\)</span> is the <strong>residual</strong> or error: the vertical distance between the point and the line,
+<span class="arithmatex">\(\epsilon_i = y_i - \hat{y}_i\)</span>. Some residuals are positive (point above the line), some negative (below), so if
+we just summed them, they'd cancel and a terrible line could score zero. The standard fix: square each residual
+before adding. That gives the <strong>Sum of Squared Errors</strong> (also called the Residual Sum of Squares):</p>
+<div class="arithmatex">\[\text{SSE} = \sum_{i=1}^{n}(y_i - \hat{y}_i)^2 = \sum_{i=1}^{n}\big(y_i - (\beta_0 + \beta_1 x_i)\big)^2\]</div>
+<p>Read this as a machine: feed in a candidate <span class="arithmatex">\((\beta_0, \beta_1)\)</span>, get out one number measuring how badly that
+line fits. In machine learning we call such a machine a <strong>loss function</strong> (or objective function). "Best line"
+now has a precise meaning — <em>the <span class="arithmatex">\((\beta_0, \beta_1)\)</span> that makes SSE as small as possible.</em> This principle is
+<strong>Ordinary Least Squares (OLS)</strong>.</p>
+<p>Here's the stroke of luck that makes everything tractable: because SSE is a sum of squares, plotting it against
+the two parameters gives a smooth bowl — a <strong>convex</strong> surface with exactly one lowest point.</p>
+<center>
+<img src="../assets/convex_cost_function.png" width="680">
+
+Fig: The SSE loss surface is a convex bowl — one minimum, no false bottoms.
+</center>
+
+<p>And calculus tells us exactly how to find the bottom of a bowl: the slope there is zero. So we take the partial
+derivative of SSE with respect to each parameter, set both to zero, and solve. Two equations, two unknowns.
+Let's do it.</p>
+<hr />
+<h2 id="5-the-derivation-ten-minutes-of-honest-calculus">5. The derivation: ten minutes of honest calculus</h2>
+<p>This is the slow-down section. Nothing here is beyond first-year calculus — the power rule, the chain rule, and
+the fact that the derivative of a sum is the sum of the derivatives. To reduce clutter I'll drop the summation
+index; every <span class="arithmatex">\(\sum\)</span> below runs over the <span class="arithmatex">\(n\)</span> samples, <span class="arithmatex">\(i = 1\)</span> to <span class="arithmatex">\(n\)</span>.</p>
+<h3 id="51-partial-derivative-with-respect-to-beta_0">5.1 Partial derivative with respect to <span class="arithmatex">\(\beta_0\)</span></h3>
+<div class="arithmatex">\[\frac{\partial\,\text{SSE}}{\partial \beta_0}
+  = \sum \frac{\partial}{\partial \beta_0}\big(y_i - (\beta_0 + \beta_1 x_i)\big)^2
+  = \sum 2\big(y_i - (\beta_0 + \beta_1 x_i)\big)(-1)
+  = -2\sum\big(y_i - (\beta_0 + \beta_1 x_i)\big) \tag{1}\]</div>
+<p>(The power rule brings the 2 down; the chain rule contributes the <span class="arithmatex">\(-1\)</span>, the derivative of the inside with
+respect to <span class="arithmatex">\(\beta_0\)</span>.)</p>
+<h3 id="52-partial-derivative-with-respect-to-beta_1">5.2 Partial derivative with respect to <span class="arithmatex">\(\beta_1\)</span></h3>
+<p>Same moves, except the chain rule now contributes <span class="arithmatex">\(-x_i\)</span>, because <span class="arithmatex">\(\beta_1\)</span> is multiplied by <span class="arithmatex">\(x_i\)</span>:</p>
+<div class="arithmatex">\[\frac{\partial\,\text{SSE}}{\partial \beta_1}
+  = \sum 2\big(y_i - (\beta_0 + \beta_1 x_i)\big)(-x_i)
+  = -2\sum x_i\big(y_i - (\beta_0 + \beta_1 x_i)\big) \tag{2}\]</div>
+<h3 id="53-set-both-to-zero-and-solve">5.3 Set both to zero and solve</h3>
+<p><strong>From equation (1):</strong> divide both sides by <span class="arithmatex">\(-2\)</span> and push the sum through the bracket:</p>
+<div class="arithmatex">\[\sum y_i - n\beta_0 - \beta_1 \sum x_i = 0\]</div>
+<p>(Summing the constant <span class="arithmatex">\(\beta_0\)</span> over <span class="arithmatex">\(n\)</span> samples gives <span class="arithmatex">\(n\beta_0\)</span>; <span class="arithmatex">\(\beta_1\)</span> slides outside its sum.) Isolate
+<span class="arithmatex">\(\beta_0\)</span> and divide by <span class="arithmatex">\(n\)</span> — and recognise that a sum divided by <span class="arithmatex">\(n\)</span> is just a mean:</p>
+<div class="arithmatex">\[\beta_0 = \bar{y} - \beta_1 \bar{x}\]</div>
+<p>Lovely — but useless on its own, since it contains the still-unknown <span class="arithmatex">\(\beta_1\)</span>. So we substitute it into the
+second equation.</p>
+<p><strong>From equation (2):</strong> divide by <span class="arithmatex">\(-2\)</span>, substitute <span class="arithmatex">\(\beta_0 = \bar{y} - \beta_1\bar{x}\)</span>, and group like terms:</p>
+<div class="arithmatex">\[\sum x_i\big((y_i - \bar{y}) - \beta_1(x_i - \bar{x})\big) = 0\]</div>
+<p>Push the sum through, slide <span class="arithmatex">\(\beta_1\)</span> out, and rearrange:</p>
+<div class="arithmatex">\[\beta_1 = \frac{\sum x_i (y_i - \bar{y})}{\sum x_i (x_i - \bar{x})}\]</div>
+<p>That's a perfectly correct answer, but you'll almost never see it written that way. A short algebraic fact —
+that <span class="arithmatex">\(\sum(y_i - \bar{y}) = 0\)</span> and <span class="arithmatex">\(\sum(x_i - \bar{x}) = 0\)</span>, so subtracting <span class="arithmatex">\(\bar{x}\)</span> inside the left factor
+changes nothing — lets us rewrite it in the symmetric form every textbook uses. (Try proving the equivalence
+yourself: expand <span class="arithmatex">\(\sum(x_i-\bar{x})(y_i-\bar{y})\)</span> and watch the extra term vanish.)</p>
+<h3 id="54-the-result">5.4 The result</h3>
+<p>Putting hats on to mark them as estimates:</p>
+<div class="arithmatex">\[\boxed{\;\hat{\beta}_1 = \frac{\sum_{i=1}^{n}(x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^{n}(x_i - \bar{x})^2}
+\qquad\qquad \hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x}\;}\]</div>
+<p>Pause and admire what just happened. We asked "which of the infinitely many lines minimises the squared error?"
+and calculus handed back a <em>formula</em> — compute <span class="arithmatex">\(\hat{\beta}_1\)</span> from means and deviations, substitute to get
+<span class="arithmatex">\(\hat{\beta}_0\)</span>, done. No searching, no iterating. (Enjoy it while it lasts: for most models later in the course
+no closed-form solution exists, and we'll have to walk downhill step by step — that's <em>gradient descent</em>, a
+story for another module.)</p>
+<hr />
+<h2 id="6-ols-from-scratch">6. OLS from scratch</h2>
+<p>Formulas are one thing; code you wrote yourself is belief. The two boxed equations translate into about four
+lines of NumPy.</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">ols_fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Estimate simple linear regression parameters by Ordinary Least Squares.</span>
+
+<span class="sd">    Implements:  b1 = sum((x - x_mean)(y - y_mean)) / sum((x - x_mean)^2)</span>
+<span class="sd">                 b0 = y_mean - b1 * x_mean</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x_mean</span><span class="p">,</span> <span class="n">y_mean</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">y</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="n">b1</span> <span class="o">=</span> <span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="n">x_mean</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">y_mean</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="n">x_mean</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">b0</span> <span class="o">=</span> <span class="n">y_mean</span> <span class="o">-</span> <span class="n">b1</span> <span class="o">*</span> <span class="n">x_mean</span>
+    <span class="k">return</span> <span class="n">b0</span><span class="p">,</span> <span class="n">b1</span>
+
+
+<span class="n">b0_tv</span><span class="p">,</span> <span class="n">b1_tv</span> <span class="o">=</span> <span class="n">ols_fit</span><span class="p">(</span><span class="n">ads</span><span class="p">[</span><span class="s2">&quot;TV&quot;</span><span class="p">],</span> <span class="n">ads</span><span class="p">[</span><span class="s2">&quot;sales&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TV model:  sales = </span><span class="si">{</span><span class="n">b0_tv</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> + </span><span class="si">{</span><span class="n">b1_tv</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> x TV&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>TV model:  sales = 7.0326 + 0.0475 x TV
+</code></pre></div>
+<p>Two numbers, straight from the formulas. And they <em>mean</em> something concrete: with zero TV spend we'd expect to
+sell about 7,030 units (<span class="arithmatex">\(\hat{\beta}_0 \approx 7.03\)</span>, in thousands), and every extra $1,000 of TV advertising
+buys roughly 47.5 more units sold (<span class="arithmatex">\(\hat{\beta}_1 \approx 0.0475\)</span>).</p>
+<p>Let's fit all three mediums and draw the lines we've earned.</p>
+<div class="highlight"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">medium</span><span class="p">,</span> <span class="n">colour</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;TV&quot;</span><span class="p">,</span> <span class="s2">&quot;radio&quot;</span><span class="p">,</span> <span class="s2">&quot;newspaper&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;tab:red&quot;</span><span class="p">,</span> <span class="s2">&quot;tab:green&quot;</span><span class="p">,</span> <span class="s2">&quot;tab:blue&quot;</span><span class="p">]):</span>
+    <span class="n">b0</span><span class="p">,</span> <span class="n">b1</span> <span class="o">=</span> <span class="n">ols_fit</span><span class="p">(</span><span class="n">ads</span><span class="p">[</span><span class="n">medium</span><span class="p">],</span> <span class="n">ads</span><span class="p">[</span><span class="s2">&quot;sales&quot;</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">ads</span><span class="p">[</span><span class="n">medium</span><span class="p">],</span> <span class="n">ads</span><span class="p">[</span><span class="s2">&quot;sales&quot;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">colour</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+    <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">ads</span><span class="p">[</span><span class="n">medium</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">ads</span><span class="p">[</span><span class="n">medium</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">b0</span> <span class="o">+</span> <span class="n">b1</span> <span class="o">*</span> <span class="n">xs</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">medium</span><span class="si">}</span><span class="s2"> budget ($1000s)&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;$</span><span class="se">\\</span><span class="s2">hat</span><span class="se">{{</span><span class="s2">y</span><span class="se">}}</span><span class="s2"> = </span><span class="si">{</span><span class="n">b0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> + </span><span class="si">{</span><span class="n">b1</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="se">\\</span><span class="s2">,x$&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;sales (1000s of units)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../03_regression_files/03_regression_18_0.png" /></p>
+<p>Three simple regressions, one per medium, each fitted with nothing but our four-line function:</p>
+<ul>
+<li><strong>TV:</strong> <span class="arithmatex">\(\hat{\beta}_0 \approx 7.03\)</span>, <span class="arithmatex">\(\hat{\beta}_1 \approx 0.048\)</span>. A tight fit — the line genuinely
+  summarises the cloud.</li>
+<li><strong>Radio:</strong> <span class="arithmatex">\(\hat{\beta}_0 \approx 9.31\)</span>, <span class="arithmatex">\(\hat{\beta}_1 \approx 0.20\)</span>. The steepest slope of the three: per
+  $1,000 spent, radio is associated with about 200 extra units. But look at the scatter around the line — much
+  noisier than TV.</li>
+<li><strong>Newspaper:</strong> <span class="arithmatex">\(\hat{\beta}_0 \approx 12.35\)</span>, <span class="arithmatex">\(\hat{\beta}_1 \approx 0.055\)</span>. A positive slope, so taken alone,
+  newspaper spending <em>does</em> look mildly useful. Hold that thought until Section 8.</li>
+</ul>
+<p>One more picture before we move on. In Section 3 we assumed errors have constant variance — and this is our
+first chance to actually check an assumption instead of just reciting it. A <strong>residual plot</strong> (residuals against
+predicted values) makes the check visual: if the assumption holds, we should see a formless horizontal band.</p>
+<div class="highlight"><pre><span></span><code><span class="n">y_hat</span> <span class="o">=</span> <span class="n">b0_tv</span> <span class="o">+</span> <span class="n">b1_tv</span> <span class="o">*</span> <span class="n">ads</span><span class="p">[</span><span class="s2">&quot;TV&quot;</span><span class="p">]</span>
+<span class="n">residuals</span> <span class="o">=</span> <span class="n">ads</span><span class="p">[</span><span class="s2">&quot;sales&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">y_hat</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">y_hat</span><span class="p">,</span> <span class="n">residuals</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:red&quot;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;predicted sales&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;residual (actual $-$ predicted)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Residuals of the TV model&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../03_regression_files/03_regression_20_0.png" /></p>
+<p>Interesting — not quite the formless band we hoped for. The residuals are pinched together at the left and
+fan out to the right: the model's errors are <em>larger</em> in high-spend markets. That's mild <strong>heteroscedasticity</strong>,
+live and in the wild, exactly the pattern from the right-hand panel of the figure in Section 3.2. It isn't
+severe enough to sink our analysis, but a careful statistician would note it — and this is precisely why we
+state assumptions up front: so we know what to go and check.</p>
+<hr />
+<h2 id="7-sanity-check-does-scikit-learn-agree">7. Sanity check: does scikit-learn agree?</h2>
+<p>Whenever you implement an algorithm by hand, verify it against a trusted implementation. If the numbers match,
+you've almost certainly understood the algorithm; if they don't, you've found a bug or a misunderstanding —
+either way, you learn something.</p>
+<div class="highlight"><pre><span></span><code><span class="n">sk_model</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span>
+<span class="n">sk_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">ads</span><span class="p">[[</span><span class="s2">&quot;TV&quot;</span><span class="p">]],</span> <span class="n">ads</span><span class="p">[</span><span class="s2">&quot;sales&quot;</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;            our OLS      scikit-learn&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;intercept   </span><span class="si">{</span><span class="n">b0_tv</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">    </span><span class="si">{</span><span class="n">sk_model</span><span class="o">.</span><span class="n">intercept_</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;slope       </span><span class="si">{</span><span class="n">b1_tv</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">    </span><span class="si">{</span><span class="n">sk_model</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>            our OLS      scikit-learn
+intercept   7.032594    7.032594
+slope       0.047537    0.047537
+</code></pre></div>
+<p>Identical, to the last decimal. That's because <code>LinearRegression</code> <em>is</em> Ordinary Least Squares — the same
+minimise-the-squared-error principle, solved by efficient linear algebra rather than our explicit formula.
+Every time you've called <code>.fit()</code> on a linear model, this is what was happening inside. It isn't magic; it's
+Section 5.</p>
+<hr />
+<h2 id="8-multiple-linear-regression-the-mediums-together">8. Multiple linear regression: the mediums, together</h2>
+<p>Three separate simple regressions is three separate half-truths: each one credits its own medium with all the
+sales, ignoring whatever the other two budgets were doing in the same market. The honest model considers them
+together:</p>
+<div class="arithmatex">\[\text{sales} = \beta_0 + \beta_1 \cdot \text{TV} + \beta_2 \cdot \text{radio} + \beta_3 \cdot \text{newspaper}\]</div>
+<p>Each coefficient now answers a sharper question: <em>how much do sales change per extra $1,000 on this medium,
+holding the other two fixed?</em> The OLS principle is unchanged — minimise the SSE — only now the bowl lives in
+four dimensions and the closed-form solution comes from matrix algebra (the elegant
+<span class="arithmatex">\(\hat{\boldsymbol\beta} = (\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top\mathbf{y}\)</span>, for the curious). We'll
+let scikit-learn handle that part and keep our energy for interpreting the result.</p>
+<p>And because we now know better than to grade a model on its own training data — that was a headline lesson of
+the workflow module — we'll split off a test set first.</p>
+<div class="highlight"><pre><span></span><code><span class="n">X</span> <span class="o">=</span> <span class="n">ads</span><span class="p">[[</span><span class="s2">&quot;TV&quot;</span><span class="p">,</span> <span class="s2">&quot;radio&quot;</span><span class="p">,</span> <span class="s2">&quot;newspaper&quot;</span><span class="p">]]</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">ads</span><span class="p">[</span><span class="s2">&quot;sales&quot;</span><span class="p">]</span>
+
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+
+<span class="n">multi</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span>
+<span class="n">multi</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+
+<span class="n">coefs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;coefficient&quot;</span><span class="p">:</span> <span class="n">multi</span><span class="o">.</span><span class="n">coef_</span><span class="p">},</span> <span class="n">index</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;intercept: </span><span class="si">{</span><span class="n">multi</span><span class="o">.</span><span class="n">intercept_</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">coefs</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>intercept: 2.995
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>coefficient</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>TV</th>
+      <td>0.0446</td>
+    </tr>
+    <tr>
+      <th>radio</th>
+      <td>0.1965</td>
+    </tr>
+    <tr>
+      <th>newspaper</th>
+      <td>-0.0028</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>Read the newspaper row twice. In its simple regression (Section 6), newspaper had a healthy positive slope of
+about <span class="arithmatex">\(0.055\)</span>. Modelled <em>together with</em> TV and radio, its coefficient collapses to roughly zero — the model is
+telling us that once you know a market's TV and radio budgets, the newspaper budget adds essentially nothing.</p>
+<p>So why did newspaper look useful on its own? Remember the correlation of about <strong>0.35 between radio and
+newspaper</strong> we filed away in Section 3.3. Markets that spend on radio also tend to spend on newspaper. Radio
+genuinely drives sales; newspaper just tags along, basking in radio's reflected glory. The simple regression
+couldn't tell the difference — the multiple regression can, and that ability to <em>hold other variables fixed</em> is
+exactly why we bother with it. (This is also multicollinearity's gentler cousin in action: the features aren't
+correlated enough to break the model, just enough to fool one-variable-at-a-time analysis.)</p>
+<p>Does modelling the mediums together actually predict better? Let's score both models on the held-out test set,
+with the same metrics we met last module.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Simple model: TV only, fitted on the same training split for a fair fight</span>
+<span class="n">simple</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">[[</span><span class="s2">&quot;TV&quot;</span><span class="p">]],</span> <span class="n">y_train</span><span class="p">)</span>
+
+<span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">feats</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;TV only&quot;</span><span class="p">,</span> <span class="n">simple</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;TV&quot;</span><span class="p">]),</span>
+                           <span class="p">(</span><span class="s2">&quot;TV + radio + newspaper&quot;</span><span class="p">,</span> <span class="n">multi</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">))]:</span>
+    <span class="n">pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">[</span><span class="n">feats</span><span class="p">])</span>
+    <span class="n">results</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;MAE&quot;</span><span class="p">:</span> <span class="n">mean_absolute_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">pred</span><span class="p">),</span>
+        <span class="s2">&quot;RMSE&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">pred</span><span class="p">)),</span>
+        <span class="s2">&quot;R^2&quot;</span><span class="p">:</span> <span class="n">r2_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">pred</span><span class="p">),</span>
+    <span class="p">}</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>MAE</th>
+      <th>RMSE</th>
+      <th>R^2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>TV only</th>
+      <td>2.505</td>
+      <td>3.192</td>
+      <td>0.676</td>
+    </tr>
+    <tr>
+      <th>TV + radio + newspaper</th>
+      <td>1.362</td>
+      <td>2.098</td>
+      <td>0.860</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>No contest. The multiple regression cuts the TV-only model's MAE nearly in half (2.5 down to 1.4) and lifts
+<span class="arithmatex">\(R^2\)</span> from 0.68 to 0.86 — the three budgets together explain about 86% of the variation in sales across
+markets. Not bad for a model whose entire brain is four numbers.</p>
+<p>The business translation writes itself: put marginal budget into radio and TV, and stop paying for newspaper
+ads. <em>That</em> is a finding someone will pay for, and it took a 200-row CSV and a model from the 1800s.</p>
+<hr />
+<h2 id="9-when-a-straight-line-isnt-enough-polynomial-regression">9. When a straight line isn't enough: polynomial regression</h2>
+<p>Everything so far assumed the truth is a line (or a plane). The real world often disagrees — growth curves
+saturate, trajectories arc, seasons oscillate. Time to cash in the loophole from Section 3.1.</p>
+<p>A polynomial of degree two in <span class="arithmatex">\(x\)</span> is</p>
+<div class="arithmatex">\[y = \beta_0 + \beta_1 x + \beta_2 x^2\]</div>
+<p>Look closely: it's <em>not linear in <span class="arithmatex">\(x\)</span></em> (there's an <span class="arithmatex">\(x^2\)</span>), but it <em>is linear in the parameters</em> — each <span class="arithmatex">\(\beta\)</span>
+enters plainly, no squares, no products of betas. So here's the trick: treat <span class="arithmatex">\(x^2\)</span> as just <strong>another feature</strong>.
+Manufacture a new column equal to <span class="arithmatex">\(x^2\)</span>, hand the model two input columns instead of one, and fit an ordinary
+linear regression. Every drop of machinery from Sections 4–7 applies unchanged. This is <strong>polynomial
+regression</strong>: new features, same algorithm.</p>
+<p>With several original features the transformation also creates cross-terms. Two features <span class="arithmatex">\(x_1, x_2\)</span> at degree
+two become <span class="arithmatex">\(1,\ x_1,\ x_2,\ x_1 x_2,\ x_1^2,\ x_2^2\)</span> — giving the model</p>
+<div class="arithmatex">\[y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1 x_2 + \beta_4 x_1^2 + \beta_5 x_2^2\]</div>
+<p>Scikit-learn packages the manufacturing step as
+<a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.PolynomialFeatures.html"><code>PolynomialFeatures</code></a>.</p>
+<p>To watch it work, we'll manufacture a dataset where <em>we</em> know the truth: points from a sine curve plus random
+noise, mimicking real measurements (imperfect instruments, calibration error, plain bad luck). Because we know
+the true curve, we can judge exactly how well each model recovers it — a luxury real data never grants.</p>
+<div class="highlight"><pre><span></span><code><span class="n">X_FROM</span><span class="p">,</span> <span class="n">X_TO</span><span class="p">,</span> <span class="n">N_POINTS</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+<span class="n">x_poly</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">X_FROM</span><span class="p">,</span> <span class="n">X_TO</span><span class="p">,</span> <span class="n">N_POINTS</span><span class="p">)</span>
+<span class="n">y_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x_poly</span><span class="p">)</span>                                  <span class="c1"># the hidden truth</span>
+<span class="n">y_poly</span> <span class="o">=</span> <span class="n">y_true</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">N_POINTS</span><span class="p">)</span>   <span class="c1"># what we actually observe</span>
+
+<span class="n">X_poly</span> <span class="o">=</span> <span class="n">x_poly</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>   <span class="c1"># sklearn expects a 2-D feature array</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x_poly</span><span class="p">,</span> <span class="n">y_poly</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:blue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;observed (noisy)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_poly</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;true curve: $</span><span class="se">\\</span><span class="s2">sin(x)$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Non-linear data&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../03_regression_files/03_regression_31_0.png" /></p>
+<p>Before running the next cell, predict: what will a plain straight-line fit do with this?</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_fit</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">transformer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Scatter the data and draw a model&#39;s prediction curve over a fine grid.&quot;&quot;&quot;</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span> <span class="ow">or</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">X_FROM</span><span class="p">,</span> <span class="n">X_TO</span><span class="p">,</span> <span class="mi">300</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">grid_features</span> <span class="o">=</span> <span class="n">transformer</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span> <span class="k">if</span> <span class="n">transformer</span> <span class="k">else</span> <span class="n">grid</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x_poly</span><span class="p">,</span> <span class="n">y_poly</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:blue&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">grid_features</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:green&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">2.2</span><span class="p">,</span> <span class="mf">2.2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">title</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+
+
+<span class="n">straight</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_poly</span><span class="p">,</span> <span class="n">y_poly</span><span class="p">)</span>
+<span class="n">plot_fit</span><span class="p">(</span><span class="n">straight</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;A straight line, doing its best&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../03_regression_files/03_regression_33_0.png" /></p>
+<p>About as useful as you guessed. The line has no vocabulary for waves — no setting of two parameters can bend
+it. The model isn't badly <em>trained</em>; it's badly <em>chosen</em>. Its family of possible shapes simply doesn't contain
+anything resembling the data. We say such a model <strong>underfits</strong>.</p>
+<p>So let's grow the family. Same <code>LinearRegression</code>, but fed polynomial features of increasing degree:</p>
+<div class="highlight"><pre><span></span><code><span class="n">degrees</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">14</span><span class="p">]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">poly_models</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">degree</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">degrees</span><span class="p">):</span>
+    <span class="n">transformer</span> <span class="o">=</span> <span class="n">PolynomialFeatures</span><span class="p">(</span><span class="n">degree</span><span class="o">=</span><span class="n">degree</span><span class="p">)</span>
+    <span class="n">X_transformed</span> <span class="o">=</span> <span class="n">transformer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_poly</span><span class="p">)</span>   <span class="c1"># manufacture x, x^2, ..., x^degree</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_transformed</span><span class="p">,</span> <span class="n">y_poly</span><span class="p">)</span>
+    <span class="n">poly_models</span><span class="p">[</span><span class="n">degree</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">transformer</span><span class="p">)</span>
+    <span class="n">plot_fit</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">transformer</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;degree </span><span class="si">{</span><span class="n">degree</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;The same linear regression, fed polynomial features of increasing degree&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../03_regression_files/03_regression_35_0.png" /></p>
+<p>Watch the story unfold left to right, top to bottom:</p>
+<ul>
+<li><strong>Degrees 1–3</strong> can't bend enough — still underfitting. (Degree 3 manages a half-hearted S-curve, but a sine
+  wave needs more.)</li>
+<li><strong>Degrees 4–5</strong> find the wave. These are honest approximations of the true sine curve.</li>
+<li><strong>Degrees 7–14</strong> have capacity to spare, and they spend it on exactly the wrong thing: chasing individual
+  noisy points. By degree 14 the curve has 15 parameters — one for each of our 15 observations — so it can
+  thread through <em>every single point</em>, wiggling frantically and snaking far away from the true curve in
+  between.</li>
+</ul>
+<p>Here's the trap in that picture: measured on the training points, degree 14 has the <em>lowest</em> error of all eight
+models — essentially zero. Every extra degree can only reduce training error, because a degree-<span class="arithmatex">\(n\)</span> polynomial
+contains every polynomial below it. If training error were the judge, maximum wiggle would always win. But we
+know the truth here is a smooth sine wave — the extra wiggle is the model memorising <em>noise</em>, and it will
+backfire the moment we ask about a new <span class="arithmatex">\(x\)</span>. That failure mode is <strong>overfitting</strong>, and it is the single most
+important pathology in machine learning.</p>
+<hr />
+<h2 id="10-underfitting-overfitting-and-the-u-shaped-curve">10. Underfitting, overfitting, and the U-shaped curve</h2>
+<p>We already own the right diagnostic tool — we built it into our workflow last module. <em>Judge the model on data
+it hasn't seen.</em> Let's split our 15 points into train and test (10 points to fit on, 5 held back as the exam),
+fit every degree from 1 to 12 on the training points only, and track both errors as complexity grows.</p>
+<div class="highlight"><pre><span></span><code><span class="n">Xp_train</span><span class="p">,</span> <span class="n">Xp_test</span><span class="p">,</span> <span class="n">yp_train</span><span class="p">,</span> <span class="n">yp_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">X_poly</span><span class="p">,</span> <span class="n">y_poly</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+
+<span class="n">records</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">degree</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">):</span>
+    <span class="n">transformer</span> <span class="o">=</span> <span class="n">PolynomialFeatures</span><span class="p">(</span><span class="n">degree</span><span class="o">=</span><span class="n">degree</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">transformer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">Xp_train</span><span class="p">),</span> <span class="n">yp_train</span><span class="p">)</span>
+
+    <span class="n">rmse</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">X_</span><span class="p">,</span> <span class="n">y_</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">y_</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">transformer</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_</span><span class="p">))))</span>
+    <span class="n">records</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;degree&quot;</span><span class="p">:</span> <span class="n">degree</span><span class="p">,</span>
+                    <span class="s2">&quot;train RMSE&quot;</span><span class="p">:</span> <span class="n">rmse</span><span class="p">(</span><span class="n">Xp_train</span><span class="p">,</span> <span class="n">yp_train</span><span class="p">),</span>
+                    <span class="s2">&quot;test RMSE&quot;</span><span class="p">:</span> <span class="n">rmse</span><span class="p">(</span><span class="n">Xp_test</span><span class="p">,</span> <span class="n">yp_test</span><span class="p">)})</span>
+
+<span class="n">curve</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">records</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;degree&quot;</span><span class="p">)</span>
+
+<span class="n">best_degree</span> <span class="o">=</span> <span class="n">curve</span><span class="p">[</span><span class="s2">&quot;test RMSE&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">idxmin</span><span class="p">()</span>
+
+<span class="c1"># From degree 9 up, 10+ parameters fit 10 training points exactly, so train RMSE is</span>
+<span class="c1"># essentially zero -- we clip it to keep the log-scale plot happy.</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">curve</span><span class="p">[</span><span class="s2">&quot;train RMSE&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;train RMSE&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">curve</span><span class="p">[</span><span class="s2">&quot;test RMSE&quot;</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;test RMSE&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">best_degree</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;best test error: degree </span><span class="si">{</span><span class="n">best_degree</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;polynomial degree (model complexity)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;RMSE (log scale)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Training error only falls; test error falls, then rises&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">curve</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../03_regression_files/03_regression_38_0.png" /></p>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>train RMSE</th>
+      <th>test RMSE</th>
+    </tr>
+    <tr>
+      <th>degree</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>0.567</td>
+      <td>0.822</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.561</td>
+      <td>0.825</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.561</td>
+      <td>0.851</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.293</td>
+      <td>0.572</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>0.233</td>
+      <td>0.655</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>0.188</td>
+      <td>1.499</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>0.156</td>
+      <td>3.089</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>0.009</td>
+      <td>9.819</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>0.000</td>
+      <td>9.033</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>0.000</td>
+      <td>4.533</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>This picture is worth the whole module — arguably the whole course. Two curves, two completely different
+stories:</p>
+<ul>
+<li><strong>Training error</strong> (blue) only goes down. More complexity always helps the model flatter itself — and from
+  degree 9 it hits rock bottom at <em>essentially zero</em>, because a model with ten parameters can thread ten
+  training points exactly. Perfect memorisation.</li>
+<li><strong>Test error</strong> (orange) traces a <strong>U-shape</strong>: it falls while added complexity captures real structure, bottoms
+  out at a modest degree, then climbs — sometimes explosively — as the model starts memorising noise.</li>
+</ul>
+<p>The vocabulary, one more time, now with pictures attached:</p>
+<ul>
+<li><strong>Underfitting</strong> (left of the U): the model is too simple to capture the real pattern. Both training and test
+  error are high. Remedy: more capacity, better features.</li>
+<li><strong>Overfitting</strong> (right of the U): the model is so flexible it learns the noise. Training error is superb, test
+  error is terrible — and the gap between the two curves is your warning light.</li>
+<li><strong>Generalisation</strong> (the bottom of the U): the actual goal. Not the model that best fits the data you have, but
+  the one that will best fit the data you <em>don't</em> have yet.</li>
+</ul>
+<p>Every model family you'll meet from here on — decision trees, random forests, neural networks — has its own
+complexity dial, and every one of them traces this same U. The names change; the trade-off never does.</p>
+<hr />
+<h2 id="11-your-turn">11. Your turn</h2>
+<p>Add cells below each exercise and have a go. The first two are quick; the last three are where the ideas get
+into your fingers.</p>
+<p><strong>Exercise 1 — Radio, by hand.</strong>
+Use our <code>ols_fit</code> function on <code>radio</code> vs <code>sales</code>, then verify the two parameters against scikit-learn's
+<code>LinearRegression</code>, as we did for TV in Section 7. Write the fitted equation in a markdown cell.</p>
+<p><strong>Exercise 2 — Spend the money.</strong>
+Using the multiple regression from Section 8: predict sales for a market with a $<span class="arithmatex">\(100k\)</span> TV budget, $<span class="arithmatex">\(30k\)</span> radio
+budget, and $<span class="arithmatex">\(20\)</span>k newspaper budget (mind the units — budgets are in thousands). According to the model, which
+single medium gives the most extra sales per additional $<span class="arithmatex">\(1,000\)</span>?</p>
+<p><strong>Exercise 3 — Break the assumptions on purpose.</strong>
+Add a fake feature <code>total = TV + radio + newspaper</code> to the multiple regression from Section 8 and refit. What
+happens to the coefficients? Which assumption from Section 3 did you just violate?</p>
+<p><strong>Exercise 4 — Back to the students.</strong>
+Load last module's <code>data/student-mat.csv</code> (remember <code>sep=";"</code>) and fit a simple linear regression of <code>G3</code> on
+<code>G1</code> from scratch with <code>ols_fit</code>. Plot the data with the fitted line and interpret both parameters in plain
+English: what does the slope say about first-period versus final grades?</p>
+<p><strong>Exercise 5 — Move the U.</strong>
+In Section 10, change the noise level (<code>scale=0.4</code>) to <code>0.1</code> and rerun, then to <code>0.8</code> and rerun. Watch where
+the best-test-error degree lands each time. What does noise do to the amount of model complexity you can
+afford? Try changing <code>N_POINTS</code> from 15 to 100 as well — does more data let you get away with higher degrees?</p>
+<hr />
+<h2 id="12-if-you-remember-nothing-else">12. If you remember nothing else</h2>
+<ol>
+<li>
+<p>A regression model is a function <span class="arithmatex">\(y \approx f(x, \beta)\)</span>, and "learning" means estimating the parameters
+   <span class="arithmatex">\(\beta\)</span> from data. "Linear" means linear <em>in the parameters</em> — the features themselves are fair game for
+   transformation.</p>
+</li>
+<li>
+<p>Linear regression comes with assumptions: linearity in parameters, constant error variance
+   (homoscedasticity), no autocorrelation, no perfect multicollinearity, random sampling. State them, then
+   <em>check</em> them — a residual plot is the five-second check for the variance one.</p>
+</li>
+<li>
+<p>Ordinary Least Squares defines "best line" as the one minimising the sum of squared errors, and because that
+   loss is a convex bowl, calculus yields closed-form solutions:
+   <span class="arithmatex">\(\hat{\beta}_1 = \frac{\sum(x_i-\bar{x})(y_i-\bar{y})}{\sum(x_i-\bar{x})^2}\)</span> and
+   <span class="arithmatex">\(\hat{\beta}_0 = \bar{y} - \hat{\beta}_1\bar{x}\)</span>.</p>
+</li>
+<li>
+<p>Scikit-learn's <code>LinearRegression</code> is exactly this. You've now written it yourself and matched it to six
+   decimal places — <code>.fit()</code> is no longer a black box.</p>
+</li>
+<li>
+<p>Multiple regression coefficients answer "holding everything else fixed" — which is why newspaper's effect
+   evaporated once radio was in the room. Correlated features make one-variable-at-a-time analysis lie.</p>
+</li>
+<li>
+<p>Polynomial regression is linear regression fed manufactured features (<span class="arithmatex">\(x^2, x^3, \dots\)</span>). New features, same
+   algorithm.</p>
+</li>
+<li>
+<p>Training error only ever falls as complexity grows; test error traces a U. Underfitting on the left,
+   overfitting on the right, generalisation at the bottom. Judge models only on data they haven't seen.</p>
+</li>
+<li>
+<p>Every model family you'll ever meet has a complexity dial and the same U-shaped trade-off waiting for you.</p>
+</li>
+</ol>
+<hr />
+<h2 id="13-further-reading-and-glossary">13. Further reading and glossary</h2>
+<h3 id="further-reading">Further reading</h3>
+<ul>
+<li><em>An Introduction to Statistical Learning</em>, <a href="https://www.statlearning.com/">Chapter 3</a> — the definitive gentle
+  treatment of linear regression, and the home of our Advertising dataset.</li>
+<li>MIT's <a href="http://www.mit.edu/~6.s085/notes/lecture3.pdf">lecture notes on simple linear regression</a> — Section 3.1
+  walks the same least-squares derivation with additional statistical detail.</li>
+<li>scikit-learn's <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html"><code>LinearRegression</code></a>
+  and <a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.PolynomialFeatures.html"><code>PolynomialFeatures</code></a>
+  documentation — the practical references for everything we used today.</li>
+<li>The scikit-learn worked example on
+  <a href="https://scikit-learn.org/stable/auto_examples/model_selection/plot_underfitting_overfitting.html">underfitting vs. overfitting</a>
+  — the same experiment as our Section 10, with cross-validation added.</li>
+</ul>
+<h3 id="glossary">Glossary</h3>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regression</td>
+<td>Predicting a continuous numeric target from input features.</td>
+</tr>
+<tr>
+<td>Parameter / coefficient (<span class="arithmatex">\(\beta\)</span>)</td>
+<td>A number the model learns from data; in linear regression, an intercept and one slope per feature.</td>
+</tr>
+<tr>
+<td>Intercept (<span class="arithmatex">\(\beta_0\)</span>)</td>
+<td>Predicted value of <span class="arithmatex">\(y\)</span> when all features are zero.</td>
+</tr>
+<tr>
+<td>Slope (<span class="arithmatex">\(\beta_1\)</span>)</td>
+<td>Change in predicted <span class="arithmatex">\(y\)</span> per one-unit increase in a feature (others held fixed).</td>
+</tr>
+<tr>
+<td>Residual / error (<span class="arithmatex">\(\epsilon\)</span>)</td>
+<td>Difference between an observed value and the model's prediction, <span class="arithmatex">\(y_i - \hat{y}_i\)</span>.</td>
+</tr>
+<tr>
+<td>SSE / RSS</td>
+<td>Sum of squared errors — the loss function OLS minimises.</td>
+</tr>
+<tr>
+<td>Ordinary Least Squares (OLS)</td>
+<td>Estimating parameters by minimising the SSE; has a closed-form solution.</td>
+</tr>
+<tr>
+<td>Convex function</td>
+<td>A bowl-shaped function with a single minimum — no false bottoms for optimisation to get stuck in.</td>
+</tr>
+<tr>
+<td>Homoscedasticity</td>
+<td>Errors have constant variance across all observations; its violation is heteroscedasticity.</td>
+</tr>
+<tr>
+<td>Autocorrelation</td>
+<td>Correlation between errors of different observations (common in time series).</td>
+</tr>
+<tr>
+<td>Multicollinearity</td>
+<td>One feature being an (almost) exact combination of others, destabilising the estimates.</td>
+</tr>
+<tr>
+<td>Multiple linear regression</td>
+<td>Linear regression with several input features.</td>
+</tr>
+<tr>
+<td>Polynomial regression</td>
+<td>Linear regression on manufactured polynomial features (<span class="arithmatex">\(x^2\)</span>, <span class="arithmatex">\(x^3\)</span>, cross-terms, …).</td>
+</tr>
+<tr>
+<td>Underfitting</td>
+<td>Model too simple to capture the real pattern — high error on train <em>and</em> test.</td>
+</tr>
+<tr>
+<td>Overfitting</td>
+<td>Model so flexible it memorises noise — low training error, high test error.</td>
+</tr>
+<tr>
+<td>Generalisation</td>
+<td>Performing well on unseen data; the actual goal of machine learning.</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../02_ml_workflow/" class="btn btn-neutral float-left" title="ML Workflow"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../04_gradient_descent/" class="btn btn-neutral float-right" title="Gradient Descent">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright &copy; 2026 - Aayush Raj Regmi</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../02_ml_workflow/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../04_gradient_descent/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../javascripts/mathjax.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

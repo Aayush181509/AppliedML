@@ -101,3 +101,43 @@ def test_data_drift_in_final_quarter(df):
     before = df[dates < pd.Timestamp("2024-10-01")]["interest_rate"].mean()
     after = df[dates >= pd.Timestamp("2024-10-01")]["interest_rate"].mean()
     assert after - before >= 0.8, f"rate shift {after - before:.2f} too small"
+
+
+def test_leakage_column_almost_perfectly_predicts_target(df):
+    """`recovery_agent_assigned` is recorded after default. A student who
+    leaves it in gets a suspiciously excellent model — that is the lesson."""
+    assert set(df["recovery_agent_assigned"].unique()) == {"Yes", "No"}
+    flagged = df[df["recovery_agent_assigned"] == "Yes"]["defaulted"].mean()
+    clean = df[df["recovery_agent_assigned"] == "No"]["defaulted"].mean()
+    assert flagged > 0.70, f"leak too weak to be seductive: {flagged:.3f}"
+    assert clean < 0.06, f"non-flagged rows too noisy: {clean:.3f}"
+
+
+def test_missingness_exists_and_is_teachable(df):
+    income_missing = df["annual_income"].isna().mean()
+    score_missing = df["credit_score"].isna().mean()
+    assert 0.04 <= income_missing <= 0.14, f"income missingness {income_missing:.3f}"
+    assert 0.03 <= score_missing <= 0.12, f"score missingness {score_missing:.3f}"
+
+
+def test_income_missingness_is_not_random(df):
+    """Informal workers are far likelier to have no documented income.
+    Dropping those rows silently drops the highest-risk applicants."""
+    informal = df[df["employment_type"] == "Informal"]["annual_income"].isna().mean()
+    salaried = df[df["employment_type"] == "Salaried"]["annual_income"].isna().mean()
+    assert informal > salaried * 3, (
+        f"missingness looks random: informal={informal:.3f} salaried={salaried:.3f}"
+    )
+
+
+def test_credit_score_missingness_tracks_first_time_borrowers(df):
+    first_time = df[df["previous_loans"] == 0]["credit_score"].isna().mean()
+    repeat = df[df["previous_loans"] > 0]["credit_score"].isna().mean()
+    assert first_time > repeat * 3, (
+        f"missingness looks random: first={first_time:.3f} repeat={repeat:.3f}"
+    )
+
+
+def test_no_missing_values_in_target_or_id(df):
+    assert df["defaulted"].notna().all()
+    assert df["loan_id"].notna().all()

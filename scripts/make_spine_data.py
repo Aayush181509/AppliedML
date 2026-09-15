@@ -169,6 +169,33 @@ def generate_loans(n_rows: int = DEFAULT_ROWS, seed: int = SEED) -> pd.DataFrame
     probability = 1.0 / (1.0 + np.exp(-logit))
     df["defaulted"] = (rng.random(n_rows) < probability).astype(int)
 
+    # ---- Planted leakage --------------------------------------------------
+    # A recovery agent is assigned only *after* an account has gone bad, so
+    # this column cannot exist at scoring time. It is in the file because real
+    # extracts are assembled from whatever the warehouse happens to hold.
+    assign_probability = np.where(df["defaulted"] == 1, 0.88, 0.03)
+    df["recovery_agent_assigned"] = np.where(
+        rng.random(n_rows) < assign_probability, "Yes", "No"
+    )
+
+    # ---- Non-random missingness ------------------------------------------
+    # Income is undocumented for informal workers; credit scores do not exist
+    # for first-time borrowers. Both groups are higher risk, so dropping
+    # incomplete rows quietly removes the applicants that matter most.
+    income_missing_probability = np.select(
+        [
+            df["employment_type"] == "Informal",
+            df["employment_type"] == "Self-Employed",
+        ],
+        [0.34, 0.11],
+        default=0.02,
+    )
+    df.loc[rng.random(n_rows) < income_missing_probability, "annual_income"] = np.nan
+
+    score_missing_probability = np.where(df["previous_loans"] == 0, 0.22, 0.015)
+    df["credit_score"] = df["credit_score"].astype("float64")
+    df.loc[rng.random(n_rows) < score_missing_probability, "credit_score"] = np.nan
+
     df = df[[c for c in COLUMNS if c in df.columns]]
     return df.reset_index(drop=True)
 

@@ -66,3 +66,38 @@ def test_different_seed_gives_different_data():
     a = generate_loans(n_rows=500, seed=42)
     b = generate_loans(n_rows=500, seed=7)
     assert not a.equals(b)
+
+
+def test_target_is_binary_int(df):
+    assert df["defaulted"].dtype.kind == "i"
+    assert set(df["defaulted"].unique()) == {0, 1}
+
+
+def test_target_is_imbalanced_around_twelve_percent(df):
+    rate = df["defaulted"].mean()
+    assert 0.10 <= rate <= 0.14, f"default rate {rate:.3f} outside teaching range"
+
+
+def test_default_rate_rises_with_risk(df):
+    """Low credit scores must default more, or the problem is not learnable."""
+    low = df[df["credit_score"] < 550]["defaulted"].mean()
+    high = df[df["credit_score"] > 720]["defaulted"].mean()
+    assert low > high * 2, f"signal too weak: low={low:.3f} high={high:.3f}"
+
+
+def test_concept_drift_in_final_quarter(df):
+    dates = pd.to_datetime(df["application_date"])
+    before = df[dates < pd.Timestamp("2024-10-01")]["defaulted"].mean()
+    after = df[dates >= pd.Timestamp("2024-10-01")]["defaulted"].mean()
+    assert after >= before * 1.6, (
+        f"drift too weak for notebook 08: before={before:.3f} after={after:.3f}"
+    )
+
+
+def test_data_drift_in_final_quarter(df):
+    """Interest rates shift upward in the drift window — detectable by a
+    distribution test, not only by the target rate."""
+    dates = pd.to_datetime(df["application_date"])
+    before = df[dates < pd.Timestamp("2024-10-01")]["interest_rate"].mean()
+    after = df[dates >= pd.Timestamp("2024-10-01")]["interest_rate"].mean()
+    assert after - before >= 0.8, f"rate shift {after - before:.2f} too small"

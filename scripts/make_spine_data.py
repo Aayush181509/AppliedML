@@ -136,6 +136,39 @@ def generate_loans(n_rows: int = DEFAULT_ROWS, seed: int = SEED) -> pd.DataFrame
         (base_rate + risk_premium + rng.normal(0, 0.45, n_rows)).clip(8.0, 22.0), 2
     )
 
+    # ---- Drift window -----------------------------------------------------
+    # From 2024-10-01 the lending environment deteriorates: rates rise,
+    # incomes soften, and the same applicant profile defaults more often.
+    # Notebook 08 detects this; nothing before notebook 08 should mention it.
+    in_drift = df["application_date"] >= DRIFT_START
+    df.loc[in_drift, "interest_rate"] = np.round(
+        (df.loc[in_drift, "interest_rate"] + rng.normal(1.4, 0.3, in_drift.sum()))
+        .clip(8.0, 24.0),
+        2,
+    )
+    df.loc[in_drift, "annual_income"] = np.round(
+        df.loc[in_drift, "annual_income"] * rng.normal(0.88, 0.05, in_drift.sum())
+        / 1000
+    ) * 1000
+
+    # ---- Default probability ---------------------------------------------
+    # A logistic function of genuine risk drivers, so the problem is learnable
+    # but never perfectly separable.
+    logit = (
+        -3.2
+        + (700 - df["credit_score"]) / 100.0 * 0.95
+        + df["days_past_due_history"] / 45.0
+        + np.log(df["loan_amount"] / df["annual_income"].clip(lower=1)) * 0.55
+        + np.where(df["has_collateral"] == "No", 0.42, -0.30)
+        + np.where(df["employment_type"] == "Informal", 0.55, 0.0)
+        + np.where(df["sector"] == "Construction", 0.33, 0.0)
+        + np.where(df["sector"] == "Tourism", 0.28, 0.0)
+        + np.where(in_drift, 1.05, 0.0)
+        + rng.normal(0, 0.35, n_rows)
+    )
+    probability = 1.0 / (1.0 + np.exp(-logit))
+    df["defaulted"] = (rng.random(n_rows) < probability).astype(int)
+
     df = df[[c for c in COLUMNS if c in df.columns]]
     return df.reset_index(drop=True)
 

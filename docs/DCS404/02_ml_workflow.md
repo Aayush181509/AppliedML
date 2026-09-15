@@ -1,6 +1,6 @@
 # The Machine Learning Workflow
 
-**DCS 404 · Data Science and Machine Learning**
+**Applied Machine Learning Module**
 
 ---
 

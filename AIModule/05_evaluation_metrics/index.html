@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>5. Model Evaluation and Performance Metrics - Applied ML</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "5. Model Evaluation and Performance Metrics";
+        var mkdocs_page_input_path = "AIModule/05_evaluation_metrics.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Applied ML
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Welcome</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../InstallationGuide/">Installation Guide</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Applied ML in Production</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../01_problem_framing/">1. ML Problem Framing and the Industry Workflow</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02_data_preparation/">2. Data Preparation for ML</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../03_feature_engineering/">3. Feature Engineering</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04_sklearn_models/">4. Building ML Models with Scikit-learn</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">5. Model Evaluation and Performance Metrics</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-work-through-this">How to work through this</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#learning-objectives">Learning objectives</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#1-four-numbers-in-business-language">1. Four numbers, in business language</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#every-metric-is-a-ratio-of-those-four">Every metric is a ratio of those four</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-accuracys-last-appearance">2. Accuracy's last appearance</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-threshold-free-views-roc-and-precisionrecall">3. Threshold-free views: ROC and precision–recall</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-the-cost-matrix-how-the-metric-is-actually-chosen">4. The cost matrix — how the metric is actually chosen</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-capacity-the-constraint-the-cost-curve-ignores">5. Capacity: the constraint the cost curve ignores</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-calibration-do-the-probabilities-mean-anything">6. Calibration: do the probabilities mean anything?</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-regression-metrics-briefly">7. Regression metrics, briefly</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#8-what-to-report-and-to-whom">8. What to report, and to whom</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#your-turn">Your turn</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#if-you-remember-nothing-else">If you remember nothing else</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#glossary">Glossary</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#further-reading">Further reading</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../06_tuning_error_analysis/">6. Model Tuning and Error Analysis</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07_pipelines_tracking/">7. ML Pipelines and Experiment Tracking</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Applied ML</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Applied ML in Production</li>
+      <li class="breadcrumb-item active">5. Model Evaluation and Performance Metrics</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="model-evaluation-and-performance-metrics">Model Evaluation and Performance Metrics</h1>
+<p><strong>Applied ML in Production · Session 5</strong></p>
+<hr />
+<p>You can already compute accuracy, precision, recall, F1 and ROC-AUC. This session
+is about a harder question: <strong>which one do you report, and why that one?</strong></p>
+<p>It matters more than it sounds. Every metric is a different opinion about which
+mistakes are worse. Choose accuracy on this dataset and a model that declines
+nobody looks excellent. Choose F1 and you will pick an operating point that costs
+the lender millions more than a different one. The metric is not a technicality
+at the end of the project — it is a business decision made in session 1 and
+cashed in here.</p>
+<p>So we start from the four numbers everything is built on, and finish by choosing
+a threshold with money rather than with habit.</p>
+<h2 id="how-to-work-through-this">How to work through this</h2>
+<p>Type the code. Most cells are a confusion matrix or a loop over thresholds, and
+the arithmetic is deliberately visible so you can check it by hand.</p>
+<p>Run each cell, read the output, then read the commentary. If a cell errors, run
+from the top.</p>
+<h2 id="learning-objectives">Learning objectives</h2>
+<p>After this session you will be able to:</p>
+<ul>
+<li>Read a confusion matrix in business language rather than statistical language.</li>
+<li>Derive accuracy, precision, recall, specificity and F1 from those four numbers.</li>
+<li>Explain why accuracy is the wrong headline metric for an imbalanced problem.</li>
+<li>Choose between ROC-AUC and precision–recall AUC, and justify the choice from
+  the base rate.</li>
+<li>Build a <strong>cost matrix</strong> and pick the threshold that minimises expected cost.</li>
+<li>Reconcile the cheapest operating point with an operational <strong>capacity</strong> limit.</li>
+<li>Check whether predicted probabilities are <strong>calibrated</strong>, and say why that
+  matters for money-based decisions.</li>
+<li>Pick the right regression metric for a regression problem.</li>
+</ul>
+<h2 id="setup">Setup</h2>
+<p>One model, trained once, used for the whole session: session 4's pipeline on
+session 2's honest features. No <code>class_weight</code> this time — we will do the work
+with the threshold instead, as session 3 showed.</p>
+<div class="highlight"><pre><span></span><code><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogisticRegression</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_pipeline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">StandardScaler</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="s2">&quot;axes.grid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;grid.alpha&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">})</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.width&quot;</span><span class="p">,</span> <span class="mi">130</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">find_data</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;loan_default.csv&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span> <span class="o">*</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">]:</span>
+        <span class="n">candidate</span> <span class="o">=</span> <span class="n">folder</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span> <span class="o">/</span> <span class="n">filename</span>
+        <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">candidate</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;could not find data/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="n">loans</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">find_data</span><span class="p">(),</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;application_date&quot;</span><span class="p">])</span>
+
+<span class="n">features</span> <span class="o">=</span> <span class="n">loans</span><span class="p">[[</span><span class="s2">&quot;loan_amount&quot;</span><span class="p">,</span> <span class="s2">&quot;tenure_months&quot;</span><span class="p">,</span> <span class="s2">&quot;interest_rate&quot;</span><span class="p">,</span> <span class="s2">&quot;previous_loans&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;days_past_due_history&quot;</span><span class="p">,</span> <span class="s2">&quot;annual_income&quot;</span><span class="p">,</span> <span class="s2">&quot;credit_score&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;sector&quot;</span><span class="p">,</span> <span class="s2">&quot;employment_type&quot;</span><span class="p">,</span> <span class="s2">&quot;has_collateral&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">features</span><span class="p">[</span><span class="s2">&quot;income_missing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="s2">&quot;annual_income&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">features</span><span class="p">[</span><span class="s2">&quot;score_missing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="s2">&quot;credit_score&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">drop_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">loans</span><span class="p">[</span><span class="s2">&quot;defaulted&quot;</span><span class="p">]</span>
+
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
+<span class="p">)</span>
+<span class="n">medians</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">median</span><span class="p">()</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">medians</span><span class="p">),</span> <span class="n">X_test</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">medians</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">make_pipeline</span><span class="p">(</span><span class="n">StandardScaler</span><span class="p">(),</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+
+<span class="n">probabilities</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">loan_amounts</span> <span class="o">=</span> <span class="n">loans</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">X_test</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s2">&quot;loan_amount&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+<span class="n">actual</span> <span class="o">=</span> <span class="n">y_test</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">actual</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> test applications, </span><span class="si">{</span><span class="n">actual</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2"> defaulted&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>3,000 test applications, 13.5% defaulted
+</code></pre></div>
+<hr />
+<h2 id="1-four-numbers-in-business-language">1. Four numbers, in business language</h2>
+<p>Every classification metric in existence is built from the same four counts. Fix a
+threshold, compare predictions to reality, and you get:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Model says repay</th>
+<th>Model says default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Actually repaid</strong></td>
+<td>True negative — approved, repaid. The business as usual</td>
+<td><strong>False positive</strong> — a <em>false alarm</em>. We declined or delayed a good customer</td>
+</tr>
+<tr>
+<td><strong>Actually defaulted</strong></td>
+<td><strong>False negative</strong> — a <em>missed default</em>. Money out the door</td>
+<td>True positive — caught it. The whole point of the project</td>
+</tr>
+</tbody>
+</table>
+<p>Learn the business names. "False negative" means nothing to a Head of Credit;
+"we approved a loan that went bad" means everything.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">confusion_matrix</span>
+
+<span class="n">THRESHOLD</span> <span class="o">=</span> <span class="mf">0.15</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="p">(</span><span class="n">probabilities</span> <span class="o">&gt;=</span> <span class="n">THRESHOLD</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+<span class="n">true_negative</span><span class="p">,</span> <span class="n">false_positive</span><span class="p">,</span> <span class="n">false_negative</span><span class="p">,</span> <span class="n">true_positive</span> <span class="o">=</span> \
+    <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span> <span class="n">predictions</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;threshold </span><span class="si">{</span><span class="n">THRESHOLD</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  caught defaults (true positive):   </span><span class="si">{</span><span class="n">true_positive</span><span class="si">:</span><span class="s2">&gt;5</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  missed defaults (false negative):  </span><span class="si">{</span><span class="n">false_negative</span><span class="si">:</span><span class="s2">&gt;5</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  false alarms    (false positive):  </span><span class="si">{</span><span class="n">false_positive</span><span class="si">:</span><span class="s2">&gt;5</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  quiet approvals (true negative):   </span><span class="si">{</span><span class="n">true_negative</span><span class="si">:</span><span class="s2">&gt;5</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>threshold 0.15
+
+  caught defaults (true positive):     261
+  missed defaults (false negative):    144
+  false alarms    (false positive):    659
+  quiet approvals (true negative):    1936
+</code></pre></div>
+<h3 id="every-metric-is-a-ratio-of-those-four">Every metric is a ratio of those four</h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Formula</th>
+<th>The question it answers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Accuracy</strong></td>
+<td>(TP + TN) / everything</td>
+<td>How often are we right?</td>
+</tr>
+<tr>
+<td><strong>Precision</strong></td>
+<td>TP / (TP + FP)</td>
+<td>When we flag a file, how often is it really bad?</td>
+</tr>
+<tr>
+<td><strong>Recall</strong> (sensitivity)</td>
+<td>TP / (TP + FN)</td>
+<td>Of all the bad loans, how many did we catch?</td>
+</tr>
+<tr>
+<td><strong>Specificity</strong></td>
+<td>TN / (TN + FP)</td>
+<td>Of all the good loans, how many did we leave alone?</td>
+</tr>
+<tr>
+<td><strong>F1</strong></td>
+<td>harmonic mean of precision and recall</td>
+<td>One number when you refuse to choose between them</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;accuracy    </span><span class="si">{</span><span class="p">(</span><span class="n">true_positive</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">true_negative</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">actual</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;precision   </span><span class="si">{</span><span class="n">true_positive</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">true_positive</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">false_positive</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;recall      </span><span class="si">{</span><span class="n">true_positive</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">true_positive</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">false_negative</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;specificity </span><span class="si">{</span><span class="n">true_negative</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">true_negative</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">false_positive</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">precision</span> <span class="o">=</span> <span class="n">true_positive</span> <span class="o">/</span> <span class="p">(</span><span class="n">true_positive</span> <span class="o">+</span> <span class="n">false_positive</span><span class="p">)</span>
+<span class="n">recall</span> <span class="o">=</span> <span class="n">true_positive</span> <span class="o">/</span> <span class="p">(</span><span class="n">true_positive</span> <span class="o">+</span> <span class="n">false_negative</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;F1          </span><span class="si">{</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">precision</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">recall</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">precision</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">recall</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>accuracy    0.732
+precision   0.284
+recall      0.644
+specificity 0.746
+F1          0.394
+</code></pre></div>
+<p>No library needed — the four counts are the whole of it. Everything scikit-learn
+offers for classification is a rearrangement of this cell.</p>
+<p><strong>Precision and recall pull against each other.</strong> Flag more files and you catch
+more defaults (recall up) while flagging more good customers (precision down).
+There is no setting that improves both; there is only a choice about which
+mistake you would rather make.</p>
+<hr />
+<h2 id="2-accuracys-last-appearance">2. Accuracy's last appearance</h2>
+<p>We have been hinting since session 1. Here is the proof, across thresholds.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">f1_score</span><span class="p">,</span> <span class="n">precision_score</span><span class="p">,</span> <span class="n">recall_score</span>
+
+<span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">threshold</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.55</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">):</span>
+    <span class="n">predictions</span> <span class="o">=</span> <span class="p">(</span><span class="n">probabilities</span> <span class="o">&gt;=</span> <span class="n">threshold</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+        <span class="s2">&quot;threshold&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">threshold</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+        <span class="s2">&quot;recall&quot;</span><span class="p">:</span> <span class="n">recall_score</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span> <span class="n">predictions</span><span class="p">),</span>
+        <span class="s2">&quot;precision&quot;</span><span class="p">:</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">zero_division</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+        <span class="s2">&quot;f1&quot;</span><span class="p">:</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span> <span class="n">predictions</span><span class="p">),</span>
+        <span class="s2">&quot;accuracy&quot;</span><span class="p">:</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span> <span class="n">predictions</span><span class="p">),</span>
+        <span class="s2">&quot;flagged&quot;</span><span class="p">:</span> <span class="n">predictions</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+    <span class="p">})</span>
+
+<span class="n">sweep</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;threshold&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sweep</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>           recall  precision     f1  accuracy  flagged
+threshold                                             
+0.05        0.968      0.174  0.295     0.374    0.752
+0.10        0.817      0.237  0.368     0.620    0.465
+0.15        0.644      0.284  0.394     0.732    0.307
+0.20        0.511      0.333  0.403     0.796    0.207
+0.25        0.407      0.382  0.394     0.831    0.144
+0.30        0.328      0.442  0.377     0.853    0.100
+0.35        0.274      0.519  0.359     0.868    0.071
+0.40        0.217      0.553  0.312     0.871    0.053
+0.45        0.165      0.593  0.259     0.872    0.038
+0.50        0.091      0.569  0.157     0.868    0.022
+</code></pre></div>
+<p>Find the row with the best accuracy: <strong>0.872, at a threshold of 0.45</strong> — where
+recall is 0.165. A model tuned to maximise accuracy misses five defaults out of
+six and the business gains almost nothing.</p>
+<p>Accuracy fails here because 86.5% of applications repay. A metric that rewards
+being right about the easy majority will always prefer a model that ignores the
+minority you built it for.</p>
+<p><strong>Retire accuracy for imbalanced problems.</strong> It is not wrong, it is irrelevant —
+it answers a question nobody asked.</p>
+<p>Notice also that F1 peaks at 0.20, in a different place from accuracy. Two
+reasonable metrics, two different "best" models, and neither has been told what a
+default costs. Section 4 fixes that.</p>
+<hr />
+<h2 id="3-threshold-free-views-roc-and-precisionrecall">3. Threshold-free views: ROC and precision–recall</h2>
+<p>Everything above depends on a threshold. Sometimes you want to judge the <em>model</em>
+rather than one operating point — comparing two candidate models, for example,
+before anyone has chosen a cut-off.</p>
+<p><strong>ROC-AUC</strong> plots recall against the false-alarm rate across every threshold.
+Read it as: <em>given one random defaulter and one random repayer, how often does
+the model score the defaulter higher?</em> 0.5 is coin-flipping, 1.0 is perfect.</p>
+<p><strong>Precision–recall AUC</strong> (average precision) plots precision against recall
+instead. Its baseline is not 0.5 — it is the <strong>base rate</strong>, here 0.135.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">PrecisionRecallDisplay</span><span class="p">,</span> <span class="n">RocCurveDisplay</span><span class="p">,</span> <span class="n">average_precision_score</span><span class="p">,</span> <span class="n">roc_auc_score</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">RocCurveDisplay</span><span class="o">.</span><span class="n">from_predictions</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span> <span class="n">probabilities</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;model&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ROC curve — AUC </span><span class="si">{</span><span class="n">roc_auc_score</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span><span class="w"> </span><span class="n">probabilities</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">PrecisionRecallDisplay</span><span class="o">.</span><span class="n">from_predictions</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span> <span class="n">probabilities</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;model&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">actual</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Precision–Recall — AP </span><span class="si">{</span><span class="n">average_precision_score</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span><span class="w"> </span><span class="n">probabilities</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../05_evaluation_metrics_files/05_evaluation_metrics_14_0.png" /></p>
+<p>AUC 0.782 against a 0.5 baseline sounds respectable. Average precision 0.381
+against a 0.135 baseline tells a sharper story: at any recall you choose, most of
+what you flag is still a good customer.</p>
+<table>
+<thead>
+<tr>
+<th>Use</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ROC-AUC</strong></td>
+<td>Roughly balanced classes; you care about ranking overall; comparing models</td>
+</tr>
+<tr>
+<td><strong>PR-AUC</strong></td>
+<td>Rare positives; you care about what happens among the cases you flag</td>
+</tr>
+</tbody>
+</table>
+<p>With 13.5% positives, PR-AUC is the more honest summary — ROC curves look
+flattering on imbalanced data because true negatives are abundant and easy.</p>
+<p>Both are still only <strong>summaries of the ranking</strong>. Neither tells you where to cut,
+and neither knows that a missed default costs twelve times a false alarm. For
+that we need money.</p>
+<hr />
+<h2 id="4-the-cost-matrix-how-the-metric-is-actually-chosen">4. The cost matrix — how the metric is actually chosen</h2>
+<p>A metric is a proxy. Money is the thing. If you can put a number on each cell of
+the confusion matrix, you can stop arguing about metrics and compute the answer.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Model says repay</th>
+<th>Model says default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Actually repaid</strong></td>
+<td>0 — business as usual</td>
+<td>Lost interest margin: <strong>4.5%</strong> of the loan</td>
+</tr>
+<tr>
+<td><strong>Actually defaulted</strong></td>
+<td>Loss after recovery: <strong>55%</strong> of the loan</td>
+<td>0 — we avoided it</td>
+</tr>
+</tbody>
+</table>
+<p>Those two percentages come from the credit team, not from you. Getting them
+written down is the single highest-value conversation in the project.</p>
+<div class="highlight"><pre><span></span><code><span class="n">LOSS_GIVEN_DEFAULT</span> <span class="o">=</span> <span class="mf">0.55</span>    <span class="c1"># of the loan amount, when a default is missed</span>
+<span class="n">FORGONE_MARGIN</span> <span class="o">=</span> <span class="mf">0.045</span>       <span class="c1"># of the loan amount, when a good loan is declined</span>
+
+<span class="n">costs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">threshold</span> <span class="ow">in</span> <span class="n">sweep</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+    <span class="n">predictions</span> <span class="o">=</span> <span class="p">(</span><span class="n">probabilities</span> <span class="o">&gt;=</span> <span class="n">threshold</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">missed</span> <span class="o">=</span> <span class="n">loan_amounts</span><span class="p">[(</span><span class="n">actual</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">predictions</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="n">LOSS_GIVEN_DEFAULT</span>
+    <span class="n">false_alarms</span> <span class="o">=</span> <span class="n">loan_amounts</span><span class="p">[(</span><span class="n">actual</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">predictions</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="n">FORGONE_MARGIN</span>
+    <span class="n">costs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">missed</span> <span class="o">+</span> <span class="n">false_alarms</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">)</span>
+
+<span class="n">sweep</span><span class="p">[</span><span class="s2">&quot;cost_NPR_m&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">costs</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sweep</span><span class="p">[[</span><span class="s2">&quot;recall&quot;</span><span class="p">,</span> <span class="s2">&quot;precision&quot;</span><span class="p">,</span> <span class="s2">&quot;f1&quot;</span><span class="p">,</span> <span class="s2">&quot;accuracy&quot;</span><span class="p">,</span> <span class="s2">&quot;flagged&quot;</span><span class="p">,</span> <span class="s2">&quot;cost_NPR_m&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+
+<span class="n">cheapest</span> <span class="o">=</span> <span class="n">sweep</span><span class="p">[</span><span class="s2">&quot;cost_NPR_m&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">idxmin</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">cheapest threshold: </span><span class="si">{</span><span class="n">cheapest</span><span class="si">}</span><span class="s2">  (NPR </span><span class="si">{</span><span class="n">sweep</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cheapest</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;cost_NPR_m&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">m)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;best-F1 threshold:  </span><span class="si">{</span><span class="n">sweep</span><span class="p">[</span><span class="s1">&#39;f1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">idxmax</span><span class="p">()</span><span class="si">}</span><span class="s2">  (NPR </span><span class="si">{</span><span class="n">sweep</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sweep</span><span class="p">[</span><span class="s1">&#39;f1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">idxmax</span><span class="p">(),</span><span class="w"> </span><span class="s1">&#39;cost_NPR_m&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">m)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;best-accuracy:      </span><span class="si">{</span><span class="n">sweep</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">idxmax</span><span class="p">()</span><span class="si">}</span><span class="s2">  (NPR </span><span class="si">{</span><span class="n">sweep</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sweep</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">idxmax</span><span class="p">(),</span><span class="w"> </span><span class="s1">&#39;cost_NPR_m&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">m)&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>           recall  precision     f1  accuracy  flagged  cost_NPR_m
+threshold                                                         
+0.05        0.968      0.174  0.295     0.374    0.752        36.9
+0.10        0.817      0.237  0.368     0.620    0.465        36.0
+0.15        0.644      0.284  0.394     0.732    0.307        44.0
+0.20        0.511      0.333  0.403     0.796    0.207        55.0
+0.25        0.407      0.382  0.394     0.831    0.144        62.9
+0.30        0.328      0.442  0.377     0.853    0.100        69.8
+0.35        0.274      0.519  0.359     0.868    0.071        75.1
+0.40        0.217      0.553  0.312     0.871    0.053        81.5
+0.45        0.165      0.593  0.259     0.872    0.038        85.6
+0.50        0.091      0.569  0.157     0.868    0.022        92.4
+
+cheapest threshold: 0.1  (NPR 36.0m)
+best-F1 threshold:  0.2  (NPR 55.0m)
+best-accuracy:      0.45  (NPR 85.6m)
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sweep</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">sweep</span><span class="p">[</span><span class="s2">&quot;cost_NPR_m&quot;</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#C44E52&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;cost (NPR millions)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">cheapest</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;decision threshold&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;cost on the test set (NPR millions)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;The only curve the business cares about&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../05_evaluation_metrics_files/05_evaluation_metrics_18_0.png" /></p>
+<p>Read those three lines again, because they are the point of the session.</p>
+<ul>
+<li>Optimising <strong>accuracy</strong> picks 0.45 and costs <strong>NPR 85.6m</strong>.</li>
+<li>Optimising <strong>F1</strong> picks 0.20 and costs <strong>NPR 55.0m</strong>.</li>
+<li>Optimising <strong>money</strong> picks 0.10 and costs <strong>NPR 36.0m</strong>.</li>
+</ul>
+<p>Choosing F1 over expected cost — a completely standard, defensible-sounding
+choice — burns about <strong>19 million rupees per quarter</strong> on this test set. No
+modelling change could recover that. The metric did it.</p>
+<p>Two things to notice about the cost curve itself.</p>
+<p><strong>It is flat near the bottom.</strong> Thresholds 0.05 and 0.10 cost 36.9m and 36.0m.
+The exact number matters far less than the region, which is a relief: you do not
+need a precise estimate of the cost ratio, only a roughly right one.</p>
+<p><strong>It rises steeply on the right.</strong> Being too cautious is cheap to say and
+expensive to do, because the missed defaults dominate everything.</p>
+<blockquote>
+<p><strong>Industry note — where the cost numbers come from.</strong>
+Teams stall for weeks waiting for perfect cost figures. You do not need them.
+Ask the credit team for a range, take the midpoint, and show them this curve.
+Disagreement about whether the ratio is 10:1 or 15:1 barely moves the chosen
+threshold; disagreement about whether it is 1:1 or 12:1 changes the entire
+product. Argue about the order of magnitude, then move on.</p>
+</blockquote>
+<hr />
+<h2 id="5-capacity-the-constraint-the-cost-curve-ignores">5. Capacity: the constraint the cost curve ignores</h2>
+<p>The cheapest threshold, 0.10, flags <strong>46.5%</strong> of applications for review. Session
+1's charter said no more than 25%, because twelve files per branch per month is
+what the credit team can actually read.</p>
+<p>The cost curve does not know that. It assumes every flagged file gets reviewed
+perfectly and for free.</p>
+<div class="highlight"><pre><span></span><code><span class="n">CAPACITY</span> <span class="o">=</span> <span class="mf">0.25</span>     <span class="c1"># the charter&#39;s guardrail: at most 25% of applications reviewed</span>
+
+<span class="n">affordable</span> <span class="o">=</span> <span class="n">sweep</span><span class="p">[</span><span class="n">sweep</span><span class="p">[</span><span class="s2">&quot;flagged&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">CAPACITY</span><span class="p">]</span>
+<span class="n">best_affordable</span> <span class="o">=</span> <span class="n">affordable</span><span class="p">[</span><span class="s2">&quot;cost_NPR_m&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">idxmin</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unconstrained best: threshold </span><span class="si">{</span><span class="n">cheapest</span><span class="si">}</span><span class="s2">  &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;recall </span><span class="si">{</span><span class="n">sweep</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cheapest</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;recall&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">  flagged </span><span class="si">{</span><span class="n">sweep</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cheapest</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;flagged&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2">  &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;NPR </span><span class="si">{</span><span class="n">sweep</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cheapest</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;cost_NPR_m&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">m&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;within capacity:    threshold </span><span class="si">{</span><span class="n">best_affordable</span><span class="si">}</span><span class="s2">  &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;recall </span><span class="si">{</span><span class="n">sweep</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">best_affordable</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;recall&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">  flagged </span><span class="si">{</span><span class="n">sweep</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">best_affordable</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;flagged&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2">  &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;NPR </span><span class="si">{</span><span class="n">sweep</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">best_affordable</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;cost_NPR_m&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">m&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">the capacity limit costs NPR &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sweep</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">best_affordable</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;cost_NPR_m&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">sweep</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cheapest</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;cost_NPR_m&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">m&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>unconstrained best: threshold 0.1  recall 0.82  flagged 46%  NPR 36.0m
+within capacity:    threshold 0.2  recall 0.51  flagged 21%  NPR 55.0m
+
+the capacity limit costs NPR 19.0m
+</code></pre></div>
+<p>That last number is the most useful sentence you can hand a Head of Credit:
+<em>"reviewing only a quarter of applications instead of nearly half costs about 19
+million rupees a quarter — here is what hiring two more credit officers would be
+worth."</em></p>
+<p>That is not a modelling result. It is a business case, and it came from a metric
+table.</p>
+<p>Also notice: session 1's criterion (recall ≥ 0.60 at ≤ 25% flagged) is still not
+met — the best operating point inside the capacity limit reaches recall 0.51. The charter's target was written
+before anyone had seen a model. Sessions 6 and 7 try to close the gap; if they
+cannot, the honest move is to renegotiate the charter, not to quietly change the
+metric.</p>
+<hr />
+<h2 id="6-calibration-do-the-probabilities-mean-anything">6. Calibration: do the probabilities mean anything?</h2>
+<p>Everything in section 4 multiplied a probability by money. That only works if the
+probabilities are <strong>calibrated</strong> — when the model says 20%, roughly 20% of those
+applicants should actually default.</p>
+<p>Ranking and calibration are different properties. A model can rank perfectly and
+still be badly calibrated.</p>
+<div class="highlight"><pre><span></span><code><span class="n">buckets</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">probabilities</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>
+
+<span class="n">calibration</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;predicted&quot;</span><span class="p">:</span> <span class="n">probabilities</span><span class="p">,</span> <span class="s2">&quot;actual&quot;</span><span class="p">:</span> <span class="n">actual</span><span class="p">,</span> <span class="s2">&quot;bucket&quot;</span><span class="p">:</span> <span class="n">buckets</span><span class="p">})</span>
+<span class="n">calibration</span> <span class="o">=</span> <span class="n">calibration</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;bucket&quot;</span><span class="p">,</span> <span class="n">observed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span>
+    <span class="n">applications</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;actual&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">),</span>
+    <span class="n">mean_predicted</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;predicted&quot;</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">),</span>
+    <span class="n">actual_rate</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;actual&quot;</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">),</span>
+<span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">calibration</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>             applications  mean_predicted  actual_rate
+bucket                                                
+(0.0, 0.05]           744           0.032        0.017
+(0.05, 0.1]           860           0.073        0.071
+(0.1, 0.2]            774           0.142        0.160
+(0.2, 0.3]            321           0.244        0.231
+(0.3, 0.5]            236           0.385        0.407
+(0.5, 1.0]             65           0.613        0.569
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">5.5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">calibration</span><span class="p">[</span><span class="s2">&quot;mean_predicted&quot;</span><span class="p">],</span> <span class="n">calibration</span><span class="p">[</span><span class="s2">&quot;actual_rate&quot;</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;our model&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">],</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;perfectly calibrated&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;predicted probability of default&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;actual default rate&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Calibration&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../05_evaluation_metrics_files/05_evaluation_metrics_25_0.png" /></p>
+<p>Close to the diagonal in every bucket — this model's probabilities can be trusted
+as probabilities, which is why the cost arithmetic in section 4 is meaningful.</p>
+<p>Logistic regression is usually well calibrated because its training objective is
+a probability loss. Tree ensembles often are not: random forests tend to avoid
+the extremes, and boosted models push toward them. If you swap in one of those
+and keep the cost calculation, check this plot first, and use
+<code>CalibratedClassifierCV</code> if the curve bends away from the diagonal.</p>
+<hr />
+<h2 id="7-regression-metrics-briefly">7. Regression metrics, briefly</h2>
+<p>For the pricing question from session 4 — predicting the interest rate — the
+same discipline applies with different arithmetic.</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>What it says</th>
+<th>Use when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>MAE</strong></td>
+<td>Average error, in the target's own units</td>
+<td>You want a number stakeholders can feel</td>
+</tr>
+<tr>
+<td><strong>RMSE</strong></td>
+<td>Like MAE but punishes large errors harder</td>
+<td>Big misses are disproportionately costly</td>
+</tr>
+<tr>
+<td><strong>R²</strong></td>
+<td>Share of variance explained, 0 to 1</td>
+<td>Comparing models on the same target</td>
+</tr>
+<tr>
+<td><strong>MAPE</strong></td>
+<td>Average error as a percentage</td>
+<td>Scale varies wildly across rows; fails on zeros</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">mean_absolute_error</span><span class="p">,</span> <span class="n">mean_squared_error</span><span class="p">,</span> <span class="n">r2_score</span>
+
+<span class="n">rate_features</span> <span class="o">=</span> <span class="n">loans</span><span class="p">[[</span><span class="s2">&quot;loan_amount&quot;</span><span class="p">,</span> <span class="s2">&quot;tenure_months&quot;</span><span class="p">,</span> <span class="s2">&quot;previous_loans&quot;</span><span class="p">,</span>
+                       <span class="s2">&quot;days_past_due_history&quot;</span><span class="p">,</span> <span class="s2">&quot;credit_score&quot;</span><span class="p">,</span> <span class="s2">&quot;annual_income&quot;</span><span class="p">]]</span>
+<span class="n">rate_features</span> <span class="o">=</span> <span class="n">rate_features</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">rate_features</span><span class="o">.</span><span class="n">median</span><span class="p">())</span>
+
+<span class="n">A_train</span><span class="p">,</span> <span class="n">A_test</span><span class="p">,</span> <span class="n">r_train</span><span class="p">,</span> <span class="n">r_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">rate_features</span><span class="p">,</span> <span class="n">loans</span><span class="p">[</span><span class="s2">&quot;interest_rate&quot;</span><span class="p">],</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
+<span class="p">)</span>
+<span class="n">rate_model</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">A_train</span><span class="p">,</span> <span class="n">r_train</span><span class="p">)</span>
+<span class="n">predicted_rate</span> <span class="o">=</span> <span class="n">rate_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">A_test</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MAE  </span><span class="si">{</span><span class="n">mean_absolute_error</span><span class="p">(</span><span class="n">r_test</span><span class="p">,</span><span class="w"> </span><span class="n">predicted_rate</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> percentage points&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RMSE </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">r_test</span><span class="p">,</span><span class="w"> </span><span class="n">predicted_rate</span><span class="p">))</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> percentage points&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;R²   </span><span class="si">{</span><span class="n">r2_score</span><span class="p">(</span><span class="n">r_test</span><span class="p">,</span><span class="w"> </span><span class="n">predicted_rate</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>MAE  0.778 percentage points
+RMSE 0.973 percentage points
+R²   0.565
+</code></pre></div>
+<p>RMSE above MAE is normal and the gap is the signal: it says a minority of
+applications are priced far from what the model expects. For a pricing-consistency
+review, those outliers are the whole point — so here you would report RMSE <em>and</em>
+go look at the worst rows.</p>
+<hr />
+<h2 id="8-what-to-report-and-to-whom">8. What to report, and to whom</h2>
+<table>
+<thead>
+<tr>
+<th>Audience</th>
+<th>Give them</th>
+<th>Not</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Head of Credit</td>
+<td>Expected cost, recall at the agreed capacity, in rupees and files</td>
+<td>AUC</td>
+</tr>
+<tr>
+<td>Credit officers</td>
+<td>What lands in their queue each day, and how often it is worth reading</td>
+<td>Anything with "curve" in the name</td>
+</tr>
+<tr>
+<td>Risk / compliance</td>
+<td>Operating point, calibration, slice performance, guardrails</td>
+<td>A single headline number</td>
+</tr>
+<tr>
+<td>Your team</td>
+<td>AUC or PR-AUC for model comparison, plus the cost curve</td>
+<td>Accuracy</td>
+</tr>
+</tbody>
+</table>
+<p><strong>One number for the business, several for the team.</strong> The business number is the
+one from the charter — here, cost in rupees at the capacity limit. The team's
+numbers exist to make that one number move.</p>
+<p>Report the operating point together with the metric, always. "Recall 0.64" is
+meaningless; "recall 0.64 while flagging 31% of applications, at threshold 0.15"
+is a result someone can act on and reproduce.</p>
+<hr />
+<h2 id="your-turn">Your turn</h2>
+<p><strong>1. Move the cost ratio.</strong> Re-run section 4 with <code>LOSS_GIVEN_DEFAULT = 0.30</code>
+and again with <code>0.80</code>. How far does the cheapest threshold move? Does your answer
+change what you would tell the credit team to spend time agreeing on?</p>
+<p><strong>2. Cost per application.</strong> Our cost is a total over 3,000 test applications.
+Divide by the number of applications to get cost per file, at the cheapest
+threshold and at the accuracy-optimal one. Which number is more persuasive in a
+meeting, and why?</p>
+<p><strong>3. Add a review cost.</strong> Reviewing a flagged file takes an officer 30 minutes,
+at NPR 400 an hour. Add that to the cost function for every flagged application
+and re-find the cheapest threshold. Does the capacity constraint still bind?</p>
+<p><strong>4. Break calibration.</strong> Train a <code>RandomForestClassifier</code>, plot its calibration
+curve next to the logistic model's, and redo the cost table with its
+probabilities. Does the cheapest threshold move? What would go wrong if you used
+uncalibrated probabilities in a pricing decision?</p>
+<p><strong>5. Slice it.</strong> Compute recall and flag rate separately for <code>sector == "Tourism"</code>
+and <code>sector == "Trade"</code> at threshold 0.15. Is the model equally useful for both?
+(This is the opening move of session 6.)</p>
+<p><strong>6. Rewrite the charter line.</strong> Session 1 asked for recall ≥ 0.60 at ≤ 25%
+flagged, which we cannot reach. Write the replacement criterion you would take
+back to the Head of Credit, in one sentence, with the evidence from this notebook
+behind it.</p>
+<hr />
+<h2 id="if-you-remember-nothing-else">If you remember nothing else</h2>
+<p><strong>Four counts underpin everything.</strong> Caught defaults, missed defaults, false
+alarms, quiet approvals. Every classification metric is a ratio of those.</p>
+<p><strong>Accuracy is irrelevant on imbalanced problems.</strong> It peaked here at a threshold
+that misses five defaults out of six.</p>
+<p><strong>ROC-AUC flatters imbalanced data.</strong> With rare positives, precision–recall tells
+you more, and its baseline is the base rate, not 0.5.</p>
+<p><strong>Cost beats every metric.</strong> Optimising F1 instead of expected cost was worth
+about NPR 19 million a quarter on this test set. Get the two cost numbers from
+the business and compute the curve.</p>
+<p><strong>A metric without an operating point is not a result.</strong> Always report the
+threshold and what it does to the queue.</p>
+<p><strong>Calibration is what makes money arithmetic legal.</strong> If the probabilities do not
+mean what they say, multiplying them by rupees produces confident nonsense.</p>
+<p><strong>Constraints outrank optima.</strong> The cheapest threshold flagged 46% of
+applications; the team can read 25%. Pricing the gap is a business case, not a
+failure.</p>
+<hr />
+<h2 id="glossary">Glossary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Confusion matrix</strong></td>
+<td>The 2×2 table of predicted against actual classes</td>
+</tr>
+<tr>
+<td><strong>Precision</strong></td>
+<td>Of the files we flagged, the share that were really bad</td>
+</tr>
+<tr>
+<td><strong>Recall / sensitivity</strong></td>
+<td>Of the bad files, the share we caught</td>
+</tr>
+<tr>
+<td><strong>Specificity</strong></td>
+<td>Of the good files, the share we left alone</td>
+</tr>
+<tr>
+<td><strong>F1</strong></td>
+<td>Harmonic mean of precision and recall</td>
+</tr>
+<tr>
+<td><strong>ROC-AUC</strong></td>
+<td>Probability the model ranks a random positive above a random negative</td>
+</tr>
+<tr>
+<td><strong>PR-AUC / average precision</strong></td>
+<td>Area under the precision–recall curve; baseline is the base rate</td>
+</tr>
+<tr>
+<td><strong>Base rate</strong></td>
+<td>The share of positives in the data — 13.5% here</td>
+</tr>
+<tr>
+<td><strong>Operating point</strong></td>
+<td>The recall/precision pair produced by a chosen threshold</td>
+</tr>
+<tr>
+<td><strong>Cost matrix</strong></td>
+<td>The money attached to each cell of the confusion matrix</td>
+</tr>
+<tr>
+<td><strong>Expected cost</strong></td>
+<td>Total money lost at a given operating point</td>
+</tr>
+<tr>
+<td><strong>Calibration</strong></td>
+<td>Whether predicted probabilities match observed frequencies</td>
+</tr>
+<tr>
+<td><strong>MAE / RMSE / R²</strong></td>
+<td>Regression metrics: average error, outlier-sensitive error, variance explained</td>
+</tr>
+</tbody>
+</table>
+<h2 id="further-reading">Further reading</h2>
+<ul>
+<li>scikit-learn User Guide, <em>Metrics and scoring</em> — every metric in this session,
+  with the formulas.</li>
+<li>Google, <em>Classification: ROC and AUC</em> — short, visual, and free.</li>
+<li>Provost and Fawcett, <em>Data Science for Business</em>, chapters 7–8 — expected value
+  framing and cost matrices, written for exactly this conversation.</li>
+<li>Niculescu-Mizil and Caruana, <em>Predicting Good Probabilities with Supervised
+  Learning</em> (ICML 2005) — why forests and boosted trees need calibrating.</li>
+</ul>
+<hr />
+<p><strong>Next session:</strong> <em>Model Tuning and Error Analysis</em> — cross-validation done
+correctly, hyperparameter search, learning curves, and finding the slices of the
+book where this model quietly fails.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../04_sklearn_models/" class="btn btn-neutral float-left" title="4. Building ML Models with Scikit-learn"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../06_tuning_error_analysis/" class="btn btn-neutral float-right" title="6. Model Tuning and Error Analysis">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright &copy; 2026 - Aayush Raj Regmi</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../04_sklearn_models/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../06_tuning_error_analysis/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../javascripts/mathjax.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

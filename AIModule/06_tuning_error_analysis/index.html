@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>6. Model Tuning and Error Analysis - Applied ML</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "6. Model Tuning and Error Analysis";
+        var mkdocs_page_input_path = "AIModule/06_tuning_error_analysis.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Applied ML
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Welcome</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../InstallationGuide/">Installation Guide</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Applied ML in Production</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../01_problem_framing/">1. ML Problem Framing and the Industry Workflow</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02_data_preparation/">2. Data Preparation for ML</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../03_feature_engineering/">3. Feature Engineering</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04_sklearn_models/">4. Building ML Models with Scikit-learn</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../05_evaluation_metrics/">5. Model Evaluation and Performance Metrics</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">6. Model Tuning and Error Analysis</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-work-through-this">How to work through this</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#learning-objectives">Learning objectives</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#1-you-cannot-tune-on-the-test-set">1. You cannot tune on the test set</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-hyperparameter-search">2. Hyperparameter search</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#grid-random-halving">Grid, random, halving</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-diagnosing-is-it-underfitting-or-overfitting">3. Diagnosing: is it underfitting or overfitting?</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-error-analysis-where-is-this-model-wrong">4. Error analysis: where is this model wrong?</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-acting-on-the-finding-without-touching-the-model">5. Acting on the finding, without touching the model</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#what-else-to-do-with-a-bad-slice">What else to do with a bad slice</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-the-tuning-workflow-in-order">6. The tuning workflow, in order</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#your-turn">Your turn</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#if-you-remember-nothing-else">If you remember nothing else</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#glossary">Glossary</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#further-reading">Further reading</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07_pipelines_tracking/">7. ML Pipelines and Experiment Tracking</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Applied ML</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Applied ML in Production</li>
+      <li class="breadcrumb-item active">6. Model Tuning and Error Analysis</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="model-tuning-and-error-analysis">Model Tuning and Error Analysis</h1>
+<p><strong>Applied ML in Production · Session 6</strong></p>
+<hr />
+<p>Session 5 left us stuck. The charter wants 60% of defaults caught while flagging
+at most a quarter of applications. Our model reaches 51% at that capacity, and
+costs the lender NPR 55 million a quarter.</p>
+<p>The instinct at this point is to tune. Search the hyperparameters, try a bigger
+model, collect more data. We will do all three — carefully, with cross-validation
+— and every one of them will fail.</p>
+<p>Then we will find NPR 8.6 million by <strong>looking at where the model is wrong</strong>,
+without retraining anything.</p>
+<p>That order is deliberate. Tuning is the thing everyone reaches for and error
+analysis is the thing that usually pays.</p>
+<h2 id="how-to-work-through-this">How to work through this</h2>
+<p>Type the code. The searches here run in a couple of seconds each, so you can
+experiment freely.</p>
+<p>Run each cell, read the output, then read the commentary. If a cell errors, run
+from the top.</p>
+<h2 id="learning-objectives">Learning objectives</h2>
+<p>After this session you will be able to:</p>
+<ul>
+<li>Explain why a single train/test split is not enough, and use <strong>cross-validation</strong>
+  correctly.</li>
+<li>Read fold-to-fold variation and know how much of a score difference is noise.</li>
+<li>Run <strong>grid</strong>, <strong>random</strong> and <strong>halving</strong> search, and say when each is worth it.</li>
+<li>Diagnose over- and underfitting from a <strong>validation curve</strong> and a <strong>learning
+  curve</strong>.</li>
+<li>Decide from those curves whether more data, more features, or more capacity is
+  the right next investment.</li>
+<li>Run <strong>slice-based error analysis</strong> to find where a model fails.</li>
+<li>Act on a slice finding — including by changing the threshold rather than the model.</li>
+</ul>
+<h2 id="setup">Setup</h2>
+<p>Same features, same split, same pipeline. Note the test set is created here and
+then <strong>not touched again</strong> until the very last cell.</p>
+<div class="highlight"><pre><span></span><code><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogisticRegression</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_pipeline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">StandardScaler</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="s2">&quot;axes.grid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;grid.alpha&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">})</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.width&quot;</span><span class="p">,</span> <span class="mi">130</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">find_data</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;loan_default.csv&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span> <span class="o">*</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">]:</span>
+        <span class="n">candidate</span> <span class="o">=</span> <span class="n">folder</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span> <span class="o">/</span> <span class="n">filename</span>
+        <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">candidate</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;could not find data/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="n">loans</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">find_data</span><span class="p">(),</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;application_date&quot;</span><span class="p">])</span>
+
+<span class="n">features</span> <span class="o">=</span> <span class="n">loans</span><span class="p">[[</span><span class="s2">&quot;loan_amount&quot;</span><span class="p">,</span> <span class="s2">&quot;tenure_months&quot;</span><span class="p">,</span> <span class="s2">&quot;interest_rate&quot;</span><span class="p">,</span> <span class="s2">&quot;previous_loans&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;days_past_due_history&quot;</span><span class="p">,</span> <span class="s2">&quot;annual_income&quot;</span><span class="p">,</span> <span class="s2">&quot;credit_score&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;sector&quot;</span><span class="p">,</span> <span class="s2">&quot;employment_type&quot;</span><span class="p">,</span> <span class="s2">&quot;has_collateral&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">features</span><span class="p">[</span><span class="s2">&quot;income_missing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="s2">&quot;annual_income&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">features</span><span class="p">[</span><span class="s2">&quot;score_missing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="s2">&quot;credit_score&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">drop_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">loans</span><span class="p">[</span><span class="s2">&quot;defaulted&quot;</span><span class="p">]</span>
+
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
+<span class="p">)</span>
+<span class="n">medians</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">median</span><span class="p">()</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">medians</span><span class="p">),</span> <span class="n">X_test</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">medians</span><span class="p">)</span>
+
+<span class="n">pipeline</span> <span class="o">=</span> <span class="n">make_pipeline</span><span class="p">(</span><span class="n">StandardScaler</span><span class="p">(),</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;train </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">   test </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> (locked away)&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>train 9,000   test 3,000 (locked away)
+</code></pre></div>
+<hr />
+<h2 id="1-you-cannot-tune-on-the-test-set">1. You cannot tune on the test set</h2>
+<p>Every time you look at the test score and change something, you leak a little
+information from it into your decisions. Do that twenty times and the test set is
+no longer an honest estimate of anything — it has quietly become a training set
+for your judgement.</p>
+<p>The fix is a <strong>third slice</strong>. Train on one, tune on another, and open the test set
+once, at the end.</p>
+<p>Rather than carve out a fixed validation set and lose the data, use
+<strong>cross-validation</strong>: split the training data into <em>k</em> folds, train on <em>k − 1</em> and
+validate on the one left out, <em>k</em> times, and average.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">StratifiedKFold</span><span class="p">,</span> <span class="n">cross_val_score</span>
+
+<span class="n">cv</span> <span class="o">=</span> <span class="n">StratifiedKFold</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="n">scores</span> <span class="o">=</span> <span class="n">cross_val_score</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="s2">&quot;average_precision&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;average precision on each fold:&quot;</span><span class="p">,</span> <span class="n">scores</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;mean </span><span class="si">{</span><span class="n">scores</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">   standard deviation </span><span class="si">{</span><span class="n">scores</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;range </span><span class="si">{</span><span class="n">scores</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">scores</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>average precision on each fold: [0.385 0.353 0.405 0.309 0.366]
+mean 0.363   standard deviation 0.032
+range 0.309 to 0.405
+</code></pre></div>
+<p>Look at the spread: <strong>0.309 to 0.405</strong> across five folds of the same data, with
+the same model. That is a gap of nearly a tenth, produced entirely by which rows
+happened to land where.</p>
+<p>Two consequences you will use for the rest of your career.</p>
+<p><strong>A single split can flatter you.</strong> The test-set average precision we have been
+quoting since session 5 was 0.381 — near the top of that range. Our honest
+expectation is the mean, 0.363.</p>
+<p><strong>Improvements smaller than the fold spread are not improvements.</strong> If a change
+moves the mean by 0.01 and the folds vary by 0.03, you have measured nothing.
+Always report the standard deviation next to the mean.</p>
+<p><strong>Stratified</strong> folds keep the 13.5% default rate in every fold. Without it, a
+fold can end up with noticeably fewer defaults and a wild score.</p>
+<blockquote>
+<p><strong>On time-ordered data.</strong> <code>StratifiedKFold</code> shuffles, which means it trains on
+the future and validates on the past. For a model that will be applied forward
+in time, <code>TimeSeriesSplit</code> is the honest choice — each fold trains on earlier
+data and validates on later. We use the shuffled version here to keep the
+comparison with earlier sessions clean; session 8 shows what it hides.</p>
+</blockquote>
+<hr />
+<h2 id="2-hyperparameter-search">2. Hyperparameter search</h2>
+<p>A hyperparameter is a setting you choose rather than learn (session 4). Searching
+them means: define a grid, cross-validate every point in it, keep the winner.</p>
+<p><code>GridSearchCV</code> is an estimator like any other — it has <code>fit</code>, and afterwards it
+has <code>best_params_</code> and <code>best_estimator_</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">GridSearchCV</span>
+
+<span class="n">grid</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;logisticregression__C&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span>          <span class="c1"># regularisation strength</span>
+    <span class="s2">&quot;logisticregression__class_weight&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;balanced&quot;</span><span class="p">],</span>
+<span class="p">}</span>
+
+<span class="n">search</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="s2">&quot;average_precision&quot;</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">search</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;combinations tried: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">search</span><span class="o">.</span><span class="n">cv_results_</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">  &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;(×5 folds = </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">search</span><span class="o">.</span><span class="n">cv_results_</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">])</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">5</span><span class="si">}</span><span class="s2"> fits)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;best parameters:&quot;</span><span class="p">,</span> <span class="n">search</span><span class="o">.</span><span class="n">best_params_</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;best cross-validated average precision: </span><span class="si">{</span><span class="n">search</span><span class="o">.</span><span class="n">best_score_</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;default settings scored:                </span><span class="si">{</span><span class="n">scores</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>combinations tried: 8  (×5 folds = 40 fits)
+best parameters: {&#39;logisticregression__C&#39;: 1, &#39;logisticregression__class_weight&#39;: None}
+best cross-validated average precision: 0.3635
+default settings scored:                0.3635
+</code></pre></div>
+<p>The search tried eight combinations and found... the defaults. <code>C=1</code>, no class
+weighting, and an average precision identical to the untuned pipeline's to four
+decimal places.</p>
+<p>That is a real result, and a common one. <strong>This model is not limited by its
+hyperparameters.</strong> Note too that <code>class_weight="balanced"</code> did not win — because
+average precision judges the ranking, and as session 3 showed, class weighting
+does not change the ranking. It only moves the operating point, which is a
+threshold decision, not a tuning decision.</p>
+<h3 id="grid-random-halving">Grid, random, halving</h3>
+<table>
+<thead>
+<tr>
+<th>Search</th>
+<th>How it works</th>
+<th>Use when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Grid</strong></td>
+<td>Every combination</td>
+<td>Few parameters, few values, cheap model</td>
+</tr>
+<tr>
+<td><strong>Random</strong></td>
+<td>Sample <em>n</em> combinations from ranges</td>
+<td>Many parameters — usually finds a near-best point far faster</td>
+</tr>
+<tr>
+<td><strong>Halving</strong></td>
+<td>Start all candidates on a small subset, keep the best half, repeat with more data</td>
+<td>Expensive models and big grids</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.ensemble</span><span class="w"> </span><span class="kn">import</span> <span class="n">HistGradientBoostingClassifier</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.experimental</span><span class="w"> </span><span class="kn">import</span> <span class="n">enable_halving_search_cv</span>  <span class="c1"># noqa: F401 — enables the import below</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">HalvingGridSearchCV</span>
+
+<span class="n">boosting_grid</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;max_depth&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
+    <span class="s2">&quot;learning_rate&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+    <span class="s2">&quot;max_iter&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span>
+<span class="p">}</span>
+
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="n">full</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">HistGradientBoostingClassifier</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">),</span> <span class="n">boosting_grid</span><span class="p">,</span>
+                    <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="s2">&quot;average_precision&quot;</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="n">grid_seconds</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="n">halving</span> <span class="o">=</span> <span class="n">HalvingGridSearchCV</span><span class="p">(</span><span class="n">HistGradientBoostingClassifier</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">),</span> <span class="n">boosting_grid</span><span class="p">,</span>
+                              <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="s2">&quot;average_precision&quot;</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                              <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="n">halving_seconds</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;grid search    </span><span class="si">{</span><span class="n">full</span><span class="o">.</span><span class="n">best_score_</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">  in </span><span class="si">{</span><span class="n">grid_seconds</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">s  </span><span class="si">{</span><span class="n">full</span><span class="o">.</span><span class="n">best_params_</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;halving search </span><span class="si">{</span><span class="n">halving</span><span class="o">.</span><span class="n">best_score_</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">  in </span><span class="si">{</span><span class="n">halving_seconds</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">s  </span><span class="si">{</span><span class="n">halving</span><span class="o">.</span><span class="n">best_params_</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">logistic regression, untuned: </span><span class="si">{</span><span class="n">scores</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> ± </span><span class="si">{</span><span class="n">scores</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>grid search    0.3665  in 1.7s  {&#39;learning_rate&#39;: 0.05, &#39;max_depth&#39;: 3, &#39;max_iter&#39;: 100}
+halving search 0.3665  in 1.2s  {&#39;learning_rate&#39;: 0.05, &#39;max_depth&#39;: 3, &#39;max_iter&#39;: 100}
+
+logistic regression, untuned: 0.3635 ± 0.0324
+</code></pre></div>
+<p>Gradient boosting, fully tuned, scores 0.3665. Logistic regression, untuned,
+scores 0.3634 ± 0.032.</p>
+<p>The difference is <strong>0.003, against a fold-to-fold noise level of 0.032</strong>. It is
+not a difference. We would be trading an explainable linear model for an opaque
+ensemble in exchange for measurement noise — and our charter requires explainable
+declines.</p>
+<p>Halving found the same answer in less time by starting every candidate on a small
+subset of the data and only giving more data to the survivors. On a grid of
+hundreds of points and a model that takes minutes to fit, that saving is the
+difference between overnight and lunchtime.</p>
+<hr />
+<h2 id="3-diagnosing-is-it-underfitting-or-overfitting">3. Diagnosing: is it underfitting or overfitting?</h2>
+<p>Two curves answer almost every "what do I do next" question.</p>
+<p><strong>A validation curve</strong> varies one hyperparameter and plots training and
+validation score against it. It tells you whether that knob is worth turning.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">validation_curve</span>
+
+<span class="n">C_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">]</span>
+
+<span class="n">train_scores</span><span class="p">,</span> <span class="n">validation_scores</span> <span class="o">=</span> <span class="n">validation_curve</span><span class="p">(</span>
+    <span class="n">pipeline</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span>
+    <span class="n">param_name</span><span class="o">=</span><span class="s2">&quot;logisticregression__C&quot;</span><span class="p">,</span> <span class="n">param_range</span><span class="o">=</span><span class="n">C_values</span><span class="p">,</span>
+    <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="s2">&quot;average_precision&quot;</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">C_values</span><span class="p">,</span> <span class="n">train_scores</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;training&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">C_values</span><span class="p">,</span> <span class="n">validation_scores</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;validation&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;C (higher = less regularisation)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;average precision&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Validation curve: a flat line means this knob is not the problem&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../06_tuning_error_analysis_files/06_tuning_error_analysis_14_0.png" /></p>
+<p>Flat, and the two lines sit on top of each other. There is no regularisation
+setting that helps, and there is no gap between training and validation — so the
+model is <strong>not overfitting</strong>. If anything it is slightly underfitting: it is not
+complex enough to squeeze more out of these features.</p>
+<p><strong>A learning curve</strong> varies the amount of training data instead. It answers the
+single most expensive question in machine learning: <em>would more data help?</em></p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">learning_curve</span>
+
+<span class="n">sizes</span><span class="p">,</span> <span class="n">train_scores</span><span class="p">,</span> <span class="n">validation_scores</span> <span class="o">=</span> <span class="n">learning_curve</span><span class="p">(</span>
+    <span class="n">pipeline</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span>
+    <span class="n">train_sizes</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.15</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+    <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="s2">&quot;average_precision&quot;</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sizes</span><span class="p">,</span> <span class="n">train_scores</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;training&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sizes</span><span class="p">,</span> <span class="n">validation_scores</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;validation&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;training applications used&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;average precision&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Learning curve: flat on the right means more data will not help&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../06_tuning_error_analysis_files/06_tuning_error_analysis_16_0.png" /></p>
+<p>The validation line climbs until about 3,500 applications and then flattens
+completely. We have 9,000. <strong>Doubling the dataset would buy us nothing.</strong></p>
+<p>Put the two diagnoses together:</p>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Diagnosis</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Big gap between training and validation</td>
+<td>Overfitting</td>
+<td>More data, more regularisation, simpler model</td>
+</tr>
+<tr>
+<td>Both curves low and converged</td>
+<td>Underfitting (bias)</td>
+<td>Better features, a more flexible model</td>
+</tr>
+<tr>
+<td>Validation curve flat</td>
+<td>The hyperparameter is irrelevant</td>
+<td>Stop tuning it</td>
+</tr>
+<tr>
+<td>Learning curve flat</td>
+<td>More data will not help</td>
+<td>Do not buy data</td>
+</tr>
+</tbody>
+</table>
+<p>Ours is the second and fourth rows: converged, flat, and not hyperparameter
+limited. Tuning is exhausted, and buying data would be a waste of a budget.</p>
+<p>That is not bad news. It is a <strong>decision</strong>, made with evidence, that the next
+improvement has to come from somewhere else. So we go looking.</p>
+<hr />
+<h2 id="4-error-analysis-where-is-this-model-wrong">4. Error analysis: where is this model wrong?</h2>
+<p>An aggregate score is an average over very different situations. A model with 51%
+recall might catch 80% of defaults in one part of the book and 20% in another —
+and the second part is where your money is going.</p>
+<p>Slice the test predictions by every grouping the business would recognise, and
+look at recall, flag rate, and <strong>missed money</strong> in each.</p>
+<div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="n">probabilities</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="n">THRESHOLD</span> <span class="o">=</span> <span class="mf">0.20</span>        <span class="c1"># the capacity-feasible operating point from session 5</span>
+
+<span class="n">analysis</span> <span class="o">=</span> <span class="n">loans</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">X_test</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;loan_amount&quot;</span><span class="p">,</span> <span class="s2">&quot;sector&quot;</span><span class="p">,</span> <span class="s2">&quot;employment_type&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">analysis</span><span class="p">[</span><span class="s2">&quot;actual&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">y_test</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+<span class="n">analysis</span><span class="p">[</span><span class="s2">&quot;probability&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">probabilities</span>
+<span class="n">analysis</span><span class="p">[</span><span class="s2">&quot;flagged&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">probabilities</span> <span class="o">&gt;=</span> <span class="n">THRESHOLD</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">analysis</span><span class="p">[</span><span class="s2">&quot;missed_default&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">analysis</span><span class="p">[</span><span class="s2">&quot;actual&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">analysis</span><span class="p">[</span><span class="s2">&quot;flagged&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">analysis</span><span class="p">[</span><span class="s2">&quot;size_band&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">qcut</span><span class="p">(</span><span class="n">analysis</span><span class="p">[</span><span class="s2">&quot;loan_amount&quot;</span><span class="p">],</span> <span class="mi">4</span><span class="p">,</span>
+                                <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;smallest&quot;</span><span class="p">,</span> <span class="s2">&quot;small&quot;</span><span class="p">,</span> <span class="s2">&quot;large&quot;</span><span class="p">,</span> <span class="s2">&quot;largest&quot;</span><span class="p">])</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">slice_report</span><span class="p">(</span><span class="n">column</span><span class="p">):</span>
+    <span class="n">grouped</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="n">observed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">report</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+        <span class="s2">&quot;applications&quot;</span><span class="p">:</span> <span class="n">grouped</span><span class="o">.</span><span class="n">size</span><span class="p">(),</span>
+        <span class="s2">&quot;defaults&quot;</span><span class="p">:</span> <span class="n">grouped</span><span class="p">[</span><span class="s2">&quot;actual&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span>
+        <span class="s2">&quot;recall&quot;</span><span class="p">:</span> <span class="n">grouped</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">g</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">g</span><span class="p">[</span><span class="s2">&quot;actual&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;flagged&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()),</span>
+        <span class="s2">&quot;flagged&quot;</span><span class="p">:</span> <span class="n">grouped</span><span class="p">[</span><span class="s2">&quot;flagged&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+        <span class="s2">&quot;missed_NPR_m&quot;</span><span class="p">:</span> <span class="n">grouped</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">g</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">g</span><span class="p">[</span><span class="s2">&quot;missed_default&quot;</span><span class="p">],</span> <span class="s2">&quot;loan_amount&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="mf">0.55</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">),</span>
+    <span class="p">})</span>
+    <span class="k">return</span> <span class="n">report</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">slice_report</span><span class="p">(</span><span class="s2">&quot;sector&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>               applications  defaults  recall  flagged  missed_NPR_m
+sector                                                              
+Agriculture             418        42   0.452    0.191         5.722
+Construction            319        58   0.621    0.279         3.804
+Manufacturing           427        60   0.483    0.173         7.090
+Service                 719        98   0.429    0.196        13.600
+Tourism                 187        28   0.571    0.251         2.409
+Trade                   930       119   0.546    0.205        13.249
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">slice_report</span><span class="p">(</span><span class="s2">&quot;employment_type&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">slice_report</span><span class="p">(</span><span class="s2">&quot;size_band&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>                 applications  defaults  recall  flagged  missed_NPR_m
+employment_type                                                       
+Business Owner            682        79   0.443    0.179        10.179
+Informal                  435        71   0.592    0.308         6.227
+Salaried                 1036       147   0.483    0.192        17.373
+Self-Employed             847       108   0.546    0.197        12.095
+
+           applications  defaults  recall  flagged  missed_NPR_m
+size_band                                                       
+smallest            761        77   0.442    0.155         3.119
+small               744        85   0.471    0.184         5.858
+large               746       110   0.509    0.193        11.658
+largest             749       133   0.579    0.298        25.240
+</code></pre></div>
+<p>Now read those three tables like an investigator.</p>
+<p><strong>Sector.</strong> Recall runs from 0.43 in Service to 0.62 in Construction. Service is
+also the second-largest sector, so its weak recall leaks NPR 13.6m — the model is
+worst where the volume is.</p>
+<p><strong>Employment type.</strong> Business Owners get recall 0.44 against Informal workers'
+0.59. Salaried applicants leak the most money in absolute terms simply because
+there are more of them.</p>
+<p><strong>Loan size — and here is the finding.</strong> Recall is 0.44 on the smallest loans and
+0.58 on the largest, which sounds fine. But look at the money: the largest quarter
+of loans accounts for <strong>NPR 25.2m of missed defaults</strong>, more than the other three
+bands combined.</p>
+<p>Of course it does. A missed default on a 2-million-rupee loan costs twenty times
+a missed default on a 100,000-rupee loan — but our single threshold treats them
+identically. We have been applying the same standard of proof to a decision worth
+20 times as much.</p>
+<hr />
+<h2 id="5-acting-on-the-finding-without-touching-the-model">5. Acting on the finding, without touching the model</h2>
+<p>The fix does not need a new model, new features, or new data. It needs the
+threshold to know what is at stake.</p>
+<p>Large loans get a <strong>lower</strong> threshold — flag them on weaker evidence, because
+being wrong is expensive. Small loans get a <strong>higher</strong> one, freeing review
+capacity to pay for it.</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">total_cost</span><span class="p">(</span><span class="n">flagged</span><span class="p">):</span>
+    <span class="n">missed</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">analysis</span><span class="p">[</span><span class="s2">&quot;actual&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">flagged</span> <span class="o">==</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;loan_amount&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="mf">0.55</span>
+    <span class="n">false_alarms</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">analysis</span><span class="p">[</span><span class="s2">&quot;actual&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">flagged</span> <span class="o">==</span> <span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;loan_amount&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="mf">0.045</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">missed</span> <span class="o">+</span> <span class="n">false_alarms</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span>
+
+
+<span class="n">flat</span> <span class="o">=</span> <span class="p">(</span><span class="n">analysis</span><span class="p">[</span><span class="s2">&quot;probability&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.20</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+<span class="n">size_aware_threshold</span> <span class="o">=</span> <span class="n">analysis</span><span class="p">[</span><span class="s2">&quot;size_band&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">({</span>
+    <span class="s2">&quot;smallest&quot;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">,</span> <span class="s2">&quot;small&quot;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">,</span> <span class="s2">&quot;large&quot;</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">,</span> <span class="s2">&quot;largest&quot;</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">,</span>
+<span class="p">})</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">size_aware</span> <span class="o">=</span> <span class="p">(</span><span class="n">analysis</span><span class="p">[</span><span class="s2">&quot;probability&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">size_aware_threshold</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">flagged</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;one threshold (0.20)&quot;</span><span class="p">,</span> <span class="n">flat</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;size-aware thresholds&quot;</span><span class="p">,</span> <span class="n">size_aware</span><span class="p">)]:</span>
+    <span class="n">recall</span> <span class="o">=</span> <span class="n">flagged</span><span class="p">[</span><span class="n">analysis</span><span class="p">[</span><span class="s2">&quot;actual&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">:</span><span class="s2">&lt;24</span><span class="si">}</span><span class="s2"> flagged </span><span class="si">{</span><span class="n">flagged</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">   recall </span><span class="si">{</span><span class="n">recall</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">   &quot;</span>
+          <span class="sa">f</span><span class="s2">&quot;cost NPR </span><span class="si">{</span><span class="n">total_cost</span><span class="p">(</span><span class="n">flagged</span><span class="p">)</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">m&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>one threshold (0.20)     flagged 20.7%   recall 0.511   cost NPR 55.0m
+size-aware thresholds    flagged 23.5%   recall 0.551   cost NPR 46.4m
+</code></pre></div>
+<p><strong>NPR 8.6 million saved, recall up from 0.511 to 0.551, and the flag rate stays
+at 23.5% — inside the charter's 25% capacity.</strong></p>
+<p>No retraining. No new features. The same probabilities, read with the knowledge
+that not all mistakes cost the same.</p>
+<p>This is why error analysis outranks tuning on most projects. The hyperparameter
+search moved the score by 0.003 of measurement noise; twenty minutes of looking at
+slices moved real money.</p>
+<h3 id="what-else-to-do-with-a-bad-slice">What else to do with a bad slice</h3>
+<table>
+<thead>
+<tr>
+<th>Finding</th>
+<th>Options</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A slice is inherently harder</td>
+<td>Accept it, document it, and monitor it separately</td>
+</tr>
+<tr>
+<td>A slice has few training rows</td>
+<td>Collect more of <em>that</em> slice — the learning curve was flat overall, not per slice</td>
+</tr>
+<tr>
+<td>A slice behaves differently</td>
+<td>Add a feature that captures the difference, or train a separate model</td>
+</tr>
+<tr>
+<td>A slice carries more cost</td>
+<td>Change its threshold — usually the cheapest fix, as above</td>
+</tr>
+<tr>
+<td>A slice is a protected group</td>
+<td>Stop. This is a fairness question, and it needs the business and compliance, not a quiet code change</td>
+</tr>
+</tbody>
+</table>
+<p>That last row is not optional. Our charter forbade protected attributes as
+features, but a model can still perform unevenly across groups it was never given.
+Slice analysis is how you find out — which is why it belongs in every review, not
+just the ones where the aggregate score disappoints.</p>
+<hr />
+<h2 id="6-the-tuning-workflow-in-order">6. The tuning workflow, in order</h2>
+<ol>
+<li><strong>Fix the metric first</strong> (session 5). Tuning against the wrong number
+   optimises the wrong model very efficiently.</li>
+<li><strong>Cross-validate the baseline</strong> and record the fold spread. That spread is your
+   noise floor for the rest of the project.</li>
+<li><strong>Search hyperparameters</strong> — grid if small, random if large, halving if
+   expensive. Compare the winner to the baseline <em>in units of the fold spread</em>.</li>
+<li><strong>Draw the two curves.</strong> Validation curve: is this knob worth turning? Learning
+   curve: would more data help?</li>
+<li><strong>Slice the errors</strong> by every grouping the business recognises, and look at
+   money, not just rates.</li>
+<li><strong>Act on the biggest slice finding</strong> — often a threshold change, not a model change.</li>
+<li><strong>Touch the test set once</strong>, at the end, to report the number you will be held to.</li>
+</ol>
+<p>Most teams do step 3 for two weeks and skip steps 4 to 6 entirely. That is the
+habit this session exists to break.</p>
+<hr />
+<h2 id="your-turn">Your turn</h2>
+<p><strong>1. Honest folds.</strong> Re-run the cross-validation with <code>TimeSeriesSplit(n_splits=5)</code>
+on data sorted by <code>application_date</code>. How do the fold scores compare to the
+shuffled version, and which number would you put in the charter?</p>
+<p><strong>2. Random search.</strong> Replace the boosting <code>GridSearchCV</code> with
+<code>RandomizedSearchCV</code> over wider ranges (<code>learning_rate</code> between 0.01 and 0.3,
+<code>max_iter</code> between 50 and 400, <code>max_depth</code> from 2 to 10), with <code>n_iter=20</code>. Does
+it beat the grid, and how long does it take?</p>
+<p><strong>3. Per-slice learning curves.</strong> The overall learning curve was flat. Draw one
+using only <code>sector == "Service"</code> rows. Is <em>that</em> slice data-limited even though
+the whole book is not?</p>
+<p><strong>4. Tune the size-aware thresholds.</strong> Section 5 picked 0.15 and 0.25 by hand.
+Search a small grid of (large-loan threshold, small-loan threshold) pairs and find
+the cheapest combination that keeps the flag rate under 25%. How much more can you
+save?</p>
+<p><strong>5. Four bands, four thresholds.</strong> Extend the idea: give each of the four size
+bands its own threshold, chosen so that the <em>expected cost</em> of flagging equals the
+expected cost of not flagging. Does this beat the two-level version?</p>
+<p><strong>6. Slice by missingness.</strong> Build a slice report on <code>income_missing</code>. Does the
+model treat applicants with no documented income differently? Should it?</p>
+<hr />
+<h2 id="if-you-remember-nothing-else">If you remember nothing else</h2>
+<p><strong>One split is one sample.</strong> Our folds ranged from 0.309 to 0.405 on the same
+data. Always cross-validate, always report the spread.</p>
+<p><strong>An improvement smaller than the fold spread is not an improvement.</strong> Gradient
+boosting "beat" logistic regression by 0.003 against noise of 0.032.</p>
+<p><strong>Read the two curves before spending money.</strong> A flat validation curve means stop
+tuning; a flat learning curve means do not buy data. Both were flat here.</p>
+<p><strong>Aggregate scores hide everything that matters.</strong> The largest quarter of loans
+carried NPR 25.2m of missed defaults — more than the other three quarters
+combined.</p>
+<p><strong>Not all mistakes cost the same, so not all thresholds should be the same.</strong>
+Size-aware thresholds saved NPR 8.6m with no retraining at all.</p>
+<p><strong>Touch the test set once.</strong> Everything in this session happened on training data
+and cross-validation folds. The test set is the final exam, not a practice paper.</p>
+<hr />
+<h2 id="glossary">Glossary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Validation set</strong></td>
+<td>Data used to choose between models; distinct from the test set</td>
+</tr>
+<tr>
+<td><strong>k-fold cross-validation</strong></td>
+<td>Rotating validation across k folds and averaging</td>
+</tr>
+<tr>
+<td><strong>Stratified k-fold</strong></td>
+<td>Folds that preserve the class balance</td>
+</tr>
+<tr>
+<td><strong><code>TimeSeriesSplit</code></strong></td>
+<td>Folds that always train on earlier data and validate on later</td>
+</tr>
+<tr>
+<td><strong>Fold spread</strong></td>
+<td>Variation between folds; your noise floor for comparing models</td>
+</tr>
+<tr>
+<td><strong>Grid search</strong></td>
+<td>Exhaustive search over a parameter grid</td>
+</tr>
+<tr>
+<td><strong>Random search</strong></td>
+<td>Sampling parameter combinations from ranges</td>
+</tr>
+<tr>
+<td><strong>Halving search</strong></td>
+<td>Eliminating weak candidates on small subsets before spending full data</td>
+</tr>
+<tr>
+<td><strong>Validation curve</strong></td>
+<td>Score against one hyperparameter</td>
+</tr>
+<tr>
+<td><strong>Learning curve</strong></td>
+<td>Score against training set size</td>
+</tr>
+<tr>
+<td><strong>Bias / underfitting</strong></td>
+<td>Both curves low and converged — the model is too simple</td>
+</tr>
+<tr>
+<td><strong>Variance / overfitting</strong></td>
+<td>Training far above validation</td>
+</tr>
+<tr>
+<td><strong>Slice analysis</strong></td>
+<td>Measuring performance within business-meaningful subgroups</td>
+</tr>
+</tbody>
+</table>
+<h2 id="further-reading">Further reading</h2>
+<ul>
+<li>scikit-learn User Guide, <em>Cross-validation</em>, <em>Tuning the hyper-parameters</em>, and
+  <em>Validation curves</em> — the three pages behind this session.</li>
+<li>Andrew Ng, <em>Machine Learning Yearning</em> — chapters on error analysis and on
+  reading learning curves; short, practical, free.</li>
+<li>Google's <em>Rules of Machine Learning</em>, rules 22–30 — when to stop tuning and
+  start looking at your errors.</li>
+<li>Barocas, Hardt and Narayanan, <em>Fairness and Machine Learning</em> — for the last
+  row of the slice-action table.</li>
+</ul>
+<hr />
+<p><strong>Next session:</strong> <em>ML Pipelines and Experiment Tracking</em> — making all of this
+reproducible, so that "the model from last Tuesday" is a thing you can actually
+retrieve.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../05_evaluation_metrics/" class="btn btn-neutral float-left" title="5. Model Evaluation and Performance Metrics"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../07_pipelines_tracking/" class="btn btn-neutral float-right" title="7. ML Pipelines and Experiment Tracking">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright &copy; 2026 - Aayush Raj Regmi</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../05_evaluation_metrics/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../07_pipelines_tracking/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../javascripts/mathjax.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

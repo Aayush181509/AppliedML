@@ -879,7 +879,7 @@ Expected: the diff shows only additions. No line inside the existing `convert`, 
 
 Create `docs/AIModule/index.md`:
 
-```markdown
+~~~markdown
 # Applied ML in Production
 
 A five-week module on what happens to a model *after* the algorithm works.
@@ -913,7 +913,7 @@ Everything runs locally. No cloud accounts, no Docker, no paid services.
 
 This module assumes DCS 404. Where a topic is being *reframed* rather than
 introduced, the notebook links back to the DCS 404 page holding the derivation.
-```
+~~~
 
 - [ ] **Step 4: Add the navigation group**
 

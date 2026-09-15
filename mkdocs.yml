@@ -1,6 +1,9 @@
 site_name: Applied ML
 site_description: Applied Machine Learning and AI
 
+exclude_docs: |
+  superpowers/
+
 nav:
   - Welcome: index.md
   - Getting Started:

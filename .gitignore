@@ -226,3 +226,11 @@ site
 .vscode
 # Superpowers SDD scratch
 .superpowers/
+
+# AI Module
+.venv/
+mlruns/
+mlartifacts/
+app/models/*.joblib
+app/models/*.pkl
+.ipynb_checkpoints/

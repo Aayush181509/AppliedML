@@ -57,40 +57,34 @@ REQUIRED = [
     "mlflow", "fastapi", "streamlit", "joblib",
 ]
 
-print(f"Python {sys.version.split()[0]}")
+lines = [f"Python {sys.version.split()[0]}"]
 if sys.version_info[:2] != (3, 12):
-    print("  WARNING: this module is built and tested on Python 3.12")
+    lines.append("  WARNING: this module is built and tested on Python 3.12")
 
 missing = []
 for name in REQUIRED:
     try:
         module = importlib.import_module(name)
-        print(f"  ok   {name:<12} {getattr(module, '__version__', '')}")
+        lines.append(f"  ok   {name:<12} {getattr(module, '__version__', '')}")
     except ImportError:
         missing.append(name)
-        print(f"  MISSING  {name}")
+        lines.append(f"  MISSING  {name}")
 
 if missing:
-    print(f"\nInstall the missing packages before continuing: {', '.join(missing)}")
+    lines.append(f"\nInstall the missing packages before continuing: {', '.join(missing)}")
 else:
-    print("\nEnvironment ready.")
+    lines.append("\nEnvironment ready.")
+
+print("\n".join(lines))
 ```
 
-    Python 3.12.13
+    Python 3.12.14
       ok   numpy        2.1.3
-
-
       ok   pandas       2.2.3
       ok   matplotlib   3.9.2
-
-
       ok   seaborn      0.13.2
       ok   sklearn      1.5.2
-
-
       ok   imblearn     0.12.4
-
-
       ok   mlflow       2.17.2
       ok   fastapi      0.115.5
       ok   streamlit    1.40.2
@@ -305,8 +299,8 @@ print(f"\nDefault rate: {loans['defaulted'].mean():.1%}")
 
 ### Three things that output already told you
 
-**The classes are imbalanced.** Roughly one loan in eight defaults. A model that
-predicts "never defaults" for every application is right about 88 percent of the
+**The classes are imbalanced.** Roughly one loan in seven defaults. A model that
+predicts "never defaults" for every application is right about 86 percent of the
 time and completely useless. Accuracy is already a trap, and we have not written
 a line of modelling code.
 

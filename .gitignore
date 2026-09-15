@@ -224,3 +224,5 @@ site
 *.bak
 *.swp
 .vscode
+# Superpowers SDD scratch
+.superpowers/

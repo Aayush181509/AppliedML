@@ -62,5 +62,5 @@ convert-ai-all:
 	@mkdir -p $(AI_OUTPUT_DIR)
 	@for nb in $(AI_NOTEBOOKS); do \
 		echo "Converting $$nb..."; \
-		jupyter nbconvert --to markdown $$nb --output-dir=$(AI_OUTPUT_DIR); \
+		jupyter nbconvert --to markdown $$nb --output-dir=$(AI_OUTPUT_DIR) || exit 1; \
 	done

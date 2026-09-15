@@ -11,9 +11,15 @@ NOTEBOOK ?= notebooks/02_ml_workflow.ipynb
 OUTPUT   ?= docs/DCS404/
 OUTPUT_DIR := docs/DCS404
 
+# AI Module (Applied ML in Production)
+AI_INPUT_DIR  := notebooks/ai-module
+AI_OUTPUT_DIR := docs/AIModule
+AI_NOTEBOOK   ?= notebooks/ai-module/00_setup_and_orientation.ipynb
+AI_NOTEBOOKS  := $(wildcard $(AI_INPUT_DIR)/*.ipynb)
+
 NOTEBOOKS  := $(wildcard $(INPUT_DIR)/*.ipynb)
 
-.PHONY: run deploy build serve convert all convert-all convert-project
+.PHONY: run deploy build serve convert all convert-all convert-project convert-ai convert-ai-all
 
 run:
 	python main.py
@@ -44,3 +50,17 @@ convert-project:
 	jupyter nbconvert --to markdown notebooks/project/00_final_project.ipynb --output-dir=$(OUTPUT_DIR)/project
 
 all: build serve
+
+# Single AI-module notebook: make convert-ai AI_NOTEBOOK=notebooks/ai-module/01_problem_framing.ipynb
+convert-ai:
+	@mkdir -p $(AI_OUTPUT_DIR)
+	jupyter nbconvert --to markdown $(AI_NOTEBOOK) --output-dir=$(AI_OUTPUT_DIR)
+
+# All AI-module notebooks
+convert-ai-all:
+	@echo "Converting all notebooks in $(AI_INPUT_DIR)/ to Markdown..."
+	@mkdir -p $(AI_OUTPUT_DIR)
+	@for nb in $(AI_NOTEBOOKS); do \
+		echo "Converting $$nb..."; \
+		jupyter nbconvert --to markdown $$nb --output-dir=$(AI_OUTPUT_DIR); \
+	done

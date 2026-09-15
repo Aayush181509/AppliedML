@@ -21,6 +21,9 @@ nav:
     - ARIMA and SARIMA Models: DCS404/12_arima_models.md
   - Final Project:
     - Project Work: DCS404/project/00_final_project.md
+  - Applied ML in Production:
+    - Module Overview: AIModule/index.md
+    - Setup and Orientation: AIModule/00_setup_and_orientation.md
 
 theme:
   # name: material

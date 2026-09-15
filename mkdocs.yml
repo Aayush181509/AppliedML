@@ -8,12 +8,7 @@ nav:
   - Welcome: index.md
   - Getting Started:
     - Installation Guide: InstallationGuide.md
-  - Machine Learning and AI:
-    - Introduction to Machine Learning: DCS404/01_introduction_to_machine_learning.md
-    - ML Workflow: DCS404/02_ml_workflow.md
-  - Applied ML in Production:
-    - Module Overview: AIModule/index.md
-    - Setup and Orientation: AIModule/00_setup_and_orientation.md
+  - Applied Machine Learning:
 
 theme:
   # name: material

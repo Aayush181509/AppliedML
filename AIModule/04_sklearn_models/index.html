@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>4. Building ML Models with Scikit-learn - Applied ML</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "4. Building ML Models with Scikit-learn";
+        var mkdocs_page_input_path = "AIModule/04_sklearn_models.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Applied ML
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Welcome</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../InstallationGuide/">Installation Guide</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Applied ML in Production</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../01_problem_framing/">1. ML Problem Framing and the Industry Workflow</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02_data_preparation/">2. Data Preparation for ML</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../03_feature_engineering/">3. Feature Engineering</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">4. Building ML Models with Scikit-learn</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-work-through-this">How to work through this</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#learning-objectives">Learning objectives</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#1-the-estimator-contract">1. The estimator contract</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#hyperparameters-versus-learned-parameters">Hyperparameters versus learned parameters</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-swapping-the-estimator">2. Swapping the estimator</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-what-actually-changes-when-you-swap">3. What actually changes when you swap</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-choosing-an-estimator">4. Choosing an estimator</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-the-same-contract-for-regression">5. The same contract for regression</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-composing-steps-into-one-object">6. Composing steps into one object</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-making-a-prediction-for-one-applicant">7. Making a prediction for one applicant</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#your-turn">Your turn</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#if-you-remember-nothing-else">If you remember nothing else</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#glossary">Glossary</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#further-reading">Further reading</a>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Applied ML</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Applied ML in Production</li>
+      <li class="breadcrumb-item active">4. Building ML Models with Scikit-learn</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="building-ml-models-with-scikit-learn">Building ML Models with Scikit-learn</h1>
+<p><strong>Applied ML in Production · Session 4</strong></p>
+<hr />
+<p>You already know these algorithms. Logistic regression, decision trees, random
+forests, KNN — you have derived them, plotted them, and been examined on them.</p>
+<p>This session is not a second pass over the maths. It is about the thing nobody
+teaches explicitly and everybody needs daily: <strong>scikit-learn presents every one of
+those algorithms through the same three-method interface</strong>, so swapping one for
+another is a one-line change. Once you see that, the question stops being "how
+does this algorithm work" and becomes "which one do I choose, and how do I defend
+the choice".</p>
+<p>We answer both, on the loan problem, in one sitting.</p>
+<h2 id="how-to-work-through-this">How to work through this</h2>
+<p>Type the code. There is very little of it, and the point is the <em>shape</em> of the
+code — the same four lines appear for every model in the library.</p>
+<p>Run each cell, read the output, then read the commentary. If a cell errors, run
+from the top.</p>
+<h2 id="learning-objectives">Learning objectives</h2>
+<p>After this session you will be able to:</p>
+<ul>
+<li>State the <strong>estimator contract</strong> — <code>fit</code>, <code>predict</code>, <code>transform</code> — and use it
+  on any scikit-learn model without reading its documentation first.</li>
+<li>Tell a <strong>hyperparameter</strong> from a <strong>learned parameter</strong>, and find both on a
+  fitted model.</li>
+<li>Swap one estimator for another and compare them fairly on the same split.</li>
+<li>Recognise overfitting from a train-versus-test gap.</li>
+<li>Choose an estimator from the constraints of the problem — data size,
+  explainability, latency, feature types — rather than by habit.</li>
+<li>Apply the same contract to a regression problem.</li>
+<li>Compose a scaler and a model into a single object with <code>make_pipeline</code>.</li>
+<li>Score a single new applicant and turn the probability into a decision.</li>
+</ul>
+<h2 id="setup">Setup</h2>
+<p>We reuse session 2's honest feature set: leak removed, missingness flagged.</p>
+<div class="highlight"><pre><span></span><code><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">StandardScaler</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="s2">&quot;axes.grid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;grid.alpha&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">})</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.width&quot;</span><span class="p">,</span> <span class="mi">120</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">find_data</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;loan_default.csv&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span> <span class="o">*</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">]:</span>
+        <span class="n">candidate</span> <span class="o">=</span> <span class="n">folder</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span> <span class="o">/</span> <span class="n">filename</span>
+        <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">candidate</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;could not find data/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="n">loans</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">find_data</span><span class="p">(),</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;application_date&quot;</span><span class="p">])</span>
+
+<span class="n">features</span> <span class="o">=</span> <span class="n">loans</span><span class="p">[[</span><span class="s2">&quot;loan_amount&quot;</span><span class="p">,</span> <span class="s2">&quot;tenure_months&quot;</span><span class="p">,</span> <span class="s2">&quot;interest_rate&quot;</span><span class="p">,</span> <span class="s2">&quot;previous_loans&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;days_past_due_history&quot;</span><span class="p">,</span> <span class="s2">&quot;annual_income&quot;</span><span class="p">,</span> <span class="s2">&quot;credit_score&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;sector&quot;</span><span class="p">,</span> <span class="s2">&quot;employment_type&quot;</span><span class="p">,</span> <span class="s2">&quot;has_collateral&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">features</span><span class="p">[</span><span class="s2">&quot;income_missing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="s2">&quot;annual_income&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">features</span><span class="p">[</span><span class="s2">&quot;score_missing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="s2">&quot;credit_score&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">drop_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">loans</span><span class="p">[</span><span class="s2">&quot;defaulted&quot;</span><span class="p">]</span>
+
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
+<span class="p">)</span>
+<span class="n">medians</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">median</span><span class="p">()</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">medians</span><span class="p">),</span> <span class="n">X_test</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">medians</span><span class="p">)</span>
+
+<span class="n">scaler</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
+<span class="n">X_train_scaled</span><span class="p">,</span> <span class="n">X_test_scaled</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_train</span><span class="p">),</span> <span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;train </span><span class="si">{</span><span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, test </span><span class="si">{</span><span class="n">X_test</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>train (9000, 18), test (3000, 18)
+</code></pre></div>
+<hr />
+<h2 id="1-the-estimator-contract">1. The estimator contract</h2>
+<p>Every model in scikit-learn is an <strong>estimator</strong>, and every estimator honours the
+same contract:</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>What it does</th>
+<th>Who has it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fit(X, y)</code></td>
+<td>Learn from data</td>
+<td>Every estimator</td>
+</tr>
+<tr>
+<td><code>predict(X)</code></td>
+<td>Produce a label or a number</td>
+<td>Every model</td>
+</tr>
+<tr>
+<td><code>predict_proba(X)</code></td>
+<td>Produce class probabilities</td>
+<td>Most classifiers</td>
+</tr>
+<tr>
+<td><code>transform(X)</code></td>
+<td>Produce modified data</td>
+<td>Scalers, encoders, imputers</td>
+</tr>
+<tr>
+<td><code>score(X, y)</code></td>
+<td>A default metric, for a quick look</td>
+<td>Every model</td>
+</tr>
+</tbody>
+</table>
+<p>That is the whole interface. A scaler is <code>fit</code> + <code>transform</code>. A classifier is
+<code>fit</code> + <code>predict</code>. Nothing else has to be memorised.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogisticRegression</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">class_weight</span><span class="o">=</span><span class="s2">&quot;balanced&quot;</span><span class="p">)</span>   <span class="c1"># not trained yet</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_scaled</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>                                   <span class="c1"># now it is</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;predict returns labels:       &quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test_scaled</span><span class="p">)[:</span><span class="mi">5</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;predict_proba returns columns:&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test_scaled</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+      <span class="s2">&quot;-&gt; [P(repaid), P(default)]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;probability of default, first five applications:&quot;</span><span class="p">,</span>
+      <span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test_scaled</span><span class="p">)[:</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>predict returns labels:        [1 1 0 1 1]
+predict_proba returns columns: (3000, 2) -&gt; [P(repaid), P(default)]
+probability of default, first five applications: [0.722 0.518 0.398 0.928 0.921]
+</code></pre></div>
+<h3 id="hyperparameters-versus-learned-parameters">Hyperparameters versus learned parameters</h3>
+<p>Two kinds of number live on a fitted model, and confusing them causes real bugs.</p>
+<p><strong>Hyperparameters</strong> are your choices. You pass them to the constructor, they are
+visible before training, and tuning them is session 6.</p>
+<p><strong>Learned parameters</strong> are what <code>fit</code> discovered. Scikit-learn marks every one
+with a <strong>trailing underscore</strong> — <code>coef_</code>, <code>classes_</code>, <code>feature_importances_</code>.
+That underscore is a convention worth knowing: it means "this did not exist until
+you called <code>fit</code>".</p>
+<div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;hyperparameters you chose:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  class_weight =&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">get_params</span><span class="p">()[</span><span class="s2">&quot;class_weight&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  max_iter     =&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">get_params</span><span class="p">()[</span><span class="s2">&quot;max_iter&quot;</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">learned parameters (note the trailing underscore):&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  classes_ =&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">classes_</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  intercept_ =&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">intercept_</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+
+<span class="n">coefficients</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  three strongest pushes toward &#39;repaid&#39;:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">coefficients</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  three strongest pushes toward &#39;default&#39;:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">coefficients</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>hyperparameters you chose:
+  class_weight = balanced
+  max_iter     = 1000
+
+learned parameters (note the trailing underscore):
+  classes_ = [0 1]
+  intercept_ = [-0.374]
+
+  three strongest pushes toward &#39;repaid&#39;:
+credit_score         -0.337
+annual_income        -0.321
+has_collateral_Yes   -0.133
+
+  three strongest pushes toward &#39;default&#39;:
+days_past_due_history    0.176
+loan_amount              0.322
+interest_rate            0.612
+</code></pre></div>
+<p>Read those coefficients as a sentence: a higher credit score pushes toward
+repayment, a higher interest rate pushes toward default. The second one is the
+lender's own pricing showing up in the data, as we saw in session 3 — predictive,
+not causal.</p>
+<p>This interpretability is the reason linear models survive in regulated lending
+long after fancier options exist. You can hand that table to a credit committee.</p>
+<hr />
+<h2 id="2-swapping-the-estimator">2. Swapping the estimator</h2>
+<p>Because the contract is identical, comparing five algorithms is a loop. The only
+thing that varies is which matrix goes in — scaled or unscaled.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.ensemble</span><span class="w"> </span><span class="kn">import</span> <span class="n">GradientBoostingClassifier</span><span class="p">,</span> <span class="n">RandomForestClassifier</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">roc_auc_score</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.neighbors</span><span class="w"> </span><span class="kn">import</span> <span class="n">KNeighborsClassifier</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">DecisionTreeClassifier</span>
+
+<span class="n">candidates</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># name:                     (estimator,                                       needs scaling)</span>
+    <span class="s2">&quot;logistic regression&quot;</span><span class="p">:</span>      <span class="p">(</span><span class="n">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">class_weight</span><span class="o">=</span><span class="s2">&quot;balanced&quot;</span><span class="p">),</span> <span class="kc">True</span><span class="p">),</span>
+    <span class="s2">&quot;decision tree (depth 5)&quot;</span><span class="p">:</span>  <span class="p">(</span><span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">max_depth</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">class_weight</span><span class="o">=</span><span class="s2">&quot;balanced&quot;</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">),</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s2">&quot;decision tree (unlimited)&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">class_weight</span><span class="o">=</span><span class="s2">&quot;balanced&quot;</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">),</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s2">&quot;random forest&quot;</span><span class="p">:</span>            <span class="p">(</span><span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">class_weight</span><span class="o">=</span><span class="s2">&quot;balanced&quot;</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">),</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s2">&quot;gradient boosting&quot;</span><span class="p">:</span>        <span class="p">(</span><span class="n">GradientBoostingClassifier</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">),</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s2">&quot;k-nearest neighbours&quot;</span><span class="p">:</span>     <span class="p">(</span><span class="n">KNeighborsClassifier</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">25</span><span class="p">),</span> <span class="kc">True</span><span class="p">),</span>
+<span class="p">}</span>
+
+<span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">needs_scaling</span><span class="p">)</span> <span class="ow">in</span> <span class="n">candidates</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">train_X</span> <span class="o">=</span> <span class="n">X_train_scaled</span> <span class="k">if</span> <span class="n">needs_scaling</span> <span class="k">else</span> <span class="n">X_train</span>
+    <span class="n">test_X</span> <span class="o">=</span> <span class="n">X_test_scaled</span> <span class="k">if</span> <span class="n">needs_scaling</span> <span class="k">else</span> <span class="n">X_test</span>
+
+    <span class="n">estimator</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_X</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>          <span class="c1"># &lt;- the same line, every time</span>
+
+    <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+        <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+        <span class="s2">&quot;train AUC&quot;</span><span class="p">:</span> <span class="n">roc_auc_score</span><span class="p">(</span><span class="n">y_train</span><span class="p">,</span> <span class="n">estimator</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">train_X</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]),</span>
+        <span class="s2">&quot;test AUC&quot;</span><span class="p">:</span> <span class="n">roc_auc_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">estimator</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">test_X</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]),</span>
+    <span class="p">})</span>
+
+<span class="n">comparison</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;model&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">comparison</span><span class="p">[</span><span class="s2">&quot;gap&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">comparison</span><span class="p">[</span><span class="s2">&quot;train AUC&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">comparison</span><span class="p">[</span><span class="s2">&quot;test AUC&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">comparison</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>                           train AUC  test AUC    gap
+model                                                
+logistic regression            0.769     0.782 -0.013
+decision tree (depth 5)        0.783     0.735  0.048
+decision tree (unlimited)      1.000     0.560  0.440
+random forest                  1.000     0.763  0.237
+gradient boosting              0.822     0.772  0.050
+k-nearest neighbours           0.796     0.711  0.085
+</code></pre></div>
+<p>Four things in that table are worth more than the winner.</p>
+<p><strong>The simplest model wins.</strong> Logistic regression, at 0.782, beats every ensemble
+here. That is common on small, tidy, mostly-linear tabular data and it surprises
+students every year. Complexity is a cost you pay when the data demands it.</p>
+<p><strong>The unlimited tree memorised the training set.</strong> Train AUC 1.000, test AUC
+0.560 — barely better than guessing. It learned 9,000 individual applications
+rather than the pattern behind them. This is <strong>overfitting</strong> in its purest form,
+and the <code>gap</code> column is how you spot it.</p>
+<p><strong>The random forest also has a train AUC of 1.000 — and still generalises.</strong>
+Averaging hundreds of overfitted trees cancels most of their individual errors.
+A large gap is a warning sign, not a verdict; read it together with the test score.</p>
+<p><strong>Scaling changed nothing for the trees.</strong> They split on order, and order survives
+rescaling. It matters enormously for logistic regression and KNN, which measure
+distances and gradients.</p>
+<p>One detail that confuses people every year: logistic regression's gap is slightly
+<em>negative</em> — it scored a shade higher on test than on train. That is not a
+miracle, it is the luck of one particular split. Gaps of a hundredth or two in
+either direction are noise; gaps of 0.4, like the unlimited tree's, are not.</p>
+<div class="highlight"><pre><span></span><code><span class="n">comparison</span><span class="p">[[</span><span class="s2">&quot;train AUC&quot;</span><span class="p">,</span> <span class="s2">&quot;test AUC&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">rot</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;#8C8C8C&quot;</span><span class="p">,</span> <span class="s2">&quot;#4C72B0&quot;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;AUC&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;A tall grey bar with a short blue one beside it means overfitting&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../04_sklearn_models_files/04_sklearn_models_13_0.png" /></p>
+<hr />
+<h2 id="3-what-actually-changes-when-you-swap">3. What actually changes when you swap</h2>
+<p>The line of code is identical. Everything around it is not.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Logistic regression</th>
+<th>Decision tree</th>
+<th>Random forest / boosting</th>
+<th>KNN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Needs scaling</strong></td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>Handles non-linearity</strong></td>
+<td>Only if you build it (session 3)</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>Explainable</strong></td>
+<td>Coefficients, one per feature</td>
+<td>The tree itself, if shallow</td>
+<td>Importances only</td>
+<td>Barely</td>
+</tr>
+<tr>
+<td><strong>Training cost</strong></td>
+<td>Very low</td>
+<td>Very low</td>
+<td>Moderate to high</td>
+<td>None — it defers the work</td>
+</tr>
+<tr>
+<td><strong>Prediction cost</strong></td>
+<td>Very low</td>
+<td>Very low</td>
+<td>Moderate</td>
+<td>High: compares to every training row</td>
+</tr>
+<tr>
+<td><strong>Key hyperparameters</strong></td>
+<td><code>C</code>, <code>penalty</code>, <code>class_weight</code></td>
+<td><code>max_depth</code>, <code>min_samples_leaf</code></td>
+<td><code>n_estimators</code>, <code>max_depth</code>, <code>learning_rate</code></td>
+<td><code>n_neighbors</code>, <code>metric</code></td>
+</tr>
+<tr>
+<td><strong>Main failure mode</strong></td>
+<td>Underfits curved patterns</td>
+<td>Overfits without a depth limit</td>
+<td>Slow, opaque</td>
+<td>Falls apart in high dimensions</td>
+</tr>
+</tbody>
+</table>
+<p>Two practical notes that cost teams real time:</p>
+<p><strong>Prediction cost is a deployment constraint, not a detail.</strong> KNN stores the
+training set and compares against it at prediction time — fine in a notebook,
+awkward in a service that must answer in milliseconds.</p>
+<p><strong>Randomness needs pinning.</strong> Trees, forests, and boosting sample. Without
+<code>random_state</code>, two runs give two different models, and you cannot tell a real
+improvement from noise. Set it everywhere, always.</p>
+<hr />
+<h2 id="4-choosing-an-estimator">4. Choosing an estimator</h2>
+<p>There is no best algorithm. There is a best algorithm <em>for a set of constraints</em>,
+and the constraints come from the charter you wrote in session 1.</p>
+<table>
+<thead>
+<tr>
+<th>If the project needs...</th>
+<th>Start with</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Explainable decisions, regulated setting</td>
+<td>Logistic regression, or a shallow tree</td>
+</tr>
+<tr>
+<td>Strong accuracy on tabular data, explainability secondary</td>
+<td>Gradient boosting (XGBoost, LightGBM, <code>HistGradientBoosting</code>)</td>
+</tr>
+<tr>
+<td>A baseline in five minutes</td>
+<td>Logistic regression</td>
+</tr>
+<tr>
+<td>Predictions in microseconds</td>
+<td>Linear model</td>
+</tr>
+<tr>
+<td>Mixed categorical and numeric, minimal preprocessing</td>
+<td>Tree ensembles</td>
+</tr>
+<tr>
+<td>Very little data (hundreds of rows)</td>
+<td>Linear or a shallow tree; ensembles will overfit</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The working rule: start with the simplest thing that could work, measure it,
+and only add complexity when the measurement demands it.</strong> A gradient boosting
+model that beats logistic regression by 0.004 AUC is not worth the deployment
+weight, the training time, and the explanation you now owe a regulator.</p>
+<p>Our charter asks for explainable declines. That plus the table above makes
+logistic regression the right choice here — and it also happens to score best.
+It will not always be so convenient.</p>
+<hr />
+<h2 id="5-the-same-contract-for-regression">5. The same contract for regression</h2>
+<p>Classification predicts a class; regression predicts a number. The code is the
+same four lines — only the estimator, and the metrics, change.</p>
+<p>Suppose the credit team asks a different question: <em>"what interest rate would this
+application normally be priced at?"</em> — useful for spotting inconsistent pricing
+between branches.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.ensemble</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomForestRegressor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">mean_absolute_error</span><span class="p">,</span> <span class="n">r2_score</span>
+
+<span class="n">rate_features</span> <span class="o">=</span> <span class="n">loans</span><span class="p">[[</span><span class="s2">&quot;loan_amount&quot;</span><span class="p">,</span> <span class="s2">&quot;tenure_months&quot;</span><span class="p">,</span> <span class="s2">&quot;previous_loans&quot;</span><span class="p">,</span>
+                       <span class="s2">&quot;days_past_due_history&quot;</span><span class="p">,</span> <span class="s2">&quot;credit_score&quot;</span><span class="p">,</span> <span class="s2">&quot;annual_income&quot;</span><span class="p">]]</span>
+<span class="n">rate_features</span> <span class="o">=</span> <span class="n">rate_features</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">rate_features</span><span class="o">.</span><span class="n">median</span><span class="p">())</span>
+<span class="n">rate</span> <span class="o">=</span> <span class="n">loans</span><span class="p">[</span><span class="s2">&quot;interest_rate&quot;</span><span class="p">]</span>
+
+<span class="n">A_train</span><span class="p">,</span> <span class="n">A_test</span><span class="p">,</span> <span class="n">r_train</span><span class="p">,</span> <span class="n">r_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">rate_features</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
+<span class="p">)</span>
+
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">estimator</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;linear regression&quot;</span><span class="p">,</span> <span class="n">LinearRegression</span><span class="p">()),</span>
+                        <span class="p">(</span><span class="s2">&quot;random forest&quot;</span><span class="p">,</span> <span class="n">RandomForestRegressor</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">))]:</span>
+    <span class="n">estimator</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">A_train</span><span class="p">,</span> <span class="n">r_train</span><span class="p">)</span>
+    <span class="n">predicted</span> <span class="o">=</span> <span class="n">estimator</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">A_test</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2"> MAE </span><span class="si">{</span><span class="n">mean_absolute_error</span><span class="p">(</span><span class="n">r_test</span><span class="p">,</span><span class="w"> </span><span class="n">predicted</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> percentage points   &quot;</span>
+          <span class="sa">f</span><span class="s2">&quot;R² </span><span class="si">{</span><span class="n">r2_score</span><span class="p">(</span><span class="n">r_test</span><span class="p">,</span><span class="w"> </span><span class="n">predicted</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>linear regression    MAE 0.78 percentage points   R² 0.565
+
+
+random forest        MAE 0.75 percentage points   R² 0.587
+</code></pre></div>
+<p>Same <code>fit</code>, same <code>predict</code>, different metrics. <strong>MAE</strong> says the typical prediction
+is off by about 0.8 percentage points of interest; <strong>R²</strong> says the features
+explain a bit under 60% of the variation in pricing.</p>
+<p>Note there is no <code>predict_proba</code> here — a regressor has nothing to be probable
+about. That is the only part of the contract that changes.</p>
+<p>Sessions 5 and 6 go properly into metrics. For now, the point is that the whole
+library works this way: learn the contract once, and every estimator in it,
+including ones written years from now, is already familiar.</p>
+<hr />
+<h2 id="6-composing-steps-into-one-object">6. Composing steps into one object</h2>
+<p>Session 2 insisted: fit every transformation on the training data only. Doing that
+by hand — scaler here, model there, remember the order — is exactly the kind of
+discipline that fails at 6pm on a Friday.</p>
+<p><code>make_pipeline</code> chains transformers and a final estimator into a <strong>single
+estimator</strong> that still honours the contract. One <code>fit</code>, one <code>predict</code>, and the
+scaler can no longer see the test set by accident.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_pipeline</span>
+
+<span class="n">pipeline</span> <span class="o">=</span> <span class="n">make_pipeline</span><span class="p">(</span>
+    <span class="n">StandardScaler</span><span class="p">(),</span>
+    <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">class_weight</span><span class="o">=</span><span class="s2">&quot;balanced&quot;</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">pipeline</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>          <span class="c1"># the scaler is fitted on TRAIN, inside</span>
+<span class="n">probabilities</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;pipeline test AUC: </span><span class="si">{</span><span class="n">roc_auc_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="w"> </span><span class="n">probabilities</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;steps:&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">steps</span><span class="p">])</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>pipeline test AUC: 0.782
+steps: [&#39;standardscaler&#39;, &#39;logisticregression&#39;]
+</code></pre></div>
+<p>The same 0.782, with the leakage risk engineered out rather than remembered.</p>
+<p>Session 7 extends this to <code>ColumnTransformer</code>, which lets one pipeline apply
+different treatment to numeric and categorical columns, and makes the whole
+preparation chain a single saveable object.</p>
+<hr />
+<h2 id="7-making-a-prediction-for-one-applicant">7. Making a prediction for one applicant</h2>
+<p>The end of the line: a real application arrives, and the model has to answer.</p>
+<div class="highlight"><pre><span></span><code><span class="n">applicant</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;loan_amount&quot;</span><span class="p">:</span> <span class="mi">800_000</span><span class="p">,</span>
+    <span class="s2">&quot;tenure_months&quot;</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span>
+    <span class="s2">&quot;interest_rate&quot;</span><span class="p">:</span> <span class="mf">14.5</span><span class="p">,</span>
+    <span class="s2">&quot;previous_loans&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;days_past_due_history&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="s2">&quot;annual_income&quot;</span><span class="p">:</span> <span class="mi">600_000</span><span class="p">,</span>
+    <span class="s2">&quot;credit_score&quot;</span><span class="p">:</span> <span class="mi">545</span><span class="p">,</span>
+    <span class="s2">&quot;income_missing&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;score_missing&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;sector_Construction&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># Build a one-row frame with exactly the training columns; anything unset is 0.</span>
+<span class="n">new_application</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">applicant</span><span class="p">])</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">X_train</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">probability</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">new_application</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="n">THRESHOLD</span> <span class="o">=</span> <span class="mf">0.15</span>        <span class="c1"># chosen in session 3, owned by the business</span>
+<span class="n">decision</span> <span class="o">=</span> <span class="s2">&quot;SEND TO SENIOR REVIEW&quot;</span> <span class="k">if</span> <span class="n">probability</span> <span class="o">&gt;=</span> <span class="n">THRESHOLD</span> <span class="k">else</span> <span class="s2">&quot;auto-approve&quot;</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;probability of default: </span><span class="si">{</span><span class="n">probability</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;threshold in force:     </span><span class="si">{</span><span class="n">THRESHOLD</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;decision:               </span><span class="si">{</span><span class="n">decision</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>probability of default: 87.4%
+threshold in force:     15%
+decision:               SEND TO SENIOR REVIEW
+</code></pre></div>
+<p>That is the whole product, in three lines: a probability, a threshold, a decision.</p>
+<p>Everything else in this module — preparation, features, metrics, tuning,
+tracking, serving, monitoring — exists to make those three lines trustworthy.</p>
+<p>The <code>reindex</code> line matters more than it looks. The model was trained on a fixed
+list of columns in a fixed order, and it will happily produce a confident number
+from a misaligned row. Session 9 replaces this hand-built frame with a validated
+API request that rejects a bad payload instead of scoring it.</p>
+<hr />
+<h2 id="your-turn">Your turn</h2>
+<p><strong>1. Add an estimator.</strong> Put <code>HistGradientBoostingClassifier</code> and
+<code>GaussianNB</code> into the <code>candidates</code> dictionary and re-run the loop. Do either
+beat logistic regression? Which needed scaling?</p>
+<p><strong>2. Close the tree's gap.</strong> The unlimited tree scored 1.000 on train and 0.560
+on test. Try <code>max_depth</code> of 3, 5, 10 and 20. Plot train and test AUC against
+depth. Where do the two lines cross over from underfitting to overfitting?</p>
+<p><strong>3. Break the contract deliberately.</strong> Fit <code>KNeighborsClassifier</code> on the
+<em>unscaled</em> training data and compare its AUC to the scaled version. Explain the
+difference in one sentence using what KNN measures.</p>
+<p><strong>4. Read a tree.</strong> Fit <code>DecisionTreeClassifier(max_depth=3)</code> and print it with
+<code>sklearn.tree.export_text(tree, feature_names=list(X_train.columns))</code>. Is the
+first split the feature you expected from session 3's importance ranking?</p>
+<p><strong>5. Time it.</strong> Wrap each <code>fit</code> in <code>time.perf_counter()</code> and add a "seconds"
+column to the comparison table. Then time <code>predict</code> on the test set. Which model
+would you choose if the requirement were 10,000 predictions per second?</p>
+<p><strong>6. Score three applicants.</strong> Change the <code>applicant</code> dictionary to describe a
+strong applicant, a marginal one, and a weak one. Do the probabilities order the
+way a credit officer would expect? If one surprises you, say why.</p>
+<hr />
+<h2 id="if-you-remember-nothing-else">If you remember nothing else</h2>
+<p><strong>One contract, every model.</strong> <code>fit</code>, <code>predict</code>, <code>transform</code>. Learn it once and
+the entire library — plus every library that copies its interface — is open to you.</p>
+<p><strong>The trailing underscore means learned.</strong> <code>coef_</code>, <code>classes_</code>,
+<code>feature_importances_</code> do not exist until <code>fit</code> has run.</p>
+<p><strong>Swapping models is one line, so compare rather than argue.</strong> A loop over a
+dictionary settles in seconds what a meeting cannot settle in an hour.</p>
+<p><strong>Start simple.</strong> On tidy tabular data the linear model is frequently the winner,
+and it is always the cheapest thing to explain, deploy, and debug.</p>
+<p><strong>A train–test gap is the overfitting alarm.</strong> Train 1.000 with test 0.560 is a
+model that memorised; read the two numbers together, never one alone.</p>
+<p><strong>Pipelines make the session 2 rule automatic.</strong> If the scaler lives inside the
+pipeline, it cannot see the test set — no discipline required.</p>
+<hr />
+<h2 id="glossary">Glossary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Estimator</strong></td>
+<td>Any scikit-learn object with a <code>fit</code> method</td>
+</tr>
+<tr>
+<td><strong>Transformer</strong></td>
+<td>An estimator with <code>transform</code> — scalers, encoders, imputers</td>
+</tr>
+<tr>
+<td><strong>Predictor</strong></td>
+<td>An estimator with <code>predict</code> — classifiers and regressors</td>
+</tr>
+<tr>
+<td><strong>Hyperparameter</strong></td>
+<td>A setting you choose before training, passed to the constructor</td>
+</tr>
+<tr>
+<td><strong>Learned parameter</strong></td>
+<td>A value discovered by <code>fit</code>, named with a trailing underscore</td>
+</tr>
+<tr>
+<td><strong><code>predict_proba</code></strong></td>
+<td>Class probabilities rather than a hard label</td>
+</tr>
+<tr>
+<td><strong>Overfitting</strong></td>
+<td>Strong on training data, weak on unseen data</td>
+</tr>
+<tr>
+<td><strong>Underfitting</strong></td>
+<td>Weak on both — the model is too simple for the pattern</td>
+</tr>
+<tr>
+<td><strong>Ensemble</strong></td>
+<td>Many models combined — bagging (forests) or boosting</td>
+</tr>
+<tr>
+<td><strong><code>random_state</code></strong></td>
+<td>The seed that makes a randomised fit reproducible</td>
+</tr>
+<tr>
+<td><strong>Pipeline</strong></td>
+<td>Transformers plus a final estimator, composed into one estimator</td>
+</tr>
+</tbody>
+</table>
+<h2 id="further-reading">Further reading</h2>
+<ul>
+<li>scikit-learn User Guide, <em>Supervised learning</em> — every estimator, one page each,
+  all following the contract above.</li>
+<li>scikit-learn, <em>Choosing the right estimator</em> — the official flowchart; useful
+  once you can already justify ignoring it.</li>
+<li>Aurélien Géron, <em>Hands-On Machine Learning</em>, chapters 2–7 — the same estimators
+  worked through in depth.</li>
+<li>Your DCS 404 notebooks — for the derivations behind logistic regression, trees,
+  KNN and ensembles, which this session deliberately does not repeat.</li>
+</ul>
+<hr />
+<p><strong>Next session:</strong> <em>Model Evaluation and Performance Metrics</em> — which number you
+report, why accuracy has been lying to us since session 1, and how the cost of
+being wrong decides the metric.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../03_feature_engineering/" class="btn btn-neutral float-left" title="3. Feature Engineering"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright &copy; 2026 - Aayush Raj Regmi</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../03_feature_engineering/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../javascripts/mathjax.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

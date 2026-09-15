@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>2. Data Preparation for ML - Applied ML</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "2. Data Preparation for ML";
+        var mkdocs_page_input_path = "AIModule/02_data_preparation.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Applied ML
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Welcome</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../InstallationGuide/">Installation Guide</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Applied ML in Production</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../01_problem_framing/">1. ML Problem Framing and the Industry Workflow</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">2. Data Preparation for ML</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-work-through-this">How to work through this</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#learning-objectives">Learning objectives</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#1-look-before-you-touch">1. Look before you touch</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-the-leakage-hunt">2. The leakage hunt</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#find-the-culprit">Find the culprit</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#the-four-kinds-of-leakage">The four kinds of leakage</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#the-leakage-checklist">The leakage checklist</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#contamination-in-practice">Contamination, in practice</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-missing-values">3. Missing values</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#what-dropna-costs">What dropna() costs</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#imputation-done-correctly">Imputation, done correctly</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-categorical-variables">4. Categorical variables</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#the-40-branch-problem">The 40-branch problem</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-scaling-and-transforming-numbers">5. Scaling and transforming numbers</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#standardisation">Standardisation</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-splitting-the-decision-that-outranks-the-rest">6. Splitting: the decision that outranks the rest</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-the-order-of-operations">7. The order of operations</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#your-turn">Your turn</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#if-you-remember-nothing-else">If you remember nothing else</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#glossary">Glossary</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#further-reading">Further reading</a>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Applied ML</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Applied ML in Production</li>
+      <li class="breadcrumb-item active">2. Data Preparation for ML</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="data-preparation-for-ml">Data Preparation for ML</h1>
+<p><strong>Applied ML in Production · Session 2</strong></p>
+<hr />
+<p>Session 1 ended with a charter and a warning: <em>some columns may not be available
+at decision time</em>. This session is where we find out which one, and it is the
+most important two hours of the module.</p>
+<p>Data preparation is the work of turning a raw extract into a matrix a model can
+learn from — handling missing values, encoding categories, scaling numbers, and
+splitting into train and test. None of that is difficult. What is difficult is
+doing it <strong>without smuggling information from the future into the training set</strong>,
+and that mistake — <em>data leakage</em> — is the single most common reason a model
+scores brilliantly in a notebook and fails in production.</p>
+<p>Today we plant ourselves in front of a model that looks excellent, prove it is a
+fraud, and fix it.</p>
+<h2 id="how-to-work-through-this">How to work through this</h2>
+<p>Type the code yourself rather than only running it. Every cell here is short on
+purpose — a few lines each, no clever tricks — because the point is the
+reasoning, not the syntax.</p>
+<p>Run each cell, read the output, then read the commentary. If a cell errors, run
+from the top.</p>
+<h2 id="learning-objectives">Learning objectives</h2>
+<p>After this session you will be able to:</p>
+<ul>
+<li>Inspect a raw dataset for dtypes, duplicates, impossible values, and missingness
+  before changing anything.</li>
+<li><strong>Detect data leakage</strong> in a dataset you did not create, and explain the four
+  kinds you will meet in industry.</li>
+<li>Distinguish missing-at-random from missing-not-at-random, and show what
+  <code>dropna()</code> quietly costs.</li>
+<li>Impute missing values correctly — fitting on training data only.</li>
+<li>Encode categorical variables, and explain why a 40-category column is a problem.</li>
+<li>Scale and transform numeric features, and say which models care.</li>
+<li>Choose between a random split and a time-based split, and justify the choice.</li>
+<li>Order the whole preparation sequence so that no step sees data it should not.</li>
+</ul>
+<h2 id="setup">Setup</h2>
+<p>Same helper as session 1: walk up from the current folder until the repository's
+<code>data/</code> directory appears, so the notebook does not care where the kernel started.</p>
+<div class="highlight"><pre><span></span><code><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="s2">&quot;axes.grid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;grid.alpha&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">})</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.width&quot;</span><span class="p">,</span> <span class="mi">120</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.max_columns&quot;</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">find_data</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;loan_default.csv&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span> <span class="o">*</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">]:</span>
+        <span class="n">candidate</span> <span class="o">=</span> <span class="n">folder</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span> <span class="o">/</span> <span class="n">filename</span>
+        <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">candidate</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;could not find data/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="n">loans</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">find_data</span><span class="p">(),</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;application_date&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">loans</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">loans</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>(12000, 15)
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>loan_id</th>
+      <th>application_date</th>
+      <th>branch</th>
+      <th>sector</th>
+      <th>employment_type</th>
+      <th>loan_amount</th>
+      <th>tenure_months</th>
+      <th>interest_rate</th>
+      <th>annual_income</th>
+      <th>credit_score</th>
+      <th>has_collateral</th>
+      <th>previous_loans</th>
+      <th>days_past_due_history</th>
+      <th>recovery_agent_assigned</th>
+      <th>defaulted</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>NL200000</td>
+      <td>2023-01-01</td>
+      <td>Birgunj-01</td>
+      <td>Service</td>
+      <td>Business Owner</td>
+      <td>417000.0</td>
+      <td>36</td>
+      <td>10.28</td>
+      <td>194000.0</td>
+      <td>652.0</td>
+      <td>Yes</td>
+      <td>2</td>
+      <td>40</td>
+      <td>Yes</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>NL200001</td>
+      <td>2023-01-01</td>
+      <td>Biratnagar-03</td>
+      <td>Service</td>
+      <td>Self-Employed</td>
+      <td>154000.0</td>
+      <td>12</td>
+      <td>9.82</td>
+      <td>NaN</td>
+      <td>695.0</td>
+      <td>Yes</td>
+      <td>1</td>
+      <td>0</td>
+      <td>No</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>NL200002</td>
+      <td>2023-01-01</td>
+      <td>Kathmandu-03</td>
+      <td>Trade</td>
+      <td>Salaried</td>
+      <td>163000.0</td>
+      <td>24</td>
+      <td>13.04</td>
+      <td>948000.0</td>
+      <td>565.0</td>
+      <td>No</td>
+      <td>2</td>
+      <td>22</td>
+      <td>No</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<hr />
+<h2 id="1-look-before-you-touch">1. Look before you touch</h2>
+<p>Before cleaning anything, find out what you have. Four questions, four short
+cells. Do this every single time you meet a dataset, including ones a colleague
+swears are clean.</p>
+<p><strong>Question 1: what type is each column, and how complete is it?</strong></p>
+<div class="highlight"><pre><span></span><code><span class="n">summary</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">loans</span><span class="o">.</span><span class="n">dtypes</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span>
+    <span class="s2">&quot;missing_%&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">loans</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+    <span class="s2">&quot;unique&quot;</span><span class="p">:</span> <span class="n">loans</span><span class="o">.</span><span class="n">nunique</span><span class="p">(),</span>
+<span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>                                  dtype  missing_%  unique
+loan_id                             str        0.0   12000
+application_date         datetime64[us]        0.0     731
+branch                              str        0.0      40
+sector                              str        0.0       6
+employment_type                     str        0.0       4
+loan_amount                     float64        0.0    1362
+tenure_months                     int64        0.0       7
+interest_rate                   float64        0.0     778
+annual_income                   float64        9.4    1613
+credit_score                    float64        7.1     493
+has_collateral                      str        0.0       2
+previous_loans                    int64        0.0       9
+days_past_due_history             int64        0.0      99
+recovery_agent_assigned             str        0.0       2
+defaulted                         int64        0.0       2
+</code></pre></div>
+<p>Two columns have gaps — <code>annual_income</code> (9.4%) and <code>credit_score</code> (7.1%) — and
+<code>branch</code> has 40 distinct values, which will matter when we encode it.</p>
+<p><strong>Question 2: are there duplicate rows?</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;exact duplicate rows:&quot;</span><span class="p">,</span> <span class="n">loans</span><span class="o">.</span><span class="n">duplicated</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;duplicate loan_id values:&quot;</span><span class="p">,</span> <span class="n">loans</span><span class="p">[</span><span class="s2">&quot;loan_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">duplicated</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;duplicates ignoring the id column:&quot;</span><span class="p">,</span> <span class="n">loans</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">&quot;loan_id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">duplicated</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>exact duplicate rows: 0
+duplicate loan_id values: 0
+duplicates ignoring the id column: 0
+</code></pre></div>
+<p>Clean here. The third check matters more than the first: an id column is unique
+by construction, so duplicated records often hide behind different ids. In
+industry, the usual cause is a join that fanned out — one application matched to
+three payment rows — and it inflates your test scores by putting near-copies of
+training rows into the test set.</p>
+<p><strong>Question 3: are the numbers possible?</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">loans</span><span class="p">[[</span><span class="s2">&quot;loan_amount&quot;</span><span class="p">,</span> <span class="s2">&quot;annual_income&quot;</span><span class="p">,</span> <span class="s2">&quot;credit_score&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;interest_rate&quot;</span><span class="p">,</span> <span class="s2">&quot;days_past_due_history&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>       loan_amount  annual_income  credit_score  interest_rate  days_past_due_history
+count      12000.0        10878.0       11149.0        12000.0                12000.0
+mean      388948.0       585418.0         639.0           12.0                   13.0
+std       347994.0       403040.0          94.0            1.0                   13.0
+min        50000.0        93000.0         300.0            9.0                    0.0
+25%       178000.0       316000.0         574.0           11.0                    3.0
+50%       292000.0       479000.0         638.0           12.0                    8.0
+75%       486000.0       735000.0         704.0           13.0                   18.0
+max     10000000.0      4604000.0         850.0           19.0                  121.0
+</code></pre></div>
+<p>Scan the <code>min</code> and <code>max</code> rows first. Negative incomes, ages of 200, credit scores
+above 850, dates in the future — those are the errors you catch here in ten
+seconds and otherwise chase for a week. This extract looks physically plausible.</p>
+<p><strong>Question 4: what does each categorical column contain?</strong></p>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;sector&quot;</span><span class="p">,</span> <span class="s2">&quot;employment_type&quot;</span><span class="p">,</span> <span class="s2">&quot;has_collateral&quot;</span><span class="p">,</span> <span class="s2">&quot;recovery_agent_assigned&quot;</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">loans</span><span class="p">[</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>sector: [&#39;Service&#39;, &#39;Trade&#39;, &#39;Tourism&#39;, &#39;Construction&#39;, &#39;Agriculture&#39;, &#39;Manufacturing&#39;]
+employment_type: [&#39;Business Owner&#39;, &#39;Self-Employed&#39;, &#39;Salaried&#39;, &#39;Informal&#39;]
+has_collateral: [&#39;Yes&#39;, &#39;No&#39;]
+recovery_agent_assigned: [&#39;Yes&#39;, &#39;No&#39;]
+</code></pre></div>
+<p>Look at that last column for a moment. <code>recovery_agent_assigned</code> — Yes or No.
+Hold that thought.</p>
+<hr />
+<h2 id="2-the-leakage-hunt">2. The leakage hunt</h2>
+<p>We now build the model our charter asked for: every plausible feature, one
+simple algorithm, honest split. Then we look at the score.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogisticRegression</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">precision_score</span><span class="p">,</span> <span class="n">recall_score</span><span class="p">,</span> <span class="n">roc_auc_score</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">StandardScaler</span>
+
+<span class="n">NUMERIC</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;loan_amount&quot;</span><span class="p">,</span> <span class="s2">&quot;tenure_months&quot;</span><span class="p">,</span> <span class="s2">&quot;interest_rate&quot;</span><span class="p">,</span> <span class="s2">&quot;previous_loans&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;days_past_due_history&quot;</span><span class="p">,</span> <span class="s2">&quot;annual_income&quot;</span><span class="p">,</span> <span class="s2">&quot;credit_score&quot;</span><span class="p">]</span>
+<span class="n">CATEGORICAL</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sector&quot;</span><span class="p">,</span> <span class="s2">&quot;employment_type&quot;</span><span class="p">,</span> <span class="s2">&quot;has_collateral&quot;</span><span class="p">,</span> <span class="s2">&quot;recovery_agent_assigned&quot;</span><span class="p">]</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="n">loans</span><span class="p">[</span><span class="n">NUMERIC</span> <span class="o">+</span> <span class="n">CATEGORICAL</span><span class="p">],</span> <span class="n">drop_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">loans</span><span class="p">[</span><span class="s2">&quot;defaulted&quot;</span><span class="p">]</span>
+
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;features after encoding&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>(12000, 17) features after encoding
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># Fill gaps with the TRAINING median, scale, fit. (Each step is explained below —</span>
+<span class="c1"># right now we only care about the score.)</span>
+<span class="n">medians</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">median</span><span class="p">()</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">medians</span><span class="p">),</span> <span class="n">X_test</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">medians</span><span class="p">)</span>
+
+<span class="n">scaler</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">class_weight</span><span class="o">=</span><span class="s2">&quot;balanced&quot;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_train</span><span class="p">),</span> <span class="n">y_train</span><span class="p">)</span>
+
+<span class="n">probabilities</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_test</span><span class="p">))[:,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_test</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ROC-AUC:   </span><span class="si">{</span><span class="n">roc_auc_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="w"> </span><span class="n">probabilities</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;recall:    </span><span class="si">{</span><span class="n">recall_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="w"> </span><span class="n">predictions</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;precision: </span><span class="si">{</span><span class="n">precision_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="w"> </span><span class="n">predictions</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>ROC-AUC:   0.974
+recall:    0.891
+precision: 0.828
+</code></pre></div>
+<p>An AUC of 0.97 and precision of 0.83 on credit default, from plain logistic
+regression, on the first attempt.</p>
+<p>If you are pleased, you have just made the mistake. <strong>Credit risk is hard.</strong>
+Lenders with decades of data, dedicated teams, and bureau feeds do not get
+numbers like this. When a result is far better than the problem allows, the
+model has usually found something it will not have on the day.</p>
+<h3 id="find-the-culprit">Find the culprit</h3>
+<p>The fastest diagnostic is also the simplest: for each categorical column, look at
+the default rate inside each of its values. A column that splits the target
+almost perfectly is either a miracle or a leak.</p>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">CATEGORICAL</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">loans</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">column</span><span class="p">)[</span><span class="s2">&quot;defaulted&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(),</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>sector
+Agriculture      0.122
+Construction     0.168
+Manufacturing    0.123
+Service          0.133
+Tourism          0.152
+Trade            0.135
+
+employment_type
+Business Owner    0.126
+Informal          0.173
+Salaried          0.129
+Self-Employed     0.131
+
+has_collateral
+No     0.180
+Yes    0.102
+
+recovery_agent_assigned
+No     0.018
+Yes    0.831
+</code></pre></div>
+<p>There it is.</p>
+<p>Where <code>recovery_agent_assigned</code> is <code>"Yes"</code>, 83% of loans defaulted. Where it is
+<code>"No"</code>, 1.8% did. No genuine applicant characteristic behaves like that — not
+credit score, not sector, not employment type, which all move the rate by a few
+points at most.</p>
+<p>Now apply the <strong>point-in-time rule</strong> from session 1: <em>would this value exist, for
+this applicant, at the moment the decision is made?</em></p>
+<p>A recovery agent is assigned to chase an account <strong>after it has gone bad</strong>. At
+application time, the moment our model runs, that field is empty for everyone.
+The column is not a predictor of default; it is a <em>record</em> of default, wearing a
+different name.</p>
+<p>This is <strong>target leakage</strong>, and it is in the file for the most ordinary reason
+imaginable: the extract was built by joining whatever the warehouse holds today,
+and today it holds the collections table.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Same model, same everything, minus the leaking column.</span>
+<span class="n">CATEGORICAL_CLEAN</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sector&quot;</span><span class="p">,</span> <span class="s2">&quot;employment_type&quot;</span><span class="p">,</span> <span class="s2">&quot;has_collateral&quot;</span><span class="p">]</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="n">loans</span><span class="p">[</span><span class="n">NUMERIC</span> <span class="o">+</span> <span class="n">CATEGORICAL_CLEAN</span><span class="p">],</span> <span class="n">drop_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
+<span class="p">)</span>
+
+<span class="n">medians</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">median</span><span class="p">()</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">medians</span><span class="p">),</span> <span class="n">X_test</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">medians</span><span class="p">)</span>
+
+<span class="n">scaler</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">class_weight</span><span class="o">=</span><span class="s2">&quot;balanced&quot;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_train</span><span class="p">),</span> <span class="n">y_train</span><span class="p">)</span>
+
+<span class="n">probabilities</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_test</span><span class="p">))[:,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_test</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ROC-AUC:   </span><span class="si">{</span><span class="n">roc_auc_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="w"> </span><span class="n">probabilities</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">   (was 0.974)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;recall:    </span><span class="si">{</span><span class="n">recall_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="w"> </span><span class="n">predictions</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">   (was 0.891)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;precision: </span><span class="si">{</span><span class="n">precision_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="w"> </span><span class="n">predictions</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">   (was 0.828)&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>ROC-AUC:   0.783   (was 0.974)
+recall:    0.696   (was 0.891)
+precision: 0.273   (was 0.828)
+</code></pre></div>
+<p>AUC falls from 0.974 to 0.783. Precision collapses from 0.83 to 0.27.</p>
+<p><strong>That is the good news.</strong> 0.783 is a real number that will survive contact with
+production. 0.974 was a number that would have been reported to the Head of
+Credit, believed, deployed, and then quietly produced garbage — because in
+production <code>recovery_agent_assigned</code> is <code>"No"</code> for every applicant, and the model
+leans on it hardest.</p>
+<p>The cost of finding this in session 2 is one afternoon. The cost of finding it
+after launch is the project.</p>
+<blockquote>
+<p><strong>Industry note — the drop that saves you.</strong>
+A sudden drop in performance after removing a column is the healthiest thing
+that can happen to a project. Teams that never see one are usually not looking.
+Practising data scientists develop an instinct: when a score is surprisingly
+high, the first hypothesis is leakage, not brilliance.</p>
+</blockquote>
+<h3 id="the-four-kinds-of-leakage">The four kinds of leakage</h3>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>What happens</th>
+<th>How to catch it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Target leakage</strong></td>
+<td>A feature is recorded after, or because of, the outcome — our <code>recovery_agent_assigned</code></td>
+<td>Point-in-time rule; look for suspiciously strong single features</td>
+</tr>
+<tr>
+<td><strong>Train-test contamination</strong></td>
+<td>A preparation step looks at the test set — a median, a scaler, an encoding fitted on all the data</td>
+<td>Fit every transformation on train only; use a <code>Pipeline</code> (session 7)</td>
+</tr>
+<tr>
+<td><strong>Temporal leakage</strong></td>
+<td>A random split trains on the future and tests on the past</td>
+<td>Split by time whenever predictions are made forward in time</td>
+</tr>
+<tr>
+<td><strong>Group leakage</strong></td>
+<td>Rows from the same entity land in both train and test — three loans from one borrower</td>
+<td>Split by group id, not by row</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-leakage-checklist">The leakage checklist</h3>
+<p>Run this on every project, before modelling:</p>
+<ol>
+<li>For every column, ask when the value is written. Not what it means — <em>when</em>.</li>
+<li>Sort features by single-feature predictive power. Investigate the top of that list.</li>
+<li>If the score is far better than the problem's known difficulty, assume leakage.</li>
+<li>Fit every imputer, scaler and encoder on training data only.</li>
+<li>If time matters, split on time. If entities repeat, split on entity.</li>
+</ol>
+<h3 id="contamination-in-practice">Contamination, in practice</h3>
+<p>Leakage rule 4 says: fit on train only. Here is what that means concretely.</p>
+<div class="highlight"><pre><span></span><code><span class="n">credit</span> <span class="o">=</span> <span class="n">loans</span><span class="p">[</span><span class="s2">&quot;credit_score&quot;</span><span class="p">]</span>
+<span class="n">train_part</span><span class="p">,</span> <span class="n">test_part</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">credit</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;median over the whole dataset: </span><span class="si">{</span><span class="n">credit</span><span class="o">.</span><span class="n">median</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">   &lt;- wrong, sees the test set&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;median over training rows only: </span><span class="si">{</span><span class="n">train_part</span><span class="o">.</span><span class="n">median</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">   &lt;- correct&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>median over the whole dataset: 638.0   &lt;- wrong, sees the test set
+median over training rows only: 638.0   &lt;- correct
+</code></pre></div>
+<p>Identical, to the decimal point. So does it matter?</p>
+<p>Yes, and the reason is worth understanding. With 12,000 rows and a well-behaved
+column, using the whole dataset's median changes almost nothing — you got lucky.
+The same shortcut is severe when:</p>
+<ul>
+<li>the dataset is small (a few hundred rows, where a handful of test values move
+  the median),</li>
+<li>the statistic is sensitive to outliers (a mean, a max, a standard deviation),</li>
+<li>the transformation involves the <strong>target</strong> — encoding a category by its average
+  default rate is a leak the moment it is fitted on all rows (session 3),</li>
+<li>you resample or oversample before splitting, which copies the same row into
+  both sides.</li>
+</ul>
+<p>The rule costs you nothing to follow and occasionally saves the project. Follow
+it even when it looks pointless, because you cannot tell in advance which case
+you are in.</p>
+<hr />
+<h2 id="3-missing-values">3. Missing values</h2>
+<p>Two columns have gaps. The instinct is to fill them or drop them and move on.
+The correct first step is to ask <strong>why they are missing</strong>, because the answer
+determines what you are allowed to do.</p>
+<table>
+<thead>
+<tr>
+<th>Mechanism</th>
+<th>Plain meaning</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>MCAR</strong> — missing completely at random</td>
+<td>Gaps unrelated to anything</td>
+<td>A form was lost in transit</td>
+</tr>
+<tr>
+<td><strong>MAR</strong> — missing at random</td>
+<td>Gaps explained by <em>other columns you have</em></td>
+<td>Income undocumented for informal workers</td>
+</tr>
+<tr>
+<td><strong>MNAR</strong> — missing not at random</td>
+<td>Gaps explained by the missing value itself</td>
+<td>High earners decline to state income</td>
+</tr>
+</tbody>
+</table>
+<p>MCAR is safe to impute and rare. MAR is the common case and the interesting one:
+the missingness itself carries information. MNAR is dangerous and often needs a
+conversation with the business rather than a statistical fix.</p>
+<p>Which do we have? Look.</p>
+<div class="highlight"><pre><span></span><code><span class="n">income_missing</span> <span class="o">=</span> <span class="n">loans</span><span class="p">[</span><span class="s2">&quot;annual_income&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;share with no recorded income, by employment type&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">income_missing</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">loans</span><span class="p">[</span><span class="s2">&quot;employment_type&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+
+<span class="n">first_time</span> <span class="o">=</span> <span class="n">loans</span><span class="p">[</span><span class="s2">&quot;previous_loans&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">share with no credit score&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  first-time borrowers:&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">loans</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">first_time</span><span class="p">,</span> <span class="s2">&quot;credit_score&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="mi">3</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  borrowed before:     &quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">loans</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">~</span><span class="n">first_time</span><span class="p">,</span> <span class="s2">&quot;credit_score&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="mi">3</span><span class="p">))</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>share with no recorded income, by employment type
+employment_type
+Business Owner    0.015
+Informal          0.336
+Salaried          0.021
+Self-Employed     0.115
+
+share with no credit score
+  first-time borrowers: 0.218
+  borrowed before:      0.015
+</code></pre></div>
+<p>Not random at all.</p>
+<p>Informal workers are missing income roughly 17 times as often as salaried
+applicants — because they have no payslip to document. First-time borrowers are
+missing a credit score about 15 times as often as repeat borrowers — because a
+score is built from a borrowing history they do not have.</p>
+<p>This is textbook MAR, and it has a consequence people miss: <strong>the fact that a
+value is missing is itself a feature.</strong> "No documented income" tells you
+something real about an applicant.</p>
+<div class="highlight"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="p">(</span><span class="n">income_missing</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">loans</span><span class="p">[</span><span class="s2">&quot;employment_type&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#4C72B0&quot;</span><span class="p">,</span> <span class="n">rot</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;% missing income&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Missing income is concentrated in one group&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../02_data_preparation_files/02_data_preparation_28_0.png" /></p>
+<h3 id="what-dropna-costs">What <code>dropna()</code> costs</h3>
+<p>The one-line fix deletes rows. Count what leaves with them.</p>
+<div class="highlight"><pre><span></span><code><span class="n">complete</span> <span class="o">=</span> <span class="n">loans</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;rows kept:           </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">complete</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">loans</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">complete</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">loans</span><span class="p">)</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2"> deleted)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;default rate:        </span><span class="si">{</span><span class="n">complete</span><span class="p">[</span><span class="s1">&#39;defaulted&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">  (full data </span><span class="si">{</span><span class="n">loans</span><span class="p">[</span><span class="s1">&#39;defaulted&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;informal applicants: </span><span class="si">{</span><span class="p">(</span><span class="n">complete</span><span class="p">[</span><span class="s1">&#39;employment_type&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;Informal&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">  &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;(full data </span><span class="si">{</span><span class="p">(</span><span class="n">loans</span><span class="p">[</span><span class="s1">&#39;employment_type&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;Informal&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>rows kept:           10,118 of 12,000 (15.7% deleted)
+default rate:        13.2%  (full data 13.5%)
+informal applicants: 10.9%  (full data 14.8%)
+</code></pre></div>
+<p><code>dropna()</code> deleted 15.7% of the book and, with it, 38% of the informal
+applicants — 678 of 1,778. The surviving sample is <em>better documented and lower risk than
+reality</em> — so the model learns a population it will not meet, and it will meet
+informal applicants at the counter tomorrow morning.</p>
+<p>This is what makes missing-data handling an ethical question as well as a
+technical one. The rows that vanish are rarely random people.</p>
+<h3 id="imputation-done-correctly">Imputation, done correctly</h3>
+<table>
+<thead>
+<tr>
+<th>Strategy</th>
+<th>When</th>
+<th>Watch out</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Drop rows</td>
+<td>Gaps are tiny (&lt;1%) and MCAR</td>
+<td>Silently changes who your model represents</td>
+</tr>
+<tr>
+<td>Drop the column</td>
+<td>Mostly empty, or the gap is unfixable</td>
+<td>You may be dropping a strong signal</td>
+</tr>
+<tr>
+<td><strong>Median / mode fill</strong></td>
+<td>The default for MAR numeric and categorical data</td>
+<td>Shrinks variance; always pair with a flag</td>
+</tr>
+<tr>
+<td><strong>Missing indicator flag</strong></td>
+<td>Whenever missingness is informative</td>
+<td>One extra column per imputed feature</td>
+</tr>
+<tr>
+<td>Model-based (KNN, iterative)</td>
+<td>Small data, rich correlations</td>
+<td>Slow, easy to leak, hard to explain</td>
+</tr>
+</tbody>
+</table>
+<p>Median rather than mean, because money columns are skewed and one 40-million
+income drags a mean upward. And the flag, because "we had to guess this" is
+information the model should be allowed to use.</p>
+<div class="highlight"><pre><span></span><code><span class="n">features</span> <span class="o">=</span> <span class="n">loans</span><span class="p">[</span><span class="n">NUMERIC</span> <span class="o">+</span> <span class="n">CATEGORICAL_CLEAN</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="c1"># The flag must be created BEFORE filling, or there is nothing left to record.</span>
+<span class="n">features</span><span class="p">[</span><span class="s2">&quot;income_missing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="s2">&quot;annual_income&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">features</span><span class="p">[</span><span class="s2">&quot;score_missing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="s2">&quot;credit_score&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">drop_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
+<span class="p">)</span>
+
+<span class="n">medians</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">median</span><span class="p">()</span>          <span class="c1"># fitted on train</span>
+<span class="n">X_train</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">medians</span><span class="p">)</span>   <span class="c1"># applied to train</span>
+<span class="n">X_test</span> <span class="o">=</span> <span class="n">X_test</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">medians</span><span class="p">)</span>     <span class="c1"># and to test, using the TRAIN values</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;missing values left:&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">X_train</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span> <span class="nb">int</span><span class="p">(</span><span class="n">X_test</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;median income used for filling: NPR&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">medians</span><span class="p">[</span><span class="s1">&#39;annual_income&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">,.0f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>missing values left: 0 0
+median income used for filling: NPR 480,000
+</code></pre></div>
+<p>Three lines, in an order that matters: flag, split, then fill with training
+medians. Reverse any two of those and you have leaked.</p>
+<blockquote>
+<p><strong>Industry note — the flag that paid for itself.</strong>
+On this dataset the missing-indicator flags barely move the score, and we keep
+them anyway. On datasets where missingness is driven by the process — a field
+only filled in when a case is escalated, a reading only taken when a machine
+alarms — those flags are regularly among the strongest features in the model.
+They cost two lines. Add them, then check whether they earned their place.</p>
+</blockquote>
+<hr />
+<h2 id="4-categorical-variables">4. Categorical variables</h2>
+<p>Models take numbers. <code>sector</code> is a word. Something has to give.</p>
+<p><strong>Ordinal</strong> categories have a real order — small/medium/large, or a risk grade of
+A/B/C. Map them to integers that respect that order.</p>
+<p><strong>Nominal</strong> categories do not — <code>sector</code>, <code>branch</code>, <code>employment_type</code>. Mapping
+Trade to 1 and Tourism to 6 invents an ordering that does not exist and a model
+will believe it. Use <strong>one-hot encoding</strong>: one 0/1 column per value.</p>
+<div class="highlight"><pre><span></span><code><span class="n">encoded</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="n">loans</span><span class="p">[[</span><span class="s2">&quot;sector&quot;</span><span class="p">,</span> <span class="s2">&quot;employment_type&quot;</span><span class="p">,</span> <span class="s2">&quot;has_collateral&quot;</span><span class="p">]],</span>
+                         <span class="n">drop_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;3 categorical columns became </span><span class="si">{</span><span class="n">encoded</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> numeric columns&quot;</span><span class="p">)</span>
+<span class="n">encoded</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>3 categorical columns became 9 numeric columns
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>sector_Construction</th>
+      <th>sector_Manufacturing</th>
+      <th>sector_Service</th>
+      <th>sector_Tourism</th>
+      <th>sector_Trade</th>
+      <th>employment_type_Informal</th>
+      <th>employment_type_Salaried</th>
+      <th>employment_type_Self-Employed</th>
+      <th>has_collateral_Yes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p><code>drop_first=True</code> removes one column per category — with <code>has_collateral_Yes</code>
+present, a <code>has_collateral_No</code> column adds nothing. It matters for linear models
+(perfectly correlated columns make coefficients unstable) and is harmless
+elsewhere.</p>
+<h3 id="the-40-branch-problem">The 40-branch problem</h3>
+<div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;distinct branches:&quot;</span><span class="p">,</span> <span class="n">loans</span><span class="p">[</span><span class="s2">&quot;branch&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;one-hot columns if we encode it:&quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="n">loans</span><span class="p">[</span><span class="s2">&quot;branch&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">smallest branches by volume:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">loans</span><span class="p">[</span><span class="s2">&quot;branch&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>distinct branches: 40
+one-hot columns if we encode it: 40
+
+smallest branches by volume:
+branch
+Kathmandu-04     272
+Biratnagar-04    271
+Nepalgunj-03     270
+</code></pre></div>
+<p>High-cardinality categoricals are a genuine trap. Forty extra columns, most of
+them nearly empty, each giving the model a chance to memorise a handful of rows —
+and a new branch opening next year produces a category the encoder has never seen.</p>
+<p>Options, in the order you should consider them:</p>
+<ol>
+<li><strong>Leave it out</strong> and check whether the model actually suffers. Often it does not.</li>
+<li><strong>Group it</strong> — keep the top 10 branches, collapse the rest into <code>"Other"</code>.</li>
+<li><strong>Replace it with something meaningful</strong> — city, province, branch size,
+   branch age. Usually what you wanted from <code>branch</code> anyway.</li>
+<li><strong>Target encoding</strong> — replace each branch with its historical default rate.
+   Powerful, and a leak in waiting unless fitted inside a cross-validation fold.
+   Session 3.</li>
+</ol>
+<p>We leave <code>branch</code> out for now and revisit it when we do feature engineering.</p>
+<blockquote>
+<p><strong>Production note.</strong> <code>pd.get_dummies</code> is perfect for exploring and wrong for
+serving: it produces whatever columns the data happens to contain, so a new
+category or a missing one silently changes the shape of your matrix. In a
+deployed system use <code>OneHotEncoder(handle_unknown="ignore")</code> inside a
+pipeline, which remembers the training categories. That is session 7.</p>
+</blockquote>
+<hr />
+<h2 id="5-scaling-and-transforming-numbers">5. Scaling and transforming numbers</h2>
+<p><code>loan_amount</code> runs from 50,000 to 10,000,000. <code>tenure_months</code> runs from 6 to 60.
+To a model that measures distances or follows gradients, the first column shouts
+and the second whispers — not because it matters more, but because its units are
+bigger.</p>
+<p><strong>Models that need scaling:</strong> logistic regression, SVM, KNN, K-means, neural
+networks, anything regularised.
+<strong>Models that do not care:</strong> decision trees, random forests, gradient boosting.
+They split on order, and order survives any monotonic rescaling.</p>
+<div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">loans</span><span class="p">[[</span><span class="s2">&quot;loan_amount&quot;</span><span class="p">,</span> <span class="s2">&quot;tenure_months&quot;</span><span class="p">,</span> <span class="s2">&quot;annual_income&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;std&quot;</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>      loan_amount  tenure_months  annual_income
+mean     388948.0           26.0       585418.0
+std      347994.0           14.0       403040.0
+max    10000000.0           60.0      4604000.0
+</code></pre></div>
+<p>Before scaling, deal with <strong>skew</strong>. Money is almost never symmetric.</p>
+<div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;skew of loan_amount:      &quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">loans</span><span class="p">[</span><span class="s2">&quot;loan_amount&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">skew</span><span class="p">(),</span> <span class="mi">2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;skew of log(loan_amount): &quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">loans</span><span class="p">[</span><span class="s2">&quot;loan_amount&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">skew</span><span class="p">(),</span> <span class="mi">2</span><span class="p">))</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">))</span>
+<span class="n">loans</span><span class="p">[</span><span class="s2">&quot;loan_amount&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#4C72B0&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;loan_amount (skew 5.2)&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">loans</span><span class="p">[</span><span class="s2">&quot;loan_amount&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#55A868&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;log(loan_amount) (skew 0.05)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>skew of loan_amount:       5.19
+skew of log(loan_amount):  0.05
+</code></pre></div>
+<p><img alt="png" src="../02_data_preparation_files/02_data_preparation_42_1.png" /></p>
+<p>A long right tail becomes a tidy bell. Use <code>np.log1p</code> rather than <code>np.log</code> in
+practice — it handles zeros, which <code>log</code> does not.</p>
+<p>The transform is not compulsory. It helps linear models, which assume a roughly
+even spread of errors, and does nothing for trees. It also changes what a
+coefficient means: after a log transform, a coefficient describes <em>percentage</em>
+change, not rupees.</p>
+<h3 id="standardisation">Standardisation</h3>
+<div class="highlight"><pre><span></span><code><span class="n">scaler</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>          <span class="c1"># learns mean and std from TRAIN</span>
+<span class="n">X_train_scaled</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
+<span class="n">X_test_scaled</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>        <span class="c1"># uses the TRAIN mean and std</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;train mean (should be ~0):&quot;</span><span class="p">,</span> <span class="n">X_train_scaled</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;train std  (should be ~1):&quot;</span><span class="p">,</span> <span class="n">X_train_scaled</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;test mean  (NOT exactly 0, and that is correct):&quot;</span><span class="p">,</span> <span class="n">X_test_scaled</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>train mean (should be ~0): -0.0
+train std  (should be ~1): 1.0
+test mean  (NOT exactly 0, and that is correct): 0.001
+</code></pre></div>
+<p>The test mean is not zero, and it must not be. The scaler was fitted on the
+training data; the test set is being treated exactly as a live application will
+be — measured against statistics computed before it arrived.</p>
+<p>If your test set scales to a perfect mean of 0, you fitted the scaler on
+everything, and you have leaked.</p>
+<table>
+<thead>
+<tr>
+<th>Transform</th>
+<th>Use when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>StandardScaler</code></td>
+<td>Default. Roughly bell-shaped features</td>
+</tr>
+<tr>
+<td><code>MinMaxScaler</code></td>
+<td>You need a bounded [0, 1] range</td>
+</tr>
+<tr>
+<td><code>RobustScaler</code></td>
+<td>Heavy outliers — uses median and quartiles</td>
+</tr>
+<tr>
+<td><code>log1p</code></td>
+<td>Right-skewed money or count columns, applied before scaling</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-splitting-the-decision-that-outranks-the-rest">6. Splitting: the decision that outranks the rest</h2>
+<p>A split is a claim: <em>"the test set stands in for the data this model will see
+after launch."</em> Make the claim badly and every number downstream is decoration.</p>
+<p><strong>Random split</strong> — <code>train_test_split</code>, optionally stratified so both sides carry
+the same share of defaults. Appropriate when rows are independent and time is
+irrelevant.</p>
+<p><strong>Time-based split</strong> — train on the past, test on the future. Appropriate
+whenever predictions are made forward in time, which includes every loan, every
+churn model, and every demand forecast.</p>
+<p>Our model will be applied to applications that have not been submitted yet. So:</p>
+<div class="highlight"><pre><span></span><code><span class="n">cutoff</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s2">&quot;2024-07-01&quot;</span><span class="p">)</span>
+
+<span class="n">train_rows</span> <span class="o">=</span> <span class="n">loans</span><span class="p">[</span><span class="n">loans</span><span class="p">[</span><span class="s2">&quot;application_date&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">cutoff</span><span class="p">]</span>
+<span class="n">test_rows</span> <span class="o">=</span> <span class="n">loans</span><span class="p">[</span><span class="n">loans</span><span class="p">[</span><span class="s2">&quot;application_date&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">cutoff</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;train: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">train_rows</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> applications before </span><span class="si">{</span><span class="n">cutoff</span><span class="si">:</span><span class="s2">%d %b %Y</span><span class="si">}</span><span class="s2">, &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;default rate </span><span class="si">{</span><span class="n">train_rows</span><span class="p">[</span><span class="s1">&#39;defaulted&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;test:  </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">test_rows</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> applications after,  &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;default rate </span><span class="si">{</span><span class="n">test_rows</span><span class="p">[</span><span class="s1">&#39;defaulted&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>train: 9,029 applications before 01 Jul 2024, default rate 11.9%
+test:  2,971 applications after,  default rate 18.5%
+</code></pre></div>
+<p>Stop and look at those two numbers. The training period defaults at 11.9%; the
+test period at 18.5%. Under the random split we used earlier, both sides sat at
+13.5%, because randomising shuffled the two periods together.</p>
+<p>The random split was hiding something real: <strong>the later period behaves
+differently from the earlier one.</strong> A model tuned on the earlier period will be
+optimistic about the later one, and a random split would never have told you.</p>
+<p>Note the observation, do not chase it — session 8 is devoted to what causes this
+and how to detect it in production. For now, take the lesson: <em>how you split
+determines what you are able to notice.</em></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Always check the boundary actually holds.</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;latest in train:  </span><span class="si">{</span><span class="n">train_rows</span><span class="p">[</span><span class="s1">&#39;application_date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">%d %b %Y</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;earliest in test: </span><span class="si">{</span><span class="n">test_rows</span><span class="p">[</span><span class="s1">&#39;application_date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">%d %b %Y</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;no overlap:&quot;</span><span class="p">,</span>
+      <span class="n">train_rows</span><span class="p">[</span><span class="s2">&quot;application_date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">test_rows</span><span class="p">[</span><span class="s2">&quot;application_date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>latest in train:  30 Jun 2024
+earliest in test: 01 Jul 2024
+no overlap: True
+</code></pre></div>
+<p>Cut on a <strong>date</strong>, not on a row count. <code>iloc[:9000]</code> can land in the middle of a
+day and put applications from the same morning on both sides of the split — a
+small leak, and an annoying one to find later.</p>
+<table>
+<thead>
+<tr>
+<th>Split</th>
+<th>Use when</th>
+<th>Gotcha</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Random</td>
+<td>Rows independent, time irrelevant</td>
+<td>Hides time effects completely</td>
+</tr>
+<tr>
+<td>Stratified random</td>
+<td>Imbalanced target, time irrelevant</td>
+<td>Same</td>
+</tr>
+<tr>
+<td><strong>Time-based</strong></td>
+<td>Predicting forward in time</td>
+<td>Test set may be small; recent data is precious</td>
+</tr>
+<tr>
+<td>Group-based</td>
+<td>Repeated entities (borrowers, patients, devices)</td>
+<td>Needs a reliable group id</td>
+</tr>
+</tbody>
+</table>
+<p>A validation set is a third slice, carved out of training data, used for tuning
+so the test set stays untouched until the end. Session 6 sets that up properly
+with cross-validation.</p>
+<hr />
+<h2 id="7-the-order-of-operations">7. The order of operations</h2>
+<p>Every step so far has one rule attached: <em>learn it from training data, apply it
+everywhere</em>. The order that respects this:</p>
+<ol>
+<li><strong>Split first.</strong> Before imputing, encoding, scaling or resampling.</li>
+<li><strong>Create missingness flags</strong> — from raw values, before filling.</li>
+<li><strong>Fit the imputer on train</strong>, apply to train and test.</li>
+<li><strong>Fit the encoder on train</strong>, apply to both; unseen categories become zeros.</li>
+<li><strong>Fit the scaler on train</strong>, apply to both.</li>
+<li><strong>Resample for imbalance on train only</strong> (session 3) — never touch the test set.</li>
+<li>Train. Evaluate once, at the end.</li>
+</ol>
+<p>Doing this by hand is error-prone, which is exactly why <code>Pipeline</code> exists. We
+build it in session 7; until then, follow the order deliberately.</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">prepare_and_score</span><span class="p">(</span><span class="n">feature_columns</span><span class="p">,</span> <span class="n">add_flags</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">drop_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prepare, train, and report — so we can compare choices fairly.&quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">loans</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span> <span class="k">if</span> <span class="n">drop_missing</span> <span class="k">else</span> <span class="n">loans</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">feature_columns</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">add_flags</span><span class="p">:</span>
+        <span class="n">features</span><span class="p">[</span><span class="s2">&quot;income_missing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="s2">&quot;annual_income&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">features</span><span class="p">[</span><span class="s2">&quot;score_missing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="s2">&quot;credit_score&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">drop_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+        <span class="n">X</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;defaulted&quot;</span><span class="p">],</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;defaulted&quot;</span><span class="p">],</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
+    <span class="p">)</span>
+
+    <span class="n">medians</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">median</span><span class="p">()</span>
+    <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">medians</span><span class="p">),</span> <span class="n">X_test</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">medians</span><span class="p">)</span>
+
+    <span class="n">scaler</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">class_weight</span><span class="o">=</span><span class="s2">&quot;balanced&quot;</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_train</span><span class="p">),</span> <span class="n">y_train</span><span class="p">)</span>
+
+    <span class="n">probabilities</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_test</span><span class="p">))[:,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_test</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;roc_auc&quot;</span><span class="p">:</span> <span class="n">roc_auc_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">probabilities</span><span class="p">),</span>
+        <span class="s2">&quot;recall&quot;</span><span class="p">:</span> <span class="n">recall_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">predictions</span><span class="p">),</span>
+        <span class="s2">&quot;precision&quot;</span><span class="p">:</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">predictions</span><span class="p">),</span>
+    <span class="p">}</span>
+
+
+<span class="n">comparison</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">&quot;with the leak&quot;</span><span class="p">:</span> <span class="n">prepare_and_score</span><span class="p">(</span><span class="n">NUMERIC</span> <span class="o">+</span> <span class="n">CATEGORICAL</span><span class="p">),</span>
+    <span class="s2">&quot;leak removed&quot;</span><span class="p">:</span> <span class="n">prepare_and_score</span><span class="p">(</span><span class="n">NUMERIC</span> <span class="o">+</span> <span class="n">CATEGORICAL_CLEAN</span><span class="p">),</span>
+    <span class="s2">&quot;leak removed + flags&quot;</span><span class="p">:</span> <span class="n">prepare_and_score</span><span class="p">(</span><span class="n">NUMERIC</span> <span class="o">+</span> <span class="n">CATEGORICAL_CLEAN</span><span class="p">,</span> <span class="n">add_flags</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="s2">&quot;leak removed + dropna()&quot;</span><span class="p">:</span> <span class="n">prepare_and_score</span><span class="p">(</span><span class="n">NUMERIC</span> <span class="o">+</span> <span class="n">CATEGORICAL_CLEAN</span><span class="p">,</span> <span class="n">drop_missing</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="p">})</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">comparison</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>                         roc_auc  recall  precision
+with the leak              0.974   0.891      0.828
+leak removed               0.783   0.696      0.273
+leak removed + flags       0.782   0.694      0.275
+leak removed + dropna()    0.748   0.680      0.254
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">comparison</span><span class="p">[</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;#C44E52&quot;</span><span class="p">,</span> <span class="s2">&quot;#4C72B0&quot;</span><span class="p">,</span> <span class="s2">&quot;#4C72B0&quot;</span><span class="p">,</span> <span class="s2">&quot;#8C8C8C&quot;</span><span class="p">],</span> <span class="n">rot</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;ROC-AUC&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;The first bar is a lie; the rest are the project&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../02_data_preparation_files/02_data_preparation_53_0.png" /></p>
+<p>Read the table honestly.</p>
+<p><strong>The leak is worth 0.19 AUC of pure fantasy.</strong> It is the tallest bar and the
+only worthless one.</p>
+<p><strong>The missingness flags changed almost nothing here</strong> (0.783 to 0.782). We keep
+them because they cost two lines and because on the next dataset they will
+matter — but notice that we <em>checked</em> rather than assumed. A technique that
+should help and does not is a finding, not an embarrassment.</p>
+<p><strong>Imputing beat dropping</strong> (0.783 against 0.748). Keeping 1,882 imperfect rows
+was better than deleting them, and it also kept the informal applicants in the
+training population where they belong.</p>
+<p>The honest model is now the starting point for session 3, where we stop cleaning
+features and start building them.</p>
+<hr />
+<h2 id="your-turn">Your turn</h2>
+<p><strong>1. Finish the availability audit.</strong> Session 1 asked you to sort all 15 columns
+into <em>known at application time</em> / <em>known later</em> / <em>not sure</em>. Do it now with the
+leak in hand. Is <code>days_past_due_history</code> safe? What exactly would you ask the
+credit team to confirm it?</p>
+<p><strong>2. Break it deliberately.</strong> In <code>prepare_and_score</code>, compute <code>medians</code> from the
+full <code>X</code> instead of <code>X_train</code>, and fit the scaler on the full <code>X</code> too. Report the
+change in AUC. Explain why it is so small here and construct a situation where it
+would not be.</p>
+<p><strong>3. The dropna audit.</strong> Beyond <code>employment_type</code>, find two more ways the
+<code>dropna()</code> sample differs from the full dataset (try <code>previous_loans</code>, <code>sector</code>,
+<code>credit_score</code>). Write one sentence on who is being excluded from the model.</p>
+<p><strong>4. Group the branches.</strong> Keep the 10 largest branches, collapse the rest into
+<code>"Other"</code>, one-hot encode the result, and re-run <code>prepare_and_score</code>. Did 40
+categories buy anything? Does the grouped version?</p>
+<p><strong>5. Split by time.</strong> Change <code>prepare_and_score</code> to use the time-based split
+instead of <code>train_test_split</code>. Compare the AUC to the random-split version and
+explain the gap in one sentence. Which number would you put in front of the Head
+of Credit?</p>
+<p><strong>6. Plant your own leak.</strong> Add a column <code>late_payment_flag</code> that is <code>"Yes"</code> for
+90% of defaulters and 5% of everyone else. Re-run the model, then re-run the
+diagnostic from section 2 and confirm it catches your leak.</p>
+<hr />
+<h2 id="if-you-remember-nothing-else">If you remember nothing else</h2>
+<p><strong>A score that is too good is a bug report.</strong> Credit default does not yield
+AUC 0.97 to a first-attempt logistic regression. Suspicion is a skill.</p>
+<p><strong>Leakage is a timing question, not a statistics question.</strong> For every column,
+ask when the value is written, not what it means.</p>
+<p><strong>Split before you do anything else.</strong> Every imputer, encoder and scaler is
+fitted on the training data and applied to the test data. No exceptions, even
+when it looks harmless.</p>
+<p><strong>Missing is information.</strong> Find out why the gaps are there, flag them, and check
+who disappears when you call <code>dropna()</code> — it is rarely a random sample of people.</p>
+<p><strong>How you split decides what you can see.</strong> A random split on time-ordered data
+hid a real shift in this dataset completely.</p>
+<hr />
+<h2 id="glossary">Glossary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Data leakage</strong></td>
+<td>Information in training that will not be available at prediction time</td>
+</tr>
+<tr>
+<td><strong>Target leakage</strong></td>
+<td>A feature recorded after or because of the outcome</td>
+</tr>
+<tr>
+<td><strong>Train-test contamination</strong></td>
+<td>A preparation step fitted on data that includes the test set</td>
+</tr>
+<tr>
+<td><strong>Temporal leakage</strong></td>
+<td>Training on data from after the test period</td>
+</tr>
+<tr>
+<td><strong>Group leakage</strong></td>
+<td>The same entity appearing in both train and test</td>
+</tr>
+<tr>
+<td><strong>MCAR / MAR / MNAR</strong></td>
+<td>Missing completely at random / at random given other columns / not at random</td>
+</tr>
+<tr>
+<td><strong>Imputation</strong></td>
+<td>Filling missing values with an estimate</td>
+</tr>
+<tr>
+<td><strong>Missing indicator</strong></td>
+<td>A 0/1 column recording that a value was imputed</td>
+</tr>
+<tr>
+<td><strong>One-hot encoding</strong></td>
+<td>One binary column per category value</td>
+</tr>
+<tr>
+<td><strong>High cardinality</strong></td>
+<td>A categorical column with many distinct values (our 40 branches)</td>
+</tr>
+<tr>
+<td><strong>Standardisation</strong></td>
+<td>Rescaling to mean 0, standard deviation 1</td>
+</tr>
+<tr>
+<td><strong>Stratified split</strong></td>
+<td>A split preserving the class balance on both sides</td>
+</tr>
+</tbody>
+</table>
+<h2 id="further-reading">Further reading</h2>
+<ul>
+<li>scikit-learn User Guide, <em>Preprocessing data</em> and <em>Common pitfalls — data
+  leakage</em> — the second is short, official, and should be required reading.</li>
+<li>Kaufman, Rosset and Perlich, <em>Leakage in Data Mining</em> (KDD 2011) — the paper
+  that named the problem, full of real competition-winning leaks.</li>
+<li>Chip Huyen, <em>Designing Machine Learning Systems</em>, chapter 4 — training data,
+  sampling, and labelling in production settings.</li>
+<li>Gelman and Hill on missing data mechanisms, for the statistics behind
+  MCAR/MAR/MNAR.</li>
+</ul>
+<hr />
+<p><strong>Next session:</strong> <em>Feature Engineering</em> — building features that are not in the
+file, selecting the ones that earn their place, and handling the 13.5% class
+imbalance we have been quietly ignoring.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../01_problem_framing/" class="btn btn-neutral float-left" title="1. ML Problem Framing and the Industry Workflow"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright &copy; 2026 - Aayush Raj Regmi</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../01_problem_framing/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../javascripts/mathjax.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

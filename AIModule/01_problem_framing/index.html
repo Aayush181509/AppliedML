@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>1. ML Problem Framing and the Industry Workflow - Applied ML</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "1. ML Problem Framing and the Industry Workflow";
+        var mkdocs_page_input_path = "AIModule/01_problem_framing.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Applied ML
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Welcome</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../InstallationGuide/">Installation Guide</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Applied ML in Production</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">1. ML Problem Framing and the Industry Workflow</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-work-through-this">How to work through this</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#learning-objectives">Learning objectives</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#1-the-map-crisp-dm">1. The map: CRISP-DM</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#what-the-phases-involve">What the phases involve</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#the-module-on-one-map">The module on one map</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-phase-1-business-understanding">2. Phase 1 — Business Understanding</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#the-request">The request</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-is-this-a-machine-learning-problem-at-all">3. Is this a machine learning problem at all?</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#when-the-answer-is-do-not-use-ml">When the answer is "do not use ML"</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-four-ways-to-frame-the-same-request">4. Four ways to frame the same request</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-from-business-objective-to-ml-specification">5. From business objective to ML specification</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#the-point-in-time-rule">The point-in-time rule</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-baselines-before-models">6. Baselines before models</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#bringing-money-into-it">Bringing money into it</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-success-criteria-you-can-be-held-to">7. Success criteria you can be held to</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#8-the-project-charter">8. The project charter</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#9-the-whole-journey-on-one-page">9. The whole journey on one page</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#your-turn">Your turn</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#if-you-remember-nothing-else">If you remember nothing else</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#glossary">Glossary</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#further-reading">Further reading</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02_data_preparation/">2. Data Preparation for ML</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Applied ML</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Applied ML in Production</li>
+      <li class="breadcrumb-item active">1. ML Problem Framing and the Industry Workflow</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="ml-problem-framing-and-the-industry-workflow">ML Problem Framing and the Industry Workflow</h1>
+<p><strong>Applied ML in Production · Session 1</strong></p>
+<hr />
+<p>A team can know a dozen algorithms, explain gradient descent on a whiteboard, sit
+down in front of a real business problem — and freeze. Knowing the tools is not
+knowing the process.</p>
+<p>Projects rarely fail because someone chose logistic regression over a random
+forest. They fail because "success" was never defined, because a crucial field
+did not exist when the model ran, or because the model worked and nobody used it.</p>
+<p>So this session covers the process before the modelling: the map the industry
+follows, and its first stop — turning a sentence a manager says into a
+specification an engineer can build and a business can judge.</p>
+<p>We write no clever model today. We decide what "good" means.</p>
+<h2 id="how-to-work-through-this">How to work through this</h2>
+<p>Run every code cell (<code>Shift + Enter</code>), look at the output, <em>then</em> read the
+commentary underneath. The code here is deliberately short — counting, sorting,
+one logistic regression — because today's difficulty is judgement, not syntax.</p>
+<p>Cells build on each other, so if something errors, run from the top.</p>
+<h2 id="learning-objectives">Learning objectives</h2>
+<p>After this session you will be able to:</p>
+<ul>
+<li>Name the six phases of the <strong>CRISP-DM</strong> workflow and say what each one asks.</li>
+<li>Trace a business request back to the <strong>decision</strong> it is supposed to change.</li>
+<li>Apply a checklist that separates problems ML can help with from problems it
+  cannot, and name three cases where the right answer is "do not use ML".</li>
+<li>Frame one business request as four different ML problems and explain what each
+  framing costs and buys.</li>
+<li>Write an ML specification: target, unit, population, decision point, horizon,
+  output, metric, constraints.</li>
+<li>Build <strong>baselines</strong> before modelling and use them to set the bar a model must clear.</li>
+<li>Produce a project charter that the rest of this module builds on.</li>
+</ul>
+<h2 id="setup">Setup</h2>
+<p>One cell, run once. It loads the module's spine dataset — about 12,000 SME loan
+applications from a Nepali lender, spanning 2023 and 2024.</p>
+<p>The <code>find_data</code> helper walks up from wherever the notebook is running until it
+finds the repository's <code>data/</code> folder, so the notebook works no matter which
+directory you started Jupyter from.</p>
+<div class="highlight"><pre><span></span><code><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="s2">&quot;axes.grid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;grid.alpha&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">})</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.width&quot;</span><span class="p">,</span> <span class="mi">120</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">find_data</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;loan_default.csv&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span> <span class="o">*</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">]:</span>
+        <span class="n">candidate</span> <span class="o">=</span> <span class="n">folder</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span> <span class="o">/</span> <span class="n">filename</span>
+        <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">candidate</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;could not find data/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="n">loans</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">find_data</span><span class="p">(),</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;application_date&quot;</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">loans</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> applications, </span><span class="si">{</span><span class="n">loans</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> columns&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;default rate: </span><span class="si">{</span><span class="n">loans</span><span class="p">[</span><span class="s1">&#39;defaulted&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">loans</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>12,000 applications, 15 columns
+default rate: 13.5%
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>loan_id</th>
+      <th>application_date</th>
+      <th>branch</th>
+      <th>sector</th>
+      <th>employment_type</th>
+      <th>loan_amount</th>
+      <th>tenure_months</th>
+      <th>interest_rate</th>
+      <th>annual_income</th>
+      <th>credit_score</th>
+      <th>has_collateral</th>
+      <th>previous_loans</th>
+      <th>days_past_due_history</th>
+      <th>recovery_agent_assigned</th>
+      <th>defaulted</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>NL200000</td>
+      <td>2023-01-01</td>
+      <td>Birgunj-01</td>
+      <td>Service</td>
+      <td>Business Owner</td>
+      <td>417000.0</td>
+      <td>36</td>
+      <td>10.28</td>
+      <td>194000.0</td>
+      <td>652.0</td>
+      <td>Yes</td>
+      <td>2</td>
+      <td>40</td>
+      <td>Yes</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>NL200001</td>
+      <td>2023-01-01</td>
+      <td>Biratnagar-03</td>
+      <td>Service</td>
+      <td>Self-Employed</td>
+      <td>154000.0</td>
+      <td>12</td>
+      <td>9.82</td>
+      <td>NaN</td>
+      <td>695.0</td>
+      <td>Yes</td>
+      <td>1</td>
+      <td>0</td>
+      <td>No</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>NL200002</td>
+      <td>2023-01-01</td>
+      <td>Kathmandu-03</td>
+      <td>Trade</td>
+      <td>Salaried</td>
+      <td>163000.0</td>
+      <td>24</td>
+      <td>13.04</td>
+      <td>948000.0</td>
+      <td>565.0</td>
+      <td>No</td>
+      <td>2</td>
+      <td>22</td>
+      <td>No</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<hr />
+<h2 id="1-the-map-crisp-dm">1. The map: CRISP-DM</h2>
+<p>Before touching the problem, here is the map. <strong>CRISP-DM</strong> — the Cross-Industry
+Standard Process for Data Mining — is a checklist of the six stages nearly every
+data project moves through. It was written in the late 1990s and it is still the
+default playbook in industry, because the shape of the work has not changed.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Phase</th>
+<th>The question it asks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Business Understanding</strong></td>
+<td>What are we trying to achieve, and how will we know we succeeded?</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Data Understanding</strong></td>
+<td>What data do we have, and what shape is it in?</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Data Preparation</strong></td>
+<td>How do we turn raw data into something a model can eat?</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Modelling</strong></td>
+<td>Which algorithm, trained how?</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Evaluation</strong></td>
+<td>Did it work, and is it good enough to trust?</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Deployment</strong></td>
+<td>How does it reach the person who makes the decision, and stay healthy?</td>
+</tr>
+</tbody>
+</table>
+<center>
+<img src="images/crispdm.png" width="620">
+
+*Fig: the CRISP-DM process. Note the arrows going backwards.*
+</center>
+
+<p>Three things about that diagram are worth more than the phase names themselves.</p>
+<p><strong>It is a loop, not a line.</strong> Evaluation sends you back to business
+understanding. Modelling sends you back to preparation. The arrow you travel most
+often in a real project points backwards.</p>
+<p><strong>Data sits in the middle.</strong> Every phase touches it, and every phase can
+contaminate it.</p>
+<p><strong>The effort is front-loaded.</strong> On typical projects, business understanding, data
+understanding and data preparation together take roughly two thirds of the time.
+Modelling — the part everyone shows up for — is nearer a tenth.</p>
+<h3 id="what-the-phases-involve">What the phases involve</h3>
+<p>A little more detail, because the names are vague on their own:</p>
+<ul>
+<li><strong>Business Understanding</strong> — define the problem, the people affected, the data
+  and resources available, and what success will look like. Today.</li>
+<li><strong>Data Understanding</strong> — acquire the data (files, databases, web scraping and
+  APIs, streams) and explore it: summaries, distributions, correlations, quality
+  checks. Data is <strong>structured</strong> (tables, like ours) or <strong>unstructured</strong> (text,
+  images, audio) — most of the world's data is the second kind.</li>
+<li><strong>Data Preparation</strong> — clean, encode, transform, split. The biggest slice of
+  the work on nearly every project.</li>
+<li><strong>Modelling</strong> — choose an algorithm, train it, tune it.</li>
+<li><strong>Evaluation</strong> — check it against the success criteria, not just the metric,
+  and find where it fails.</li>
+<li><strong>Deployment</strong> — three parts that students always underestimate: write up what
+  you built, wrap the model in something the world can call, and monitor it for
+  quiet decay.</li>
+</ul>
+<blockquote>
+<p>A complete CRISP-DM walkthrough on a different problem — predicting school
+grades, all six phases in one sitting — is in
+<code>reference/MLWorkflow.ipynb</code>. Read it alongside this module if you want the
+whole loop end to end before we take it slowly, phase by phase.</p>
+</blockquote>
+<h3 id="the-module-on-one-map">The module on one map</h3>
+<p>Each of our ten sessions lives somewhere on that loop:</p>
+<table>
+<thead>
+<tr>
+<th>CRISP-DM phase</th>
+<th>Sessions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Business Understanding</td>
+<td><strong>Session 1 — today</strong></td>
+</tr>
+<tr>
+<td>2. Data Understanding</td>
+<td>Session 2</td>
+</tr>
+<tr>
+<td>3. Data Preparation</td>
+<td>Sessions 2, 3</td>
+</tr>
+<tr>
+<td>4. Modelling</td>
+<td>Sessions 4, 6, 7</td>
+</tr>
+<tr>
+<td>5. Evaluation</td>
+<td>Sessions 5, 6</td>
+</tr>
+<tr>
+<td>6. Deployment</td>
+<td>Sessions 8, 9, 10</td>
+</tr>
+</tbody>
+</table>
+<p>Today is Phase 1 in full. It is the phase everyone is tempted to skip and the one
+that most often decides whether the project lives.</p>
+<hr />
+<h2 id="2-phase-1-business-understanding">2. Phase 1 — Business Understanding</h2>
+<p>Phase 1 asks six questions. The infographic below is the version pinned above
+many an industry desk; the Business Understanding ring at the top is our whole
+session.</p>
+<center>
+<img src="images/crispdminfographics.png" width="760">
+
+*Fig: CRISP-DM in detail. Phase 1 — the ring at the top — is today.*
+</center>
+
+<table>
+<thead>
+<tr>
+<th>Phase 1 question</th>
+<th>Where we answer it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>What will you do differently?</td>
+<td>Section 2, below</td>
+</tr>
+<tr>
+<td>Who will be impacted?</td>
+<td>Section 2</td>
+</tr>
+<tr>
+<td>What are the risks?</td>
+<td>Section 3</td>
+</tr>
+<tr>
+<td>How much will errors cost?</td>
+<td>Section 6</td>
+</tr>
+<tr>
+<td>How will you measure success?</td>
+<td>Section 7</td>
+</tr>
+<tr>
+<td>Who can help?</td>
+<td>The charter, section 8</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-request">The request</h3>
+<p>Here is the email. Yours will look almost exactly like this.</p>
+<blockquote>
+<p><em>"Our default rate is climbing and the credit team can't keep up with volume.
+Decisions are inconsistent between branches. Can we use AI to predict which
+loans will go bad?"</em>
+— Head of Credit</p>
+</blockquote>
+<p>That is a complaint plus a proposed solution. It is not yet a problem statement.
+Ask three questions, in this order.</p>
+<p><strong>1. What decision does this change?</strong>
+Not "what would we predict" — what would somebody <em>do differently</em>. If the honest
+answer is "we would understand our risk better", stop. Knowing is not doing. Here
+the candidate decisions are: approve or decline, price differently, require
+collateral, or send the file to a senior officer.</p>
+<p><strong>2. Who makes that decision, and when?</strong>
+A credit officer, when the application is submitted, before any money moves. That
+moment is the <strong>decision point</strong>, and it fixes what information the model may
+use. Anything recorded later is off limits — it will not exist on the day.</p>
+<p><strong>3. What do they do today, and how well does it work?</strong>
+Manual assessment against a policy document. "How well" is a number we compute in
+section 5, and it becomes the bar the model must clear.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># How often is this decision made? Volume is what justifies automating anything.</span>
+<span class="n">per_month</span> <span class="o">=</span> <span class="n">loans</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">loans</span><span class="p">[</span><span class="s2">&quot;application_date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">to_period</span><span class="p">(</span><span class="s2">&quot;M&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;applications per month: about </span><span class="si">{</span><span class="n">per_month</span><span class="o">.</span><span class="n">median</span><span class="p">()</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;branches: </span><span class="si">{</span><span class="n">loans</span><span class="p">[</span><span class="s1">&#39;branch&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;applications per branch per month: about </span><span class="si">{</span><span class="n">per_month</span><span class="o">.</span><span class="n">median</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">loans</span><span class="p">[</span><span class="s1">&#39;branch&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">per_month</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;#4C72B0&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Applications per month&quot;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>applications per month: about 498
+branches: 40
+applications per branch per month: about 12
+</code></pre></div>
+<p><img alt="png" src="../01_problem_framing_files/01_problem_framing_9_1.png" /></p>
+<p>About 500 applications a month, roughly 12 per branch. That single number tells
+us three things:</p>
+<ul>
+<li>It is <strong>enough volume to be worth automating</strong>. A decision made twice a year
+  needs a good afternoon of analysis, not a model.</li>
+<li>It is <strong>low enough to keep a human in the loop</strong>. Twelve files per branch per
+  month can be reviewed by hand, which makes "rank the risky ones for review" a
+  realistic design — remember that in section 4.</li>
+<li>The <strong>latency requirement is trivial</strong>: a few seconds is plenty. That removes a
+  whole category of engineering complexity from the project.</li>
+</ul>
+<blockquote>
+<p><strong>Industry note — the model nobody used.</strong>
+The commonest failure in industry is not a bad model; it is a good model that
+changes no decision. Scores appear in a dashboard, nobody is accountable for
+acting on them, and the project quietly ends. Before writing code, name the
+person whose workflow changes and the button they press. If you cannot, you are
+building a report — and a report has a much cheaper implementation.</p>
+</blockquote>
+<hr />
+<h2 id="3-is-this-a-machine-learning-problem-at-all">3. Is this a machine learning problem at all?</h2>
+<p>Machine learning earns its place under specific conditions. Run the checklist
+before committing.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Condition</th>
+<th>This problem</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>The decision is <strong>repeated</strong> at volume</td>
+<td>~500 a month, yes</td>
+</tr>
+<tr>
+<td>2</td>
+<td>The outcome is <strong>recorded</strong> as data</td>
+<td><code>defaulted</code> exists for past loans, yes</td>
+</tr>
+<tr>
+<td>3</td>
+<td>The pattern is real but <strong>not a simple stable rule</strong></td>
+<td>Risk depends on several interacting factors, yes</td>
+</tr>
+<tr>
+<td>4</td>
+<td>The past <strong>resembles</strong> the future</td>
+<td>Partly — lending conditions change. Record this as a risk</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Errors are <strong>survivable</strong> and their costs known</td>
+<td>A wrong decline annoys; a wrong approve costs money. Both bounded</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Someone will <strong>act</strong> on the output</td>
+<td>A credit officer, at submission, yes</td>
+</tr>
+</tbody>
+</table>
+<p>Condition 4 is the one people wave through. Write it down as a risk now; session
+8 measures what happens when the world moves under a model that assumed it would not.</p>
+<h3 id="when-the-answer-is-do-not-use-ml">When the answer is "do not use ML"</h3>
+<ul>
+<li><strong>A rule already works.</strong> If policy says "decline anyone with an unpaid
+  judgement", implement the rule. A model that learns an existing rule adds
+  failure modes and subtracts transparency.</li>
+<li><strong>There are no labels.</strong> "Predict which customers are unhappy", with no record
+  of unhappiness, is a data-collection project wearing an ML costume.</li>
+<li><strong>The decision is one-off.</strong> Choosing a head office location is analysis.</li>
+<li><strong>The explanation must be legal, not statistical.</strong> If a regulator demands the
+  exact reason for every decline, your model choices narrow sharply.</li>
+<li><strong>The inputs will not exist at decision time.</strong> The strongest column in your
+  extract may be recorded only after the outcome. Hold that thought — it is the
+  whole of session 2.</li>
+</ul>
+<hr />
+<h2 id="4-four-ways-to-frame-the-same-request">4. Four ways to frame the same request</h2>
+<p>"Predict which loans go bad" maps onto at least four different ML problems. Same
+data, completely different systems.</p>
+<table>
+<thead>
+<tr>
+<th>Framing</th>
+<th>Target</th>
+<th>Output</th>
+<th>Decision it supports</th>
+<th>What it costs you</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Binary classification</strong></td>
+<td><code>defaulted</code> (0/1)</td>
+<td>approve / decline</td>
+<td>Automated accept–reject</td>
+<td>Throws away <em>how</em> risky; needs a threshold someone must own</td>
+</tr>
+<tr>
+<td><strong>Regression</strong></td>
+<td>rupees lost on this loan</td>
+<td>a number</td>
+<td>Risk-based pricing, provisioning</td>
+<td>We do not have this target — it would need recovery records</td>
+</tr>
+<tr>
+<td><strong>Ranking</strong></td>
+<td>a risk score</td>
+<td>a queue</td>
+<td>"Review the riskiest 20% by hand"</td>
+<td>States no decision itself; a human must act on the order</td>
+</tr>
+<tr>
+<td><strong>Unsupervised</strong></td>
+<td>none</td>
+<td>applicant segments</td>
+<td>Portfolio understanding, policy design</td>
+<td>No target, so no direct accuracy claim</td>
+</tr>
+</tbody>
+</table>
+<p>What changes between the rows is not the algorithm — it is the <strong>label</strong> and the
+<strong>shape of the deployed system</strong>. Framing is a product decision that happens to be
+made by the data person.</p>
+<p>Ranking suits this business better than students expect. With 12 files per branch
+per month, the lender does not need a machine that says yes or no. It needs one
+that says <em>look at these six first</em>.</p>
+<p>The plot below is a <strong>capture curve</strong>: review the riskiest X% of applications by
+hand, and what share of all defaults do you get in front of?</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># A crude risk score — no model, just arithmetic on two obvious risk drivers.</span>
+<span class="c1"># (Missing credit scores are filled with the median to keep this simple;</span>
+<span class="c1">#  session 2 shows why that shortcut is not free.)</span>
+<span class="n">score</span> <span class="o">=</span> <span class="p">(</span><span class="mi">700</span> <span class="o">-</span> <span class="n">loans</span><span class="p">[</span><span class="s2">&quot;credit_score&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">640</span><span class="p">))</span> <span class="o">/</span> <span class="mi">100</span> <span class="o">+</span> <span class="n">loans</span><span class="p">[</span><span class="s2">&quot;days_past_due_history&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">45</span>
+
+<span class="n">ranked</span> <span class="o">=</span> <span class="n">loans</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">score</span><span class="o">=</span><span class="n">score</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;score&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">caught</span> <span class="o">=</span> <span class="n">ranked</span><span class="p">[</span><span class="s2">&quot;defaulted&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span> <span class="o">/</span> <span class="n">ranked</span><span class="p">[</span><span class="s2">&quot;defaulted&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span>
+<span class="n">reviewed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ranked</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">ranked</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">reviewed</span><span class="p">,</span> <span class="n">caught</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;crude risk score&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;reviewing at random&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">% o</span><span class="s2">f applications reviewed by hand&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">% o</span><span class="s2">f all defaults caught&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Capture curve: what a review queue buys you&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;reviewing the riskiest 20% catches </span><span class="si">{</span><span class="n">caught</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.20</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">ranked</span><span class="p">))]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">% of all defaults&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../01_problem_framing_files/01_problem_framing_13_0.png" /></p>
+<div class="highlight"><pre><span></span><code>reviewing the riskiest 20% catches 43% of all defaults
+</code></pre></div>
+<p>Two lines of arithmetic, no training, and the queue already finds twice as many
+defaults as reviewing the same number of files at random. That is a picture you
+can put in front of the Head of Credit without naming a single algorithm.</p>
+<p>For the rest of the module we take the <strong>binary classification</strong> framing: it
+supports an automated decision, and its metrics (session 5) are the ones the
+syllabus is built around. Keep ranking in your pocket — it is often what ships
+first, because it keeps a human in the loop while trust is earned.</p>
+<hr />
+<h2 id="5-from-business-objective-to-ml-specification">5. From business objective to ML specification</h2>
+<p>This is the translation step. A business objective is a sentence about money or
+risk. An ML objective is a precise statement about a target variable. They are
+never the same sentence.</p>
+<table>
+<thead>
+<tr>
+<th>Business objective</th>
+<th>ML objective</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Reduce credit losses without shrinking the book"</td>
+<td>"Predict, at application time, the probability that a loan will be recorded as defaulted within 12 months"</td>
+</tr>
+</tbody>
+</table>
+<p>Everything vague has been removed: <em>when</em> we predict, <em>what</em> we predict, over
+<em>what horizon</em>, in <em>what form</em> — a probability, not a yes/no, because the
+threshold is a separate business-owned decision (session 5).</p>
+<p>The same move works on any request. A school wants to <em>"spot students at risk of
+a poor final grade early enough to help them"</em>. A counsellor can only reach a
+handful of students, so the wish becomes: <em>"predict a student's final grade from
+information available at the start of the year, and be within about two grade
+points"</em> — a regression problem with a stated tolerance. That worked example runs
+end to end in <code>reference/MLWorkflow.ipynb</code>.</p>
+<p>A complete specification answers nine questions.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>This project</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Target</strong></td>
+<td><code>defaulted</code> — 1 if the loan was recorded as defaulted</td>
+</tr>
+<tr>
+<td><strong>Unit of prediction</strong></td>
+<td>One loan application</td>
+</tr>
+<tr>
+<td><strong>Population</strong></td>
+<td>SME working-capital applications, all 40 branches</td>
+</tr>
+<tr>
+<td><strong>Decision point</strong></td>
+<td>Application submitted, before disbursement</td>
+</tr>
+<tr>
+<td><strong>Features</strong></td>
+<td>Only fields that exist <em>at that moment</em></td>
+</tr>
+<tr>
+<td><strong>Horizon</strong></td>
+<td>Default observed within 12 months of disbursement</td>
+</tr>
+<tr>
+<td><strong>Output</strong></td>
+<td>A probability between 0 and 1</td>
+</tr>
+<tr>
+<td><strong>Offline metric</strong></td>
+<td>Chosen in session 5</td>
+</tr>
+<tr>
+<td><strong>Constraints</strong></td>
+<td>Seconds per decision; declines must be explainable; no protected attributes</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-point-in-time-rule">The point-in-time rule</h3>
+<blockquote>
+<p>For every column, ask: <strong>would this value exist, for this applicant, at the
+moment the decision is made?</strong> If the answer is "no" or "not sure", it is not a
+feature until somebody proves otherwise.</p>
+</blockquote>
+<p>This sounds obvious and is broken constantly, because extracts are assembled from
+whatever the warehouse holds <em>today</em> — including columns written long after the
+decision was made. A model trained on those looks superb in a notebook and
+collapses in production, where they are empty.</p>
+<div class="highlight"><pre><span></span><code><span class="n">TARGET</span> <span class="o">=</span> <span class="s2">&quot;defaulted&quot;</span>
+<span class="n">candidate_features</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">loans</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;loan_id&quot;</span><span class="p">,</span> <span class="s2">&quot;application_date&quot;</span><span class="p">,</span> <span class="n">TARGET</span><span class="p">]]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;target: </span><span class="si">{</span><span class="n">TARGET</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">candidate_features</span><span class="p">)</span><span class="si">}</span><span class="s2"> candidate features:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">candidate_features</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Candidate, not confirmed — each one still has to pass the point-in-time rule.&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>target: defaulted
+12 candidate features:
+branch, sector, employment_type, loan_amount, tenure_months, interest_rate, annual_income, credit_score, has_collateral, previous_loans, days_past_due_history, recovery_agent_assigned
+
+Candidate, not confirmed — each one still has to pass the point-in-time rule.
+</code></pre></div>
+<p>Auditing that list is the first exercise at the end of this notebook, and session
+2 opens with the answer.</p>
+<blockquote>
+<p><strong>Industry note — the warehouse contains the future.</strong>
+Warehouse tables are updated as life happens: a customer status is overwritten
+when the customer churns, a case owner is filled in when a case is opened.
+Query that table a year later and every row quietly contains information from
+<em>after</em> the moment you are pretending to stand in. This is why mature teams
+keep dated snapshots rather than live tables.</p>
+</blockquote>
+<hr />
+<h2 id="6-baselines-before-models">6. Baselines before models</h2>
+<p>A baseline is a cheap method whose score you must beat to justify anything more
+expensive. Three levels, always in this order:</p>
+<ol>
+<li><strong>Constant</strong> — always predict the majority class. Exposes metrics that lie.</li>
+<li><strong>Rule</strong> — the heuristic the business already uses. This is what you are
+   replacing, so this is the real bar.</li>
+<li><strong>Simple model</strong> — logistic regression on a few obvious features. Tells you
+   what "easy machine learning" is worth here.</li>
+</ol>
+<p>Only then does anything complicated get to enter the conversation.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogisticRegression</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">precision_score</span><span class="p">,</span> <span class="n">recall_score</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
+
+<span class="n">FEATURES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;loan_amount&quot;</span><span class="p">,</span> <span class="s2">&quot;tenure_months&quot;</span><span class="p">,</span> <span class="s2">&quot;interest_rate&quot;</span><span class="p">,</span> <span class="s2">&quot;previous_loans&quot;</span><span class="p">]</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">loans</span><span class="p">[</span><span class="n">FEATURES</span><span class="p">]</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">loans</span><span class="p">[</span><span class="n">TARGET</span><span class="p">]</span>
+
+<span class="c1"># A random, stratified split. How to split properly is itself a design decision — session 2.</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;train </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> rows, test </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> rows&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>train 9,000 rows, test 3,000 rows
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">predictions</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="c1"># 1. Constant: nobody ever defaults.</span>
+<span class="n">predictions</span><span class="p">[</span><span class="s2">&quot;always predict &#39;repaid&#39;&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y_test</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+<span class="c1"># 2. The existing policy rule (a missing score means the rule stays silent).</span>
+<span class="n">credit_score</span> <span class="o">=</span> <span class="n">loans</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">X_test</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s2">&quot;credit_score&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">999</span><span class="p">)</span>
+<span class="n">predictions</span><span class="p">[</span><span class="s2">&quot;rule: credit_score &lt; 600&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">credit_score</span> <span class="o">&lt;</span> <span class="mi">600</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+
+<span class="c1"># 3. Logistic regression on four obvious features.</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">class_weight</span><span class="o">=</span><span class="s2">&quot;balanced&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="n">predictions</span><span class="p">[</span><span class="s2">&quot;logistic regression&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+
+<span class="n">results</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="n">name</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;accuracy&quot;</span><span class="p">:</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">),</span>
+        <span class="s2">&quot;precision&quot;</span><span class="p">:</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">zero_division</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+        <span class="s2">&quot;recall&quot;</span><span class="p">:</span> <span class="n">recall_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">zero_division</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+        <span class="s2">&quot;flagged&quot;</span><span class="p">:</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">y_pred</span> <span class="ow">in</span> <span class="n">predictions</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<span class="p">})</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>                          accuracy  precision  recall  flagged
+always predict &#39;repaid&#39;      0.865      0.000   0.000    0.000
+rule: credit_score &lt; 600     0.695      0.230   0.536    0.314
+logistic regression          0.696      0.253   0.642    0.342
+</code></pre></div>
+<p>Read that table slowly, because it contains the most important trap in applied
+machine learning.</p>
+<p><strong>The do-nothing baseline has the best accuracy.</strong> Predicting that nobody ever
+defaults is right 86.5% of the time and catches zero defaults. Any project
+reporting "86% accuracy" on this dataset has reported nothing at all.</p>
+<p>The rule catches about half the defaults, at the cost of flagging a third of the
+book. The logistic regression catches more and flags more. Neither is good yet —
+their job today is to be the number the real work must beat.</p>
+<p>Change the metric and the winner changes. That is the normal state of affairs,
+and it is why the metric must be agreed <em>before</em> modelling starts. Session 5 is
+devoted to choosing it properly.</p>
+<h3 id="bringing-money-into-it">Bringing money into it</h3>
+<p>Metrics are proxies. The business cares about rupees. Any set of predictions
+becomes a cost estimate as soon as we state two numbers:</p>
+<ul>
+<li>A <strong>missed default</strong> (approved, then defaulted) loses roughly 55% of the loan
+  amount after recovery.</li>
+<li>A <strong>false alarm</strong> (declined a loan that would have been repaid) loses the
+  interest margin, roughly 4.5% of the loan amount.</li>
+</ul>
+<p>Both are guesses until the credit team confirms them — and getting them confirmed
+is your job, not theirs.</p>
+<div class="highlight"><pre><span></span><code><span class="n">amounts</span> <span class="o">=</span> <span class="n">loans</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">X_test</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s2">&quot;loan_amount&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+<span class="n">actual</span> <span class="o">=</span> <span class="n">y_test</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">y_pred</span> <span class="ow">in</span> <span class="n">predictions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">missed</span> <span class="o">=</span> <span class="n">amounts</span><span class="p">[(</span><span class="n">actual</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">y_pred</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="mf">0.55</span>
+    <span class="n">false_alarm</span> <span class="o">=</span> <span class="n">amounts</span><span class="p">[(</span><span class="n">actual</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">y_pred</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="mf">0.045</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NPR </span><span class="si">{</span><span class="n">missed</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">false_alarm</span><span class="si">:</span><span class="s2">&gt;13,.0f</span><span class="si">}</span><span class="s2">   </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>NPR   103,513,300   always predict &#39;repaid&#39;
+NPR    64,961,030   rule: credit_score &lt; 600
+NPR    44,181,625   logistic regression
+</code></pre></div>
+<p>The ordering just flipped. Under accuracy, "never decline anyone" won. Under
+money it is the most expensive option on the table, because a missed default
+costs about twelve times what a false alarm does.</p>
+<p>That is the point of framing: same predictions, same data, two different
+conclusions — and only one of them is the conclusion the business acts on.</p>
+<p>Do not over-read the numbers. The costs are invented, the split is naive, the
+features are minimal. What matters is the habit: state the costs, compute the
+money, and let it argue with the metric.</p>
+<hr />
+<h2 id="7-success-criteria-you-can-be-held-to">7. Success criteria you can be held to</h2>
+<p>"Make the model as accurate as possible" is not a success criterion. It has no
+stopping point, no owner, and no link to the business. A usable one has four parts.</p>
+<p><strong>1. An offline metric with a number.</strong> Anchored to a baseline: <em>"catch at least
+60% of defaults while flagging no more than 25% of applications"</em> is checkable.
+<em>"High recall"</em> is not.</p>
+<p><strong>2. A business metric.</strong> The number the project is judged on, in the unit the
+business speaks — rupees of credit loss avoided, net of lost margin, per quarter.</p>
+<p><strong>3. Guardrails.</strong> Things that must not get worse even if the headline metric
+improves: latency, decline rates in any one branch, explainability, and the
+absence of protected attributes.</p>
+<p><strong>4. Kill criteria.</strong> The conditions under which the project stops. Writing these
+while everyone is calm is the most valuable ten minutes of a project.</p>
+<div class="highlight"><pre><span></span><code><span class="n">CRITERION_RECALL</span> <span class="o">=</span> <span class="mf">0.60</span>      <span class="c1"># catch at least 60% of defaults</span>
+<span class="n">CRITERION_FLAGGED</span> <span class="o">=</span> <span class="mf">0.25</span>     <span class="c1"># while flagging at most 25% of applications</span>
+
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="n">passes</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;recall&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">CRITERION_RECALL</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;flagged&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">CRITERION_FLAGGED</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;PASSES&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">passes</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;fails &#39;</span><span class="si">:</span><span class="s2">&lt;7</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">&lt;26</span><span class="si">}</span><span class="s2"> recall </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;recall&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, flags </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;flagged&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>fails   always predict &#39;repaid&#39;    recall 0.00, flags 0%
+fails   rule: credit_score &lt; 600   recall 0.54, flags 31%
+fails   logistic regression        recall 0.64, flags 34%
+</code></pre></div>
+<p>Nothing passes. That is the correct state at the end of session 1 — we now have a
+target worth five weeks of work.</p>
+<hr />
+<h2 id="8-the-project-charter">8. The project charter</h2>
+<p>Everything above compresses onto one page that the whole project refers back to.
+Write it, circulate it, get it agreed, and revisit it when something changes.</p>
+<p>Sessions 2 to 10 keep returning to this charter: when session 5 picks a metric it
+is filling in a field here; when session 8 detects drift it is testing an
+assumption recorded here.</p>
+<div class="highlight"><pre><span></span><code><span class="n">CHARTER</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;project&quot;</span><span class="p">:</span> <span class="s2">&quot;SME loan default prediction&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;business_problem&quot;</span><span class="p">:</span> <span class="s2">&quot;Manual assessment cannot keep up with ~500 applications a month; &quot;</span>
+                        <span class="s2">&quot;decisions are inconsistent across 40 branches and losses are rising.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;decision_changed&quot;</span><span class="p">:</span> <span class="s2">&quot;At submission, route an application to auto-approve, senior review, or decline.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;decision_owner&quot;</span><span class="p">:</span> <span class="s2">&quot;Head of Credit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ml_task&quot;</span><span class="p">:</span> <span class="s2">&quot;binary classification, probability of default&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="s2">&quot;defaulted, observed within 12 months of disbursement&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;unit_of_prediction&quot;</span><span class="p">:</span> <span class="s2">&quot;one loan application, scored at submission&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;baseline_to_beat&quot;</span><span class="p">:</span> <span class="s2">&quot;the credit_score &lt; 600 policy rule&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;offline_criterion&quot;</span><span class="p">:</span> <span class="s2">&quot;recall &gt;= 0.60 while flagging &lt;= 25</span><span class="si">% o</span><span class="s2">f applications&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;business_criterion&quot;</span><span class="p">:</span> <span class="s2">&quot;quarterly credit losses down &gt;= 15%, net of lost margin&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;guardrails&quot;</span><span class="p">:</span> <span class="s2">&quot;decision in seconds; declines explainable; no protected attributes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;kill_criteria&quot;</span><span class="p">:</span> <span class="s2">&quot;does not beat the policy rule at an equal decline rate&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;known_risks&quot;</span><span class="p">:</span> <span class="s2">&quot;lending conditions may shift; some columns may not exist at decision time&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="k">for</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">CHARTER</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">  </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>PROJECT
+  SME loan default prediction
+
+BUSINESS PROBLEM
+  Manual assessment cannot keep up with ~500 applications a month; decisions are inconsistent across 40 branches and losses are rising.
+
+DECISION CHANGED
+  At submission, route an application to auto-approve, senior review, or decline.
+
+DECISION OWNER
+  Head of Credit
+
+ML TASK
+  binary classification, probability of default
+
+TARGET
+  defaulted, observed within 12 months of disbursement
+
+UNIT OF PREDICTION
+  one loan application, scored at submission
+
+BASELINE TO BEAT
+  the credit_score &lt; 600 policy rule
+
+OFFLINE CRITERION
+  recall &gt;= 0.60 while flagging &lt;= 25% of applications
+
+BUSINESS CRITERION
+  quarterly credit losses down &gt;= 15%, net of lost margin
+
+GUARDRAILS
+  decision in seconds; declines explainable; no protected attributes
+
+KILL CRITERIA
+  does not beat the policy rule at an equal decline rate
+
+KNOWN RISKS
+  lending conditions may shift; some columns may not exist at decision time
+</code></pre></div>
+<p>Notice how little of that page is about machine learning. The decision, the
+owner, the bar, the conditions for stopping — a business reader can check every
+one without knowing what logistic regression is. That is the test of a good charter.</p>
+<hr />
+<h2 id="9-the-whole-journey-on-one-page">9. The whole journey on one page</h2>
+<table>
+<thead>
+<tr>
+<th>CRISP-DM phase</th>
+<th>What it asks</th>
+<th>What we did today</th>
+<th>Where it is finished</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Business Understanding</td>
+<td>What are we solving, and what is success?</td>
+<td>Named the decision, framed it as classification, set baselines and a charter</td>
+<td><strong>Done today</strong></td>
+</tr>
+<tr>
+<td>2. Data Understanding</td>
+<td>What have we got?</td>
+<td>Listed 12 candidate features and flagged the point-in-time question</td>
+<td>Session 2</td>
+</tr>
+<tr>
+<td>3. Data Preparation</td>
+<td>Make it model-ready</td>
+<td>—</td>
+<td>Sessions 2–3</td>
+</tr>
+<tr>
+<td>4. Modelling</td>
+<td>Which model, trained how?</td>
+<td>A four-feature logistic regression, as a baseline only</td>
+<td>Sessions 4, 6, 7</td>
+</tr>
+<tr>
+<td>5. Evaluation</td>
+<td>Is it good enough to trust?</td>
+<td>Wrote the criterion; nothing passes it yet</td>
+<td>Sessions 5–6</td>
+</tr>
+<tr>
+<td>6. Deployment</td>
+<td>How does it reach the decision-maker?</td>
+<td>Recorded the latency and explainability constraints</td>
+<td>Sessions 8–10</td>
+</tr>
+</tbody>
+</table>
+<p>Phase 1 is complete: we started with a fuzzy complaint and ended with a written
+charter, three measured baselines, and a number to beat.</p>
+<hr />
+<h2 id="your-turn">Your turn</h2>
+<p><strong>1. The availability audit.</strong> Go through all 15 columns and sort them into
+<em>known at application time</em>, <em>not known until later</em>, and <em>not sure</em>. For each
+column in the last two groups, write one sentence saying what you would ask the
+credit team. Keep this list — session 2 opens with it.</p>
+<p><strong>2. Name the decision.</strong> Take a different request — "predict which customers
+will churn", "predict machine failures", "predict which tickets will escalate" —
+and answer the three questions from section 2. If you cannot name the decision
+that changes, say so explicitly; that is a valid and valuable finding.</p>
+<p><strong>3. Reframe.</strong> Write the specification for the <strong>ranking</strong> framing instead of
+classification: target, output, what the credit officer sees, what you report.
+Which framing would you recommend to the Head of Credit, and why?</p>
+<p><strong>4. Move the cost assumptions.</strong> Re-run the money cell with the missed-default
+cost at 0.30 (strong recovery) and again at 0.80 (weak recovery). At what point
+does "never decline anyone" stop being the worst option? What does that say about
+how carefully those numbers need to be agreed?</p>
+<p><strong>5. Set the bar.</strong> Justify or change the 60% recall / 25% flagged criterion
+using the capture curve in section 4 and the review capacity implied by 12
+applications per branch per month.</p>
+<p><strong>6. Write your own charter.</strong> Fill in the <code>CHARTER</code> template for a problem from
+your workplace, degree project, or a dataset you like. Bring it next session —
+the fields you cannot fill are the instructive ones.</p>
+<hr />
+<h2 id="if-you-remember-nothing-else">If you remember nothing else</h2>
+<p><strong>Machine learning is a process, not a model.</strong> CRISP-DM names the six phases,
+and the arrows that matter most point backwards.</p>
+<p><strong>A model that changes no decision is a report.</strong> Start from the decision, the
+person making it, and the moment they make it — not from the data.</p>
+<p><strong>Framing is the design.</strong> The same request becomes classification, regression,
+ranking or segmentation depending on the decision it serves. That choice fixes
+your label, your metric and your deployment shape, and it is far harder to change
+later than any hyperparameter.</p>
+<p><strong>Baselines are competitors.</strong> A constant, a rule, and a simple model. On
+imbalanced data the do-nothing baseline beats you on accuracy every time.</p>
+<p><strong>State success before you start.</strong> An offline metric with a number, a business
+metric in money, guardrails, and the conditions under which you stop.</p>
+<p><strong>Only use features that exist at the decision point.</strong> Everything else is the
+future leaking backwards — and it is the subject of the next session.</p>
+<hr />
+<h2 id="glossary">Glossary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CRISP-DM</strong></td>
+<td>The six-phase process most data projects follow</td>
+</tr>
+<tr>
+<td><strong>Decision point</strong></td>
+<td>The moment the prediction is used; fixes what data may be a feature</td>
+</tr>
+<tr>
+<td><strong>Unit of prediction</strong></td>
+<td>What one row and one prediction refer to — here, one application</td>
+</tr>
+<tr>
+<td><strong>Horizon</strong></td>
+<td>The window in which the outcome is observed (12 months)</td>
+</tr>
+<tr>
+<td><strong>Baseline</strong></td>
+<td>A cheap alternative whose score a real model must beat</td>
+</tr>
+<tr>
+<td><strong>Capture curve</strong></td>
+<td>Share of positives found against share of cases reviewed</td>
+</tr>
+<tr>
+<td><strong>Point-in-time correctness</strong></td>
+<td>Using only values that existed at the decision point</td>
+</tr>
+<tr>
+<td><strong>Guardrail</strong></td>
+<td>A quantity that must not degrade, even if the headline metric improves</td>
+</tr>
+<tr>
+<td><strong>Kill criteria</strong></td>
+<td>Pre-agreed conditions for stopping the project</td>
+</tr>
+<tr>
+<td><strong>Class imbalance</strong></td>
+<td>One class far rarer than the other — 13.5% defaults here</td>
+</tr>
+<tr>
+<td><strong>Charter</strong></td>
+<td>The one-page agreement fixing problem, decision, bar, and risks</td>
+</tr>
+</tbody>
+</table>
+<h2 id="further-reading">Further reading</h2>
+<ul>
+<li>Google, <em>Introduction to Machine Learning Problem Framing</em> — short, and the
+  industry reference for this session.</li>
+<li>Chip Huyen, <em>Designing Machine Learning Systems</em>, chapters 1–2 — business
+  objectives versus ML objectives.</li>
+<li>Emmanuel Ameisen, <em>Building Machine Learning Powered Applications</em>, chapters
+  1–3 — framing and baselines, worked through.</li>
+<li>Wirth and Hipp, <em>CRISP-DM: Towards a Standard Process Model for Data Mining</em>
+  (2000) — the original six-phase paper.</li>
+</ul>
+<hr />
+<p><strong>Next session:</strong> <em>Data Preparation for ML</em> — cleaning, missing values, encoding,
+scaling, splitting, and a hunt for the column in this dataset that should never
+have been in the file.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../../InstallationGuide/" class="btn btn-neutral float-left" title="Installation Guide"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../02_data_preparation/" class="btn btn-neutral float-right" title="2. Data Preparation for ML">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright &copy; 2026 - Aayush Raj Regmi</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../../InstallationGuide/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../02_data_preparation/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../javascripts/mathjax.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

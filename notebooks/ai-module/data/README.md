@@ -22,18 +22,5 @@ identical every run).
 | `has_collateral` | string | Yes / No |
 | `previous_loans` | int | Count of prior loans with this lender |
 | `days_past_due_history` | int | Worst historical delinquency, days |
-| `recovery_agent_assigned` | string | Yes / No — see the warning below |
+| `recovery_agent_assigned` | string | Yes / No |
 | `defaulted` | int | **Target.** 1 if the loan defaulted |
-
-## Read this before modelling
-
-`recovery_agent_assigned` is recorded **after** a loan has already gone bad. It
-is not available when a real application is being scored, and including it as a
-feature produces an excellent-looking model that is worthless in production.
-This is target leakage, and finding it is the point of notebook 02.
-
-The missing values in `annual_income` and `credit_score` are not missing at
-random. Informal workers frequently have no documented income, and first-time
-borrowers have no bureau score. Both groups carry above-average risk, so
-dropping incomplete rows removes exactly the applicants the model most needs to
-get right.

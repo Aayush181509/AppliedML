@@ -22,7 +22,3 @@ ML lifecycle, model management, deployment workflow, monitoring, model drift, CI
 Saving models, inference, REST APIs, serving an ML model, basic deployment using tools such as
 FastAPI/Streamlit
 Problem - data - preprocessing - model - evaluation - deployment/presentation
-5 weeks ko yo tentative plan huna sakchha?
-All media
-Reply
-Done

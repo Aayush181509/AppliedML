@@ -141,3 +141,31 @@ def test_credit_score_missingness_tracks_first_time_borrowers(df):
 def test_no_missing_values_in_target_or_id(df):
     assert df["defaulted"].notna().all()
     assert df["loan_id"].notna().all()
+
+
+COMMITTED_CSV = (
+    Path(__file__).resolve().parents[1]
+    / "notebooks"
+    / "ai-module"
+    / "data"
+    / "loan_default.csv"
+)
+
+
+def test_committed_csv_matches_generator(df, tmp_path):
+    """Every notebook loads the committed CSV, not `generate_loans()` directly.
+    If a future edit to the generator is not followed by regenerating and
+    recommitting the dataset, this is the only test that will catch the drift.
+
+    A failure here means "regenerate and recommit the dataset" — run
+    `python scripts/make_spine_data.py` and commit the result — not "the
+    generator is broken". Compare through a CSV round-trip so dtypes (e.g.
+    int vs. float after NaNs) match what every notebook actually reads.
+    """
+    regenerated_path = tmp_path / "loan_default.csv"
+    df.to_csv(regenerated_path, index=False)
+
+    committed = pd.read_csv(COMMITTED_CSV, parse_dates=["application_date"])
+    regenerated = pd.read_csv(regenerated_path, parse_dates=["application_date"])
+
+    pd.testing.assert_frame_equal(committed, regenerated)

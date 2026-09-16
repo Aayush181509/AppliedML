@@ -5,14 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>8. Introduction to MLOps - Applied ML</title>
+    <title>Introduction to MLOps - Applied ML</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "8. Introduction to MLOps";
+        var mkdocs_page_name = "Introduction to MLOps";
         var mkdocs_page_input_path = "AIModule/08_mlops_intro.md";
         var mkdocs_page_url = null;
       </script>
@@ -49,81 +49,10 @@
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Applied ML in Production</span></p>
-              <ul class="current">
+              <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../01_problem_framing/">1. ML Problem Framing and the Industry Workflow</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../02_data_preparation/">2. Data Preparation for ML</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../03_feature_engineering/">3. Feature Engineering</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../04_sklearn_models/">4. Building ML Models with Scikit-learn</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../05_evaluation_metrics/">5. Model Evaluation and Performance Metrics</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../06_tuning_error_analysis/">6. Model Tuning and Error Analysis</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../07_pipelines_tracking/">7. ML Pipelines and Experiment Tracking</a>
-                  </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">8. Introduction to MLOps</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#how-to-work-through-this">How to work through this</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#learning-objectives">Learning objectives</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#1-what-a-deployed-model-actually-is">1. What a deployed model actually is</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#the-production-loop">The production loop</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#2-deployment-workflow">2. Deployment workflow</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#3-monitoring-three-layers">3. Monitoring: three layers</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#4-two-kinds-of-drift">4. Two kinds of drift</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#the-population-stability-index">The population stability index</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#5-responding-recalibrate-retrain-or-roll-back">5. Responding: recalibrate, retrain, or roll back?</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#does-retraining-help">Does retraining help?</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#how-often-should-you-retrain">How often should you retrain?</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#6-cicd-for-machine-learning">6. CI/CD for machine learning</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#7-a-monitoring-runbook-for-this-project">7. A monitoring runbook for this project</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#your-turn">Your turn</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#if-you-remember-nothing-else">If you remember nothing else</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#glossary">Glossary</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#further-reading">Further reading</a>
-    </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../09_deployment_apis/">9. Model Deployment and APIs</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../10_end_to_end_project/">10. End-to-End ML Project</a>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Bonus — Deep Learning</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../11_neural_networks/">1. Neural Networks from Scratch</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../12_cnn/">2. Convolutional Neural Networks</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../13_rnn_lstm_gru/">3. Recurrent Networks — RNN, LSTM, GRU</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../14_attention_transformers/">4. Attention and Transformers</a>
                   </li>
               </ul>
       </div>
@@ -140,8 +69,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Applied ML in Production</li>
-      <li class="breadcrumb-item active">8. Introduction to MLOps</li>
+      <li class="breadcrumb-item active">Introduction to MLOps</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -954,10 +882,6 @@ of it.</p>
               
             </div>
           </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../07_pipelines_tracking/" class="btn btn-neutral float-left" title="7. ML Pipelines and Experiment Tracking"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../09_deployment_apis/" class="btn btn-neutral float-right" title="9. Model Deployment and APIs">Next <span class="icon icon-circle-arrow-right"></span></a>
-    </div>
 
   <hr/>
 
@@ -980,10 +904,6 @@ of it.</p>
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
-      <span><a href="../07_pipelines_tracking/" style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-      <span><a href="../09_deployment_apis/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

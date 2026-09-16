@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>10. End-to-End ML Project - Applied ML</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "10. End-to-End ML Project";
+        var mkdocs_page_input_path = "AIModule/10_end_to_end_project.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Applied ML
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Welcome</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../InstallationGuide/">Installation Guide</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Applied ML in Production</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../01_problem_framing/">1. ML Problem Framing and the Industry Workflow</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02_data_preparation/">2. Data Preparation for ML</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../03_feature_engineering/">3. Feature Engineering</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04_sklearn_models/">4. Building ML Models with Scikit-learn</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../05_evaluation_metrics/">5. Model Evaluation and Performance Metrics</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../06_tuning_error_analysis/">6. Model Tuning and Error Analysis</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07_pipelines_tracking/">7. ML Pipelines and Experiment Tracking</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../08_mlops_intro/">8. Introduction to MLOps</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../09_deployment_apis/">9. Model Deployment and APIs</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">10. End-to-End ML Project</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-work-through-this">How to work through this</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#learning-objectives">Learning objectives</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Applied ML</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Applied ML in Production</li>
+      <li class="breadcrumb-item active">10. End-to-End ML Project</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="end-to-end-ml-project">End-to-End ML Project</h1>
+<p><strong>Applied ML in Production · Session 10</strong></p>
+<hr />
+<p>Nine sessions, one loan book. Today we do the whole thing again — on a problem
+none of us has modelled before, in one sitting, using only the moves the module
+has already taught.</p>
+<p>The point is not the new dataset. It is to show that the sequence is the same
+every time: decision first, data audit second, baseline third, model fourth,
+honest verdict last. When you meet a problem at work, this is the shape of the
+first week.</p>
+<p>The second half of this notebook is your <strong>project brief and rubric</strong>.</p>
+<h2 id="how-to-work-through-this">How to work through this</h2>
+<p>Read part A as a worked example and type along — it is short, because a
+well-drilled end-to-end pass <em>is</em> short. Read part B carefully; it is what you
+will be assessed on.</p>
+<h2 id="learning-objectives">Learning objectives</h2>
+<p>After this session you will be able to:</p>
+<ul>
+<li>Run a complete ML project from problem statement to saved model, without
+  skipping the steps that decide whether it works.</li>
+<li>Apply the point-in-time rule to a dataset you have not seen before.</li>
+<li>Judge a model against the decision it supports rather than against its metric.</li>
+<li>Write an honest recommendation, including "this is not worth deploying yet".</li>
+<li>Plan and submit the module's final project.</li>
+</ul>
+<h2 id="setup">Setup</h2>
+<p>A new problem, a new file: <strong>student performance</strong> from two Portuguese secondary
+schools (395 students, 33 columns). The full CRISP-DM walkthrough of this dataset
+is in <code>reference/MLWorkflow.ipynb</code>; here we treat it the way this module treats
+problems.</p>
+<div class="highlight"><pre><span></span><code><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">joblib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="s2">&quot;axes.grid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;grid.alpha&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">})</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.width&quot;</span><span class="p">,</span> <span class="mi">130</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">find_repository_root</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span> <span class="o">*</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">folder</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">folder</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;could not find the repository root&quot;</span><span class="p">)</span>
+
+
+<span class="n">ROOT</span> <span class="o">=</span> <span class="n">find_repository_root</span><span class="p">()</span>
+<span class="n">students</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">ROOT</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span> <span class="o">/</span> <span class="s2">&quot;student-mat.csv&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>   <span class="c1"># semicolon-separated</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">students</span><span class="p">)</span><span class="si">}</span><span class="s2"> students, </span><span class="si">{</span><span class="n">students</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> columns&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;missing values: </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">students</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;final grade G3: mean </span><span class="si">{</span><span class="n">students</span><span class="p">[</span><span class="s1">&#39;G3&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">, range </span><span class="si">{</span><span class="n">students</span><span class="p">[</span><span class="s1">&#39;G3&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">–</span><span class="si">{</span><span class="n">students</span><span class="p">[</span><span class="s1">&#39;G3&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;students who fail (G3 &lt; 10): </span><span class="si">{</span><span class="p">(</span><span class="n">students</span><span class="p">[</span><span class="s1">&#39;G3&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">students</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>395 students, 33 columns
+missing values: 0
+final grade G3: mean 10.4, range 0–20
+students who fail (G3 &lt; 10): 32.9%
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>school</th>
+      <th>sex</th>
+      <th>age</th>
+      <th>address</th>
+      <th>famsize</th>
+      <th>Pstatus</th>
+      <th>Medu</th>
+      <th>Fedu</th>
+      <th>Mjob</th>
+      <th>Fjob</th>
+      <th>...</th>
+      <th>famrel</th>
+      <th>freetime</th>
+      <th>goout</th>
+      <th>Dalc</th>
+      <th>Walc</th>
+      <th>health</th>
+      <th>absences</th>
+      <th>G1</th>
+      <th>G2</th>
+      <th>G3</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>GP</td>
+      <td>F</td>
+      <td>18</td>
+      <td>U</td>
+      <td>GT3</td>
+      <td>A</td>
+      <td>4</td>
+      <td>4</td>
+      <td>at_home</td>
+      <td>teacher</td>
+      <td>...</td>
+      <td>4</td>
+      <td>3</td>
+      <td>4</td>
+      <td>1</td>
+      <td>1</td>
+      <td>3</td>
+      <td>6</td>
+      <td>5</td>
+      <td>6</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>GP</td>
+      <td>F</td>
+      <td>17</td>
+      <td>U</td>
+      <td>GT3</td>
+      <td>T</td>
+      <td>1</td>
+      <td>1</td>
+      <td>at_home</td>
+      <td>other</td>
+      <td>...</td>
+      <td>5</td>
+      <td>3</td>
+      <td>3</td>
+      <td>1</td>
+      <td>1</td>
+      <td>3</td>
+      <td>4</td>
+      <td>5</td>
+      <td>5</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>GP</td>
+      <td>F</td>
+      <td>15</td>
+      <td>U</td>
+      <td>LE3</td>
+      <td>T</td>
+      <td>1</td>
+      <td>1</td>
+      <td>at_home</td>
+      <td>other</td>
+      <td>...</td>
+      <td>4</td>
+      <td>3</td>
+      <td>2</td>
+      <td>2</td>
+      <td>3</td>
+      <td>3</td>
+      <td>10</td>
+      <td>7</td>
+      <td>8</td>
+      <td>10</td>
+    </tr>
+  </tbody>
+</table>
+<p>3 rows × 33 columns</p>
+</div>
+
+<hr />
+<h1 id="part-a-the-project-end-to-end">Part A — the project, end to end</h1>
+<h2 id="1-the-decision-session-1">1. The decision (session 1)</h2>
+<blockquote>
+<p><em>"Some of our students are struggling. Can we use data to find them?"</em>
+— Head Teacher</p>
+</blockquote>
+<p>Three questions.</p>
+<p><strong>What decision changes?</strong> One counsellor supports 395 students and can give
+sustained attention to roughly <strong>20% of them</strong> — about 79 students. Today that
+list is compiled from staffroom impressions. The model would produce the list.</p>
+<p><strong>Who decides, and when?</strong> The counsellor, at the <strong>start of the school year</strong>,
+when the support timetable is set.</p>
+<p><strong>What happens today?</strong> Ad hoc referral. Nobody knows its hit rate, which means
+we have no baseline — so we will build one.</p>
+<div class="highlight"><pre><span></span><code><span class="n">CHARTER</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;decision&quot;</span><span class="p">:</span> <span class="s2">&quot;which ~20</span><span class="si">% o</span><span class="s2">f students get sustained counsellor support&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;decision_owner&quot;</span><span class="p">:</span> <span class="s2">&quot;school counsellor&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;decision_point&quot;</span><span class="p">:</span> <span class="s2">&quot;start of the school year&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;unit_of_prediction&quot;</span><span class="p">:</span> <span class="s2">&quot;one student&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="s2">&quot;G3, the final grade (0-20)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ml_task&quot;</span><span class="p">:</span> <span class="s2">&quot;regression, used to rank students by predicted grade&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;capacity&quot;</span><span class="p">:</span> <span class="mf">0.20</span><span class="p">,</span>
+    <span class="s2">&quot;success_metric&quot;</span><span class="p">:</span> <span class="s2">&quot;share of students who would have failed (G3 &lt; 10) that appear on the list&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;beat_this&quot;</span><span class="p">:</span> <span class="s2">&quot;random selection, which catches 20</span><span class="si">% o</span><span class="s2">f failing students&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;constraints&quot;</span><span class="p">:</span> <span class="s2">&quot;explainable to parents; no use of protected characteristics without review&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;known_risks&quot;</span><span class="p">:</span> <span class="s2">&quot;395 students is small; last year&#39;s patterns may not hold&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="k">for</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">CHARTER</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>decision             which ~20% of students get sustained counsellor support
+decision_owner       school counsellor
+decision_point       start of the school year
+unit_of_prediction   one student
+target               G3, the final grade (0-20)
+ml_task              regression, used to rank students by predicted grade
+capacity             0.2
+success_metric       share of students who would have failed (G3 &lt; 10) that appear on the list
+beat_this            random selection, which catches 20% of failing students
+constraints          explainable to parents; no use of protected characteristics without review
+known_risks          395 students is small; last year&#39;s patterns may not hold
+</code></pre></div>
+<p>Notice the target and the metric disagree on purpose. We predict a <strong>grade</strong>
+(regression), but we are judged on the <strong>list</strong> (ranking). Session 1's framing
+table warned that these come apart; here we make it explicit from the start,
+because it changes which number we report at the end.</p>
+<hr />
+<h2 id="2-data-understanding-session-2">2. Data understanding (session 2)</h2>
+<div class="highlight"><pre><span></span><code><span class="n">numeric_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">students</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="s2">&quot;number&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">columns</span>
+                   <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;G1&quot;</span><span class="p">,</span> <span class="s2">&quot;G2&quot;</span><span class="p">,</span> <span class="s2">&quot;G3&quot;</span><span class="p">]]</span>
+<span class="n">categorical_columns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">students</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="s2">&quot;number&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">numeric_columns</span><span class="p">)</span><span class="si">}</span><span class="s2"> numeric features, </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">categorical_columns</span><span class="p">)</span><span class="si">}</span><span class="s2"> categorical&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">numeric:     </span><span class="si">{</span><span class="n">numeric_columns</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">categorical: </span><span class="si">{</span><span class="n">categorical_columns</span><span class="p">[:</span><span class="mi">8</span><span class="p">]</span><span class="si">}</span><span class="s2"> ...&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">duplicate rows: </span><span class="si">{</span><span class="n">students</span><span class="o">.</span><span class="n">duplicated</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>13 numeric features, 17 categorical
+
+numeric:     [&#39;age&#39;, &#39;Medu&#39;, &#39;Fedu&#39;, &#39;traveltime&#39;, &#39;studytime&#39;, &#39;failures&#39;, &#39;famrel&#39;, &#39;freetime&#39;, &#39;goout&#39;, &#39;Dalc&#39;, &#39;Walc&#39;, &#39;health&#39;, &#39;absences&#39;]
+
+categorical: [&#39;school&#39;, &#39;sex&#39;, &#39;address&#39;, &#39;famsize&#39;, &#39;Pstatus&#39;, &#39;Mjob&#39;, &#39;Fjob&#39;, &#39;reason&#39;] ...
+
+duplicate rows: 0
+</code></pre></div>
+<blockquote>
+<p><strong>A pandas note worth 20 minutes of your life.</strong> In pandas 3 a text column has
+dtype <code>str</code>, not <code>object</code>, so the old idiom <code>select_dtypes(include="object")</code>
+silently returns nothing and every text column ends up in your numeric list.
+Selecting on <code>include="number"</code> and <code>exclude="number"</code> works on both pandas 2
+and 3.</p>
+</blockquote>
+<p>No missing values and no duplicates — cleaner than the loan book, and cleaner
+than almost anything you will meet at work. The interesting problem here is not
+dirt. It is <strong>timing</strong>.</p>
+<hr />
+<h2 id="3-the-point-in-time-audit-session-2s-real-lesson">3. The point-in-time audit (session 2's real lesson)</h2>
+<p>The dataset contains <code>G1</code> and <code>G2</code> — grades from the first and second marking
+periods. They are enormously predictive of <code>G3</code>.</p>
+<p>They are also <strong>not available at the decision point</strong>. The counsellor sets the
+support timetable at the <em>start</em> of the year. A model that needs the first two
+report cards can only produce its list in the second half of the year, by which
+time the students it identifies have already been failing for months.</p>
+<p>This is the loan project's <code>recovery_agent_assigned</code> in a different costume: not a
+leak in the strict sense — <code>G1</code> genuinely happens before <code>G3</code> — but unavailable
+when the decision is made, which has the same effect.</p>
+<p>Measure both, so the cost of honesty is a number rather than an argument.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.compose</span><span class="w"> </span><span class="kn">import</span> <span class="n">ColumnTransformer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.dummy</span><span class="w"> </span><span class="kn">import</span> <span class="n">DummyRegressor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.ensemble</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomForestRegressor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ridge</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">KFold</span><span class="p">,</span> <span class="n">cross_val_score</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pipeline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">OneHotEncoder</span><span class="p">,</span> <span class="n">StandardScaler</span>
+
+<span class="n">cv</span> <span class="o">=</span> <span class="n">KFold</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">students</span><span class="p">[</span><span class="s2">&quot;G3&quot;</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="n">numeric</span><span class="p">,</span> <span class="n">estimator</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Pipeline</span><span class="p">([</span>
+        <span class="p">(</span><span class="s2">&quot;prepare&quot;</span><span class="p">,</span> <span class="n">ColumnTransformer</span><span class="p">([</span>
+            <span class="p">(</span><span class="s2">&quot;numeric&quot;</span><span class="p">,</span> <span class="n">StandardScaler</span><span class="p">(),</span> <span class="n">numeric</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;categorical&quot;</span><span class="p">,</span> <span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">handle_unknown</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">),</span> <span class="n">categorical_columns</span><span class="p">),</span>
+        <span class="p">])),</span>
+        <span class="p">(</span><span class="s2">&quot;estimate&quot;</span><span class="p">,</span> <span class="n">estimator</span><span class="p">),</span>
+    <span class="p">])</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">report</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">numeric</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="o">-</span><span class="n">cross_val_score</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="s2">&quot;neg_mean_absolute_error&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">:</span><span class="s2">&lt;34</span><span class="si">}</span><span class="s2"> MAE </span><span class="si">{</span><span class="n">errors</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> ± </span><span class="si">{</span><span class="n">errors</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> grade points&quot;</span><span class="p">)</span>
+
+
+<span class="n">early_features</span> <span class="o">=</span> <span class="n">students</span><span class="p">[</span><span class="n">numeric_columns</span> <span class="o">+</span> <span class="n">categorical_columns</span><span class="p">]</span>
+<span class="n">late_features</span> <span class="o">=</span> <span class="n">students</span><span class="p">[</span><span class="n">numeric_columns</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;G1&quot;</span><span class="p">,</span> <span class="s2">&quot;G2&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">categorical_columns</span><span class="p">]</span>
+
+<span class="n">report</span><span class="p">(</span><span class="n">build</span><span class="p">(</span><span class="n">numeric_columns</span><span class="p">,</span> <span class="n">Ridge</span><span class="p">()),</span> <span class="n">early_features</span><span class="p">,</span> <span class="n">numeric_columns</span><span class="p">,</span>
+       <span class="s2">&quot;start of year (no G1, G2)&quot;</span><span class="p">)</span>
+<span class="n">report</span><span class="p">(</span><span class="n">build</span><span class="p">(</span><span class="n">numeric_columns</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;G1&quot;</span><span class="p">,</span> <span class="s2">&quot;G2&quot;</span><span class="p">],</span> <span class="n">Ridge</span><span class="p">()),</span> <span class="n">late_features</span><span class="p">,</span>
+       <span class="n">numeric_columns</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;G1&quot;</span><span class="p">,</span> <span class="s2">&quot;G2&quot;</span><span class="p">],</span> <span class="s2">&quot;mid-year (with G1, G2)&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>start of year (no G1, G2)          MAE 3.40 ± 0.04 grade points
+mid-year (with G1, G2)             MAE 1.37 ± 0.16 grade points
+</code></pre></div>
+<p><strong>MAE 1.37 with the report cards, 3.40 without.</strong> The tempting model is more than
+twice as accurate and cannot be used for the decision we are making.</p>
+<p>This is the same moment as session 2's AUC dropping from 0.974 to 0.783, and the
+same correct response: take the weaker, usable number, and write down why.</p>
+<p>Everything that follows uses start-of-year information only.</p>
+<hr />
+<h2 id="4-baselines-session-1">4. Baselines (session 1)</h2>
+<div class="highlight"><pre><span></span><code><span class="n">report</span><span class="p">(</span><span class="n">build</span><span class="p">(</span><span class="n">numeric_columns</span><span class="p">,</span> <span class="n">DummyRegressor</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">)),</span> <span class="n">early_features</span><span class="p">,</span>
+       <span class="n">numeric_columns</span><span class="p">,</span> <span class="s2">&quot;baseline: predict the mean grade&quot;</span><span class="p">)</span>
+<span class="n">report</span><span class="p">(</span><span class="n">build</span><span class="p">(</span><span class="n">numeric_columns</span><span class="p">,</span> <span class="n">Ridge</span><span class="p">()),</span> <span class="n">early_features</span><span class="p">,</span> <span class="n">numeric_columns</span><span class="p">,</span>
+       <span class="s2">&quot;ridge regression&quot;</span><span class="p">)</span>
+<span class="n">report</span><span class="p">(</span><span class="n">build</span><span class="p">(</span><span class="n">numeric_columns</span><span class="p">,</span> <span class="n">RandomForestRegressor</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)),</span>
+       <span class="n">early_features</span><span class="p">,</span> <span class="n">numeric_columns</span><span class="p">,</span> <span class="s2">&quot;random forest&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>baseline: predict the mean grade   MAE 3.43 ± 0.34 grade points
+ridge regression                   MAE 3.40 ± 0.04 grade points
+
+
+random forest                      MAE 2.90 ± 0.21 grade points
+</code></pre></div>
+<p>Read that honestly.</p>
+<p><strong>Ridge barely beats predicting the mean</strong> — 3.40 against 3.43. On this data, a
+linear model of start-of-year characteristics is worth almost nothing.</p>
+<p><strong>The random forest does better</strong>, 2.90, a 15% improvement on the baseline. Here
+the more flexible model earns its complexity, which is the opposite of what
+happened on the loan book. That is why you always check rather than assume.</p>
+<p>But MAE is not the metric from the charter. The counsellor does not need accurate
+grades; they need the right 79 names.</p>
+<hr />
+<h2 id="5-judging-the-model-by-the-decision-sessions-1-and-5">5. Judging the model by the decision (sessions 1 and 5)</h2>
+<p>Rank students by predicted grade, take the lowest 20%, and ask how many of the
+students who actually fail appear on that list.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
+
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">early_features</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
+<span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">build</span><span class="p">(</span><span class="n">numeric_columns</span><span class="p">,</span> <span class="n">RandomForestRegressor</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="n">predicted_grade</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+
+<span class="n">actually_failed</span> <span class="o">=</span> <span class="p">(</span><span class="n">y_test</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">riskiest_first</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">predicted_grade</span><span class="p">)</span>          <span class="c1"># lowest predicted grade = most at risk</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;test group: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">y_test</span><span class="p">)</span><span class="si">}</span><span class="s2"> students, </span><span class="si">{</span><span class="n">actually_failed</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2"> of them failed &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">actually_failed</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">share</span> <span class="ow">in</span> <span class="p">[</span><span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.20</span><span class="p">,</span> <span class="mf">0.30</span><span class="p">]:</span>
+    <span class="n">listed</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">share</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_test</span><span class="p">))</span>
+    <span class="n">caught</span> <span class="o">=</span> <span class="n">actually_failed</span><span class="p">[</span><span class="n">riskiest_first</span><span class="p">][:</span><span class="n">listed</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">actually_failed</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  support list = </span><span class="si">{</span><span class="n">share</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2"> of students (</span><span class="si">{</span><span class="n">listed</span><span class="si">:</span><span class="s2">&gt;2</span><span class="si">}</span><span class="s2"> names): &quot;</span>
+          <span class="sa">f</span><span class="s2">&quot;catches </span><span class="si">{</span><span class="n">caught</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2"> of the students who fail   (random would catch </span><span class="si">{</span><span class="n">share</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>test group: 99 students, 36 of them failed (36.4%)
+
+  support list = 10% of students ( 9 names): catches 19.4% of the students who fail   (random would catch 10%)
+  support list = 20% of students (19 names): catches 33.3% of the students who fail   (random would catch 20%)
+  support list = 30% of students (29 names): catches 47.2% of the students who fail   (random would catch 30%)
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">caught</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">actually_failed</span><span class="p">[</span><span class="n">riskiest_first</span><span class="p">])</span> <span class="o">/</span> <span class="n">actually_failed</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span>
+<span class="n">listed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_test</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_test</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">listed</span><span class="p">,</span> <span class="n">caught</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;model-ranked support list&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;staffroom lottery&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#C44E52&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;counsellor capacity&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">% o</span><span class="s2">f students on the support list&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">% o</span><span class="s2">f failing students reached&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;The only chart the Head Teacher needs&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../10_end_to_end_project_files/10_end_to_end_project_19_0.png" /></p>
+<p>At the counsellor's real capacity, the model reaches <strong>33% of the students who go
+on to fail, against 20% from picking at random.</strong> A lift of about 1.7×.</p>
+<p>Is that worth deploying? That is a judgement, and it is yours to make and defend,
+not the model's:</p>
+<ul>
+<li><strong>For:</strong> it is free and uses data the school already holds. The lift is about
+  13 percentage points, which across a cohort of 395 students — roughly 130 of
+  whom fail — means about <strong>17 additional failing students reached each year</strong>.</li>
+<li><strong>Against:</strong> 1.7× is a modest lift. Two thirds of the students who fail are
+  still missed, and a list with the school's name on it carries a risk of
+  becoming a label that follows a child.</li>
+</ul>
+<p>The recommendation I would write: <strong>deploy as a ranked suggestion to the
+counsellor, never as an automatic assignment, and revisit once attendance data
+from the current term is available</strong> — because the model's strongest feature is
+last year's absences, and this year's would almost certainly be stronger.</p>
+<div class="highlight"><pre><span></span><code><span class="n">importances</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">named_steps</span><span class="p">[</span><span class="s2">&quot;estimate&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">feature_importances_</span><span class="p">,</span>
+    <span class="n">index</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">named_steps</span><span class="p">[</span><span class="s2">&quot;prepare&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get_feature_names_out</span><span class="p">(),</span>
+<span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;what the model leans on:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">importances</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>what the model leans on:
+numeric__absences     0.184
+numeric__failures     0.129
+numeric__goout        0.059
+numeric__health       0.047
+numeric__age          0.046
+numeric__studytime    0.038
+</code></pre></div>
+<p><code>absences</code> and <code>failures</code> — prior attendance and prior repeated years. The model
+has rediscovered what every experienced teacher already knows, which is both
+reassuring and a warning: if the model tells you only what the staffroom already
+knew, the gain over current practice may be smaller in the real school than in
+this test set.</p>
+<hr />
+<h2 id="6-error-analysis-session-6">6. Error analysis (session 6)</h2>
+<div class="highlight"><pre><span></span><code><span class="n">slices</span> <span class="o">=</span> <span class="n">students</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">X_test</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;school&quot;</span><span class="p">,</span> <span class="s2">&quot;sex&quot;</span><span class="p">,</span> <span class="s2">&quot;address&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">slices</span><span class="p">[</span><span class="s2">&quot;absolute_error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y_test</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">-</span> <span class="n">predicted_grade</span><span class="p">)</span>
+<span class="n">slices</span><span class="p">[</span><span class="s2">&quot;failed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">actually_failed</span>
+<span class="n">slices</span><span class="p">[</span><span class="s2">&quot;on_list&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">slices</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">riskiest_first</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.20</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_test</span><span class="p">))],</span> <span class="n">slices</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="s2">&quot;on_list&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;school&quot;</span><span class="p">,</span> <span class="s2">&quot;address&quot;</span><span class="p">,</span> <span class="s2">&quot;sex&quot;</span><span class="p">]:</span>
+    <span class="n">grouped</span> <span class="o">=</span> <span class="n">slices</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+        <span class="s2">&quot;students&quot;</span><span class="p">:</span> <span class="n">grouped</span><span class="o">.</span><span class="n">size</span><span class="p">(),</span>
+        <span class="s2">&quot;MAE&quot;</span><span class="p">:</span> <span class="n">grouped</span><span class="p">[</span><span class="s2">&quot;absolute_error&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+        <span class="s2">&quot;on_list&quot;</span><span class="p">:</span> <span class="n">grouped</span><span class="p">[</span><span class="s2">&quot;on_list&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+        <span class="s2">&quot;caught_of_failing&quot;</span><span class="p">:</span> <span class="n">grouped</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">g</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">g</span><span class="p">[</span><span class="s2">&quot;failed&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;on_list&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">if</span> <span class="n">g</span><span class="p">[</span><span class="s2">&quot;failed&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span>
+    <span class="p">})</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(),</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>        students    MAE  on_list  caught_of_failing
+school                                             
+GP            83  3.082    0.181              0.333
+MS            16  2.703    0.250              0.333
+
+         students    MAE  on_list  caught_of_failing
+address                                             
+R              26  3.160    0.308              0.417
+U              73  2.972    0.151              0.292
+
+     students    MAE  on_list  caught_of_failing
+sex                                             
+F          49  3.068    0.245              0.381
+M          50  2.976    0.140              0.267
+</code></pre></div>
+<p>Error is even across school, address and sex — around 3 grade points everywhere.
+<strong>Coverage is not.</strong> Rural students make up 31% of the support list against 15%
+of urban students, and female students 25% against 14% of male students. With 99
+test students those differences rest on a handful of names, so do not over-read
+them — but do not look away from them either.</p>
+<p>Two things to say out loud, because this is a project about children.</p>
+<p><strong><code>sex</code> is in this dataset.</strong> Using it as a feature is a policy decision, not a
+modelling one — and the charter says protected characteristics need review before
+use. Our model includes it; a real deployment would need the school to agree that
+explicitly, or drop it.</p>
+<p><strong>Equal error is not equal treatment.</strong> If one group is systematically placed on
+the list more often, that needs explaining to the people affected, whatever the
+MAE says. Session 6's last table applies: this is a conversation, not a code
+change.</p>
+<hr />
+<h2 id="7-package-it-sessions-7-and-9">7. Package it (sessions 7 and 9)</h2>
+<div class="highlight"><pre><span></span><code><span class="n">ARTIFACT_DIR</span> <span class="o">=</span> <span class="n">ROOT</span> <span class="o">/</span> <span class="s2">&quot;app&quot;</span> <span class="o">/</span> <span class="s2">&quot;models&quot;</span>
+<span class="n">ARTIFACT_DIR</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">early_features</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>            <span class="c1"># refit on everything before saving</span>
+<span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">ARTIFACT_DIR</span> <span class="o">/</span> <span class="s2">&quot;student_support_model.joblib&quot;</span><span class="p">)</span>
+
+<span class="n">data_file</span> <span class="o">=</span> <span class="n">ROOT</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span> <span class="o">/</span> <span class="s2">&quot;student-mat.csv&quot;</span>
+<span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;student-support-ranking&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.1.0&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;trained_at&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;training_rows&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">students</span><span class="p">),</span>
+    <span class="s2">&quot;training_data_md5&quot;</span><span class="p">:</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">data_file</span><span class="o">.</span><span class="n">read_bytes</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()[:</span><span class="mi">12</span><span class="p">],</span>
+    <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="s2">&quot;G3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;decision&quot;</span><span class="p">:</span> <span class="n">CHARTER</span><span class="p">[</span><span class="s2">&quot;decision&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;capacity&quot;</span><span class="p">:</span> <span class="n">CHARTER</span><span class="p">[</span><span class="s2">&quot;capacity&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;excluded_features&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;G1&quot;</span><span class="p">,</span> <span class="s2">&quot;G2&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;excluded_reason&quot;</span><span class="p">:</span> <span class="s2">&quot;not available at the start of the school year&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;offline_result&quot;</span><span class="p">:</span> <span class="s2">&quot;reaches 33</span><span class="si">% o</span><span class="s2">f failing students at 20</span><span class="si">% c</span><span class="s2">apacity (random: 20%)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;pilot — suggestion only, never automatic assignment&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="p">(</span><span class="n">ARTIFACT_DIR</span> <span class="o">/</span> <span class="s2">&quot;student_support_model.json&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;saved </span><span class="si">{</span><span class="p">(</span><span class="n">ARTIFACT_DIR</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s1">&#39;student_support_model.joblib&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> KB&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)[</span><span class="o">-</span><span class="mi">420</span><span class="p">:])</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>saved 7512 KB
+aining_data_md5&quot;: &quot;4dc304be95c6&quot;,
+  &quot;target&quot;: &quot;G3&quot;,
+  &quot;decision&quot;: &quot;which ~20% of students get sustained counsellor support&quot;,
+  &quot;capacity&quot;: 0.2,
+  &quot;excluded_features&quot;: [
+    &quot;G1&quot;,
+    &quot;G2&quot;
+  ],
+  &quot;excluded_reason&quot;: &quot;not available at the start of the school year&quot;,
+  &quot;offline_result&quot;: &quot;reaches 33% of failing students at 20% capacity (random: 20%)&quot;,
+  &quot;status&quot;: &quot;pilot \u2014 suggestion only, never automatic assignment&quot;
+}
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># The list the counsellor would actually receive.</span>
+<span class="n">reloaded</span> <span class="o">=</span> <span class="n">joblib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">ARTIFACT_DIR</span> <span class="o">/</span> <span class="s2">&quot;student_support_model.joblib&quot;</span><span class="p">)</span>
+<span class="n">students_scored</span> <span class="o">=</span> <span class="n">students</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">predicted_grade</span><span class="o">=</span><span class="n">reloaded</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">early_features</span><span class="p">))</span>
+
+<span class="n">support_list</span> <span class="o">=</span> <span class="n">students_scored</span><span class="o">.</span><span class="n">nsmallest</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">CHARTER</span><span class="p">[</span><span class="s2">&quot;capacity&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">students</span><span class="p">)),</span> <span class="s2">&quot;predicted_grade&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;support list: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">support_list</span><span class="p">)</span><span class="si">}</span><span class="s2"> students</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">support_list</span><span class="p">[[</span><span class="s2">&quot;school&quot;</span><span class="p">,</span> <span class="s2">&quot;sex&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">,</span> <span class="s2">&quot;absences&quot;</span><span class="p">,</span> <span class="s2">&quot;failures&quot;</span><span class="p">,</span> <span class="s2">&quot;studytime&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;predicted_grade&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>support list: 79 students
+
+    school sex  age  absences  failures  studytime  predicted_grade
+146     GP   F   15         0         3          2             0.30
+343     GP   F   17         0         1          2             0.31
+137     GP   F   16         0         2          1             0.44
+173     GP   F   16         0         3          2             0.62
+144     GP   M   17         0         3          1             0.74
+160     GP   M   17         0         2          1             0.76
+341     GP   M   18         0         1          2             1.01
+389     MS   F   18         0         1          2             1.03
+</code></pre></div>
+<p>That table is the deliverable. Not the MAE, not the feature importances — a list
+of names a counsellor can act on in September, with the reasons visible beside
+each one.</p>
+<h3 id="monitoring-session-8">Monitoring (session 8)</h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Frequency</th>
+<th>Alarm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Intake distribution against last year</td>
+<td>At enrolment</td>
+<td>PSI &gt; 0.25 on absences, failures, studytime</td>
+</tr>
+<tr>
+<td>Support list composition</td>
+<td>At publication</td>
+<td>Any group's share moves sharply against last year</td>
+</tr>
+<tr>
+<td>Realised outcomes</td>
+<td>End of year</td>
+<td>Fewer than 25% of failing students were on the list</td>
+</tr>
+<tr>
+<td>Model refresh</td>
+<td>Yearly</td>
+<td>Retrain on the completed cohort</td>
+</tr>
+</tbody>
+</table>
+<p>Note the label delay again: outcomes arrive <strong>once a year</strong>. The model can be
+checked properly four times in a four-year secondary programme, which is a strong
+argument for keeping a human in the loop rather than automating the decision.</p>
+<hr />
+<h2 id="8-the-honest-summary">8. The honest summary</h2>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>What we did</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Problem framing</td>
+<td>Named the decision: 79 support places</td>
+<td>Ranking problem, not accuracy problem</td>
+</tr>
+<tr>
+<td>Data understanding</td>
+<td>395 students, no gaps, 33 columns</td>
+<td>Clean data, timing problem</td>
+</tr>
+<tr>
+<td>Point-in-time audit</td>
+<td>Dropped <code>G1</code>, <code>G2</code></td>
+<td>MAE 1.37 → 3.40; the honest model</td>
+</tr>
+<tr>
+<td>Baselines</td>
+<td>Mean grade, ridge</td>
+<td>3.43, 3.40 — barely distinguishable</td>
+</tr>
+<tr>
+<td>Model</td>
+<td>Random forest</td>
+<td>MAE 2.90</td>
+</tr>
+<tr>
+<td>Decision metric</td>
+<td>Capture at 20% capacity</td>
+<td>33% vs 20% random</td>
+</tr>
+<tr>
+<td>Error analysis</td>
+<td>School, address, sex</td>
+<td>Error even; small subgroups; <code>sex</code> needs a policy decision</td>
+</tr>
+<tr>
+<td>Packaging</td>
+<td>Pipeline + metadata saved</td>
+<td>Reproducible artifact</td>
+</tr>
+<tr>
+<td>Verdict</td>
+<td><strong>Pilot as a suggestion, not an assignment</strong></td>
+<td>Revisit with current-term attendance</td>
+</tr>
+</tbody>
+</table>
+<p>One sitting, nine steps, and a recommendation the Head Teacher can act on —
+including the parts that say "not yet".</p>
+<hr />
+<h1 id="part-b-your-project">Part B — your project</h1>
+<h2 id="the-brief">The brief</h2>
+<p>Take a problem you care about, run it end to end exactly as part A did, and hand
+in something a working team could pick up.</p>
+<p><strong>Your dataset must not be the loan book or the student file.</strong> Use data from your
+workplace (with permission), a public source (Kaggle, UCI, data.gov.np, World
+Bank, Nepal Rastra Bank), or a dataset you build yourself. It must be <strong>tabular</strong>,
+have at least <strong>1,000 rows</strong>, and contain a target you could genuinely act on.</p>
+<p><strong>Choose a problem where a decision changes.</strong> If you cannot name the person whose
+work changes because of your model, pick a different problem. That question is
+the first thing I will ask, and it is worth 20% of the grade before any modelling
+is looked at.</p>
+<h2 id="what-to-submit">What to submit</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Deliverable</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Project charter</strong>, one page</td>
+<td>Session 1's template: decision, owner, decision point, target, baseline, success criteria, guardrails, kill criteria, risks</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Notebook</strong></td>
+<td>The full run: data audit, preparation, features, models, evaluation, error analysis. Narrated, not just code</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Model artifact</strong></td>
+<td>Saved pipeline plus metadata JSON, as in session 9</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>A served model</strong></td>
+<td>A FastAPI endpoint <em>or</em> a Streamlit interface. One is enough</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Monitoring plan</strong>, half a page</td>
+<td>What you would watch, how often, what would trigger action</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>README</strong></td>
+<td>How to install, run, and reproduce your result in under ten minutes</td>
+</tr>
+</tbody>
+</table>
+<p>Submit as a git repository, with a <code>requirements.txt</code> that works.</p>
+<h2 id="how-it-is-graded">How it is graded</h2>
+<table>
+<thead>
+<tr>
+<th>Weight</th>
+<th>Criterion</th>
+<th>What a strong submission shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>20%</strong></td>
+<td><strong>Problem framing</strong></td>
+<td>A decision, an owner, a decision point. Success criteria written before modelling. A baseline that is measured, not assumed</td>
+</tr>
+<tr>
+<td><strong>20%</strong></td>
+<td><strong>Data discipline</strong></td>
+<td>Point-in-time audit of every column. Missingness understood, not just filled. Split justified. No leakage — and evidence you went looking</td>
+</tr>
+<tr>
+<td><strong>15%</strong></td>
+<td><strong>Modelling</strong></td>
+<td>Pipeline from raw columns to prediction. Cross-validated comparison with the fold spread reported. Model choice justified against constraints</td>
+</tr>
+<tr>
+<td><strong>15%</strong></td>
+<td><strong>Evaluation</strong></td>
+<td>The right metric for the decision, with an operating point. Cost or capacity reasoning. Error analysis by slice</td>
+</tr>
+<tr>
+<td><strong>15%</strong></td>
+<td><strong>Engineering</strong></td>
+<td>Reproducible, seeded, saved with metadata, served, and it runs from a clean clone</td>
+</tr>
+<tr>
+<td><strong>15%</strong></td>
+<td><strong>Communication and honesty</strong></td>
+<td>A clear recommendation a non-specialist can act on, including limitations and what you would do next</td>
+</tr>
+</tbody>
+</table>
+<p>Note what is <strong>not</strong> on that list: the score itself. A project reporting an honest
+AUC of 0.68 with a clear decision and a measured baseline beats one reporting 0.95
+with a leaked column, every time. If your first model looks excellent, your first
+job is to find out why.</p>
+<h2 id="suggested-timeline">Suggested timeline</h2>
+<table>
+<thead>
+<tr>
+<th>Week</th>
+<th>Work</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Choose the problem and the dataset. Write the charter. Get it checked before going further</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Data audit, preparation, baselines. Most of the value is in this week</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Features, models, cross-validation, metric selection</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Error analysis, threshold or operating point, artifact and serving</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Monitoring plan, README, rehearse the ten-minute walkthrough</td>
+</tr>
+</tbody>
+</table>
+<h2 id="common-ways-projects-lose-marks">Common ways projects lose marks</h2>
+<ul>
+<li><strong>No named decision.</strong> The single biggest one. "Understanding the drivers" is
+  not a decision.</li>
+<li><strong>No baseline.</strong> Without one, no score means anything.</li>
+<li><strong>A leaked column.</strong> Especially "status" fields, anything with <code>final_</code>,
+  <code>resolution_</code>, <code>closed_</code> in the name, and anything suspiciously predictive.</li>
+<li><strong>Accuracy on imbalanced data.</strong> Session 5 exists entirely because of this.</li>
+<li><strong>Preprocessing fitted before the split.</strong> Use a pipeline and it cannot happen.</li>
+<li><strong>A notebook that does not run.</strong> Restart the kernel, run all, before you submit.</li>
+<li><strong>Burying the recommendation.</strong> Put it at the top, in one paragraph, in words a
+  head of department would use.</li>
+</ul>
+<h2 id="frequently-asked">Frequently asked</h2>
+<p><strong>Can I use deep learning?</strong> Yes, if it beats a well-tuned baseline on your data
+and you can justify the cost. On tabular data of this size it usually will not.</p>
+<p><strong>My model is barely better than the baseline.</strong> Then that is your finding. Report
+it clearly, show what you tried, and say what data would change the answer. This is
+a pass-worthy and often excellent project — see part A of this notebook.</p>
+<p><strong>How big should the notebook be?</strong> Long enough to follow the reasoning, short
+enough that someone reads it all. Part A is about the right length for the modelling
+narrative.</p>
+<p><strong>Can I work with someone else?</strong> The project is individual, but reviewing each
+other's charters in week 1 is encouraged and usually improves both.</p>
+<hr />
+<h2 id="if-you-remember-nothing-else-from-the-whole-module">If you remember nothing else — from the whole module</h2>
+<p><strong>Start from the decision.</strong> A model that changes no decision is a report with
+extra steps.</p>
+<p><strong>Measure the cheap option first.</strong> A constant, a rule, a simple model. Most
+projects are judged against them and never asked.</p>
+<p><strong>Ask when each value is written.</strong> Point-in-time correctness has saved more
+projects than every algorithm in scikit-learn combined.</p>
+<p><strong>Pick the metric before you model, and attach money or capacity to it.</strong> Then
+report the operating point, never the metric alone.</p>
+<p><strong>A pipeline makes discipline structural.</strong> Training code and serving code should
+be the same code.</p>
+<p><strong>Look at where you are wrong.</strong> Slice analysis has found more value in this
+module than every hyperparameter search we ran.</p>
+<p><strong>The world moves.</strong> Monitor inputs, because the labels arrive late — if they
+arrive at all.</p>
+<p><strong>Say what you actually found.</strong> Including "this is not ready", "the gain is
+modest", and "here is what it would cost to do properly". That honesty is the
+whole professional skill; the rest is scikit-learn.</p>
+<hr />
+<h2 id="further-reading-if-you-continue">Further reading, if you continue</h2>
+<ul>
+<li>Chip Huyen, <em>Designing Machine Learning Systems</em> — the closest book to this
+  module's point of view.</li>
+<li>Emmanuel Ameisen, <em>Building Machine Learning Powered Applications</em> — framing and
+  shipping, with worked code.</li>
+<li>Andrew Ng, <em>Machine Learning Yearning</em> — free, short, and the best writing on
+  error analysis.</li>
+<li>Google, <em>Rules of Machine Learning</em> — 43 rules from people who have made every
+  mistake in this module at scale.</li>
+<li>Provost and Fawcett, <em>Data Science for Business</em> — for the conversations with
+  stakeholders that decide whether any of this matters.</li>
+</ul>
+<hr />
+<p>That is the module. Ten sessions, one loan book, one school, and a habit of
+asking what decision changes.</p>
+<p>Good luck with your project — bring the charter to week 1 and we will look at it
+together.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../09_deployment_apis/" class="btn btn-neutral float-left" title="9. Model Deployment and APIs"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright &copy; 2026 - Aayush Raj Regmi</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../09_deployment_apis/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../javascripts/mathjax.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

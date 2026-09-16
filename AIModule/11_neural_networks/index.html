@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>1. Neural Networks from Scratch - Applied ML</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "1. Neural Networks from Scratch";
+        var mkdocs_page_input_path = "AIModule/11_neural_networks.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Applied ML
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Welcome</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../InstallationGuide/">Installation Guide</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Applied ML in Production</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../01_problem_framing/">1. ML Problem Framing and the Industry Workflow</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02_data_preparation/">2. Data Preparation for ML</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../03_feature_engineering/">3. Feature Engineering</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04_sklearn_models/">4. Building ML Models with Scikit-learn</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../05_evaluation_metrics/">5. Model Evaluation and Performance Metrics</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../06_tuning_error_analysis/">6. Model Tuning and Error Analysis</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07_pipelines_tracking/">7. ML Pipelines and Experiment Tracking</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../08_mlops_intro/">8. Introduction to MLOps</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../09_deployment_apis/">9. Model Deployment and APIs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../10_end_to_end_project/">10. End-to-End ML Project</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Bonus — Deep Learning</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">1. Neural Networks from Scratch</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-work-through-this">How to work through this</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#learning-objectives">Learning objectives</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#1-a-neuron">1. A neuron</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#activation-functions">Activation functions</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-why-depth-the-xor-problem">2. Why depth: the XOR problem</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-backpropagation-by-hand">3. Backpropagation, by hand</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-the-same-thing-in-pytorch">4. The same thing in PyTorch</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#nnmodule-the-version-you-will-actually-write">nn.Module: the version you will actually write</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-a-neural-network-on-the-loan-problem">5. A neural network on the loan problem</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#bigger-is-not-better">Bigger is not better</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-the-training-loop-annotated-once">6. The training loop, annotated once</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#your-turn">Your turn</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#if-you-remember-nothing-else">If you remember nothing else</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#glossary">Glossary</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#further-reading">Further reading</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../12_cnn/">2. Convolutional Neural Networks</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../13_rnn_lstm_gru/">3. Recurrent Networks — RNN, LSTM, GRU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../14_attention_transformers/">4. Attention and Transformers</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Applied ML</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Bonus — Deep Learning</li>
+      <li class="breadcrumb-item active">1. Neural Networks from Scratch</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="neural-networks-from-scratch">Neural Networks from Scratch</h1>
+<p><strong>Applied ML in Production · Bonus 1 of 4</strong></p>
+<hr />
+<p>The ten core sessions deliberately stayed with models you can explain to a credit
+committee. This bonus series covers the other half of modern machine learning —
+neural networks, convolutions, recurrence, and attention — and it starts here,
+with the smallest possible question: <strong>what is a neuron, and why would you stack
+them?</strong></p>
+<p>We build a network twice. First in twenty lines of NumPy, deriving the gradients
+by hand, so that nothing is magic. Then in PyTorch, so you can see what the
+library is doing on your behalf.</p>
+<p>Then we do something the tutorials skip: we point the network at session 2's loan
+data and compare it honestly with logistic regression.</p>
+<h2 id="how-to-work-through-this">How to work through this</h2>
+<p>Type the code. The NumPy network is the most important twenty lines in this
+series — everything later is that idea with more structure.</p>
+<p>Run each cell, read the output, then read the commentary. If a cell errors, run
+from the top.</p>
+<h2 id="learning-objectives">Learning objectives</h2>
+<p>After this session you will be able to:</p>
+<ul>
+<li>Describe a neuron as a weighted sum, a bias, and an activation function.</li>
+<li>Explain why logistic regression <em>is</em> a single-neuron network.</li>
+<li>Say what problem hidden layers solve, and demonstrate it on XOR.</li>
+<li>Implement forward propagation and <strong>backpropagation</strong> by hand in NumPy.</li>
+<li>Use PyTorch tensors, autograd, <code>nn.Module</code>, and a standard training loop.</li>
+<li>Recognise overfitting from training and validation curves.</li>
+<li>Judge when a neural network is the right choice for a tabular problem — and
+  when it is not.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="s2">&quot;axes.grid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;grid.alpha&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">})</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;torch&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;everything here runs on the CPU in seconds — no GPU required&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>torch 2.13.0
+everything here runs on the CPU in seconds — no GPU required
+</code></pre></div>
+<hr />
+<h2 id="1-a-neuron">1. A neuron</h2>
+<p>A neuron does three things:</p>
+<ol>
+<li>Multiply each input by a weight and add them up.</li>
+<li>Add a bias.</li>
+<li>Pass the result through an <strong>activation function</strong>.</li>
+</ol>
+<div class="arithmatex">\[ a = f(w_1x_1 + w_2x_2 + \dots + w_nx_n + b) \]</div>
+<p>If the activation is the sigmoid, that is <em>exactly</em> logistic regression. You have
+been using a one-neuron neural network since session 4.</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">sigmoid</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">z</span><span class="p">))</span>
+
+
+<span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.8</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.2</span><span class="p">])</span>      <span class="c1"># what the model learned</span>
+<span class="n">bias</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">inputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">])</span>        <span class="c1"># one application, two features</span>
+
+<span class="n">z</span> <span class="o">=</span> <span class="n">inputs</span> <span class="o">@</span> <span class="n">weights</span> <span class="o">+</span> <span class="n">bias</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;weighted sum + bias: </span><span class="si">{</span><span class="n">z</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;after sigmoid:       </span><span class="si">{</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">z</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">   &lt;- a probability&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>weighted sum + bias: 0.820
+after sigmoid:       0.694   &lt;- a probability
+</code></pre></div>
+<h3 id="activation-functions">Activation functions</h3>
+<p>Without an activation, stacking layers is pointless: a chain of linear maps is
+just another linear map. The activation is what makes depth mean something.</p>
+<div class="highlight"><pre><span></span><code><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;sigmoid — squashes to (0, 1)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;tanh — squashes to (-1, 1)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;ReLU — max(0, z)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Three activation functions&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../11_neural_networks_files/11_neural_networks_7_0.png" /></p>
+<table>
+<thead>
+<tr>
+<th>Activation</th>
+<th>Range</th>
+<th>Where you meet it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Sigmoid</strong></td>
+<td>0 to 1</td>
+<td>Output layer for binary classification</td>
+</tr>
+<tr>
+<td><strong>Tanh</strong></td>
+<td>−1 to 1</td>
+<td>Hidden layers in older networks, and inside LSTMs</td>
+</tr>
+<tr>
+<td><strong>ReLU</strong></td>
+<td>0 to ∞</td>
+<td>The default for hidden layers since about 2012</td>
+</tr>
+</tbody>
+</table>
+<p>ReLU won for an unglamorous reason: its gradient is exactly 1 for positive inputs,
+so gradients do not shrink as they pass back through many layers. Sigmoid's
+gradient is at most 0.25, so ten layers of it multiply to nearly nothing — the
+<strong>vanishing gradient</strong> problem, which bonus 3 revisits when we reach RNNs.</p>
+<hr />
+<h2 id="2-why-depth-the-xor-problem">2. Why depth: the XOR problem</h2>
+<p>Here is the smallest problem a single neuron cannot solve. Output 1 when exactly
+one input is 1.</p>
+<table>
+<thead>
+<tr>
+<th>x₁</th>
+<th>x₂</th>
+<th>y</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>No straight line separates the 1s from the 0s. Logistic regression draws straight
+lines, so it cannot do better than guessing.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogisticRegression</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+<span class="n">single_neuron</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;logistic regression accuracy on XOR:&quot;</span><span class="p">,</span> <span class="n">single_neuron</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">ravel</span><span class="p">()))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;predictions:&quot;</span><span class="p">,</span> <span class="n">single_neuron</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>logistic regression accuracy on XOR: 0.5
+predictions: [0. 0. 0. 0.]
+</code></pre></div>
+<p>50% — a coin flip. This is the same limitation as session 3's interaction
+example: a linear model cannot express "one <strong>or</strong> the other, but not both"
+unless you hand it the right feature.</p>
+<p>A hidden layer builds that feature for itself.</p>
+<hr />
+<h2 id="3-backpropagation-by-hand">3. Backpropagation, by hand</h2>
+<p>A network learns by repeating four steps:</p>
+<ol>
+<li><strong>Forward pass</strong> — push inputs through the layers to a prediction.</li>
+<li><strong>Loss</strong> — measure how wrong the prediction is.</li>
+<li><strong>Backward pass</strong> — work out how much each weight contributed to the error.</li>
+<li><strong>Update</strong> — nudge every weight against its gradient.</li>
+</ol>
+<p>Step 3 is backpropagation, and it is the chain rule applied layer by layer. Here
+it is in full, for a network with one hidden layer of eight tanh units.</p>
+<div class="highlight"><pre><span></span><code><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">HIDDEN</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">LEARNING_RATE</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+<span class="n">W1</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">HIDDEN</span><span class="p">))</span>      <span class="c1"># input -&gt; hidden</span>
+<span class="n">b1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">HIDDEN</span><span class="p">))</span>
+<span class="n">W2</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">HIDDEN</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>      <span class="c1"># hidden -&gt; output</span>
+<span class="n">b2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="n">history</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5001</span><span class="p">):</span>
+    <span class="c1"># 1. forward</span>
+    <span class="n">hidden</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">X</span> <span class="o">@</span> <span class="n">W1</span> <span class="o">+</span> <span class="n">b1</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">hidden</span> <span class="o">@</span> <span class="n">W2</span> <span class="o">+</span> <span class="n">b2</span><span class="p">)</span>
+
+    <span class="c1"># 2. loss (binary cross-entropy)</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">output</span> <span class="o">+</span> <span class="mf">1e-9</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">output</span> <span class="o">+</span> <span class="mf">1e-9</span><span class="p">))</span>
+
+    <span class="c1"># 3. backward — the chain rule, one layer at a time</span>
+    <span class="n">d_output</span> <span class="o">=</span> <span class="p">(</span><span class="n">output</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>              <span class="c1"># dLoss/dz for sigmoid + cross-entropy</span>
+    <span class="n">dW2</span> <span class="o">=</span> <span class="n">hidden</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">d_output</span>
+    <span class="n">db2</span> <span class="o">=</span> <span class="n">d_output</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">d_hidden</span> <span class="o">=</span> <span class="p">(</span><span class="n">d_output</span> <span class="o">@</span> <span class="n">W2</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">hidden</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>   <span class="c1"># tanh&#39;(z) = 1 - tanh(z)^2</span>
+    <span class="n">dW1</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">d_hidden</span>
+    <span class="n">db1</span> <span class="o">=</span> <span class="n">d_hidden</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># 4. update</span>
+    <span class="n">W1</span> <span class="o">-=</span> <span class="n">LEARNING_RATE</span> <span class="o">*</span> <span class="n">dW1</span>
+    <span class="n">b1</span> <span class="o">-=</span> <span class="n">LEARNING_RATE</span> <span class="o">*</span> <span class="n">db1</span>
+    <span class="n">W2</span> <span class="o">-=</span> <span class="n">LEARNING_RATE</span> <span class="o">*</span> <span class="n">dW2</span>
+    <span class="n">b2</span> <span class="o">-=</span> <span class="n">LEARNING_RATE</span> <span class="o">*</span> <span class="n">db2</span>
+
+    <span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">epoch</span> <span class="o">%</span> <span class="mi">1000</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;epoch </span><span class="si">{</span><span class="n">epoch</span><span class="si">:</span><span class="s2">&gt;5</span><span class="si">}</span><span class="s2">   loss </span><span class="si">{</span><span class="n">loss</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">final predictions:&quot;</span><span class="p">,</span> <span class="n">output</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;targets:          &quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>epoch     0   loss 0.7414
+epoch  1000   loss 0.0013
+epoch  2000   loss 0.0006
+epoch  3000   loss 0.0004
+epoch  4000   loss 0.0003
+epoch  5000   loss 0.0002
+
+final predictions: [0. 1. 1. 0.]
+targets:           [0. 1. 1. 0.]
+</code></pre></div>
+<p>It learned XOR. Twenty lines, no framework, and the only mathematics is the chain
+rule.</p>
+<p>Two lines deserve a second look. <code>d_output = (output - y) / len(X)</code> is the
+gradient of cross-entropy with respect to the pre-sigmoid value — the sigmoid
+derivative and the log cancel, which is why this pairing is standard.
+<code>(1 - hidden ** 2)</code> is the tanh derivative, and it is where the <strong>vanishing
+gradient</strong> lives: when a unit saturates near ±1, that factor approaches zero and
+the layers behind it stop learning.</p>
+<div class="highlight"><pre><span></span><code><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;epoch&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;loss&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Learning XOR: loss against epoch&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../11_neural_networks_files/11_neural_networks_15_0.png" /></p>
+<p>Notice the shape: almost everything happens in the first few hundred epochs — the
+loss is already down to 0.02 by epoch 100 — and the remaining 4,900 epochs polish
+a solution that was essentially found early. That is typical, and it is why the
+sensible stopping rule is "when validation stops improving" rather than a fixed
+epoch count.</p>
+<p>The shape is also fragile. With a narrower hidden layer the curve can flatten
+early at a much worse loss and stay there, which is the next note.</p>
+<blockquote>
+<p><strong>Try this later.</strong> Set <code>HIDDEN = 4</code> and keep the seed at 0. The network stalls
+at a loss around 0.35 and learns only half the truth table. Same architecture
+class, same data, different starting weights — that is how much initialisation
+matters, and why <code>random_state</code> is not optional in this corner of the field.</p>
+</blockquote>
+<hr />
+<h2 id="4-the-same-thing-in-pytorch">4. The same thing in PyTorch</h2>
+<p>PyTorch does two things for you: it records the operations you perform so it can
+compute gradients automatically (<strong>autograd</strong>), and it gives you layers,
+optimisers and loss functions off the shelf.</p>
+<p>Start with autograd on a single number, so the magic is small.</p>
+<div class="highlight"><pre><span></span><code><span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">z</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="n">z</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>                 <span class="c1"># walk the graph backwards, filling in gradients</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;z = 3x² + 1 at x = 2 gives z = </span><span class="si">{</span><span class="n">z</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dz/dx = 6x = </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">   (computed, not derived by us)&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>z = 3x² + 1 at x = 2 gives z = 13.0
+dz/dx = 6x = 12.0   (computed, not derived by us)
+</code></pre></div>
+<p>That is the whole trick. Every operation on a tensor with <code>requires_grad=True</code> is
+recorded; <code>backward()</code> replays the chain rule through the recording.</p>
+<p>Now the XOR network again — same architecture, none of the derivatives.</p>
+<div class="highlight"><pre><span></span><code><span class="n">X_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="n">y_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+    <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>      <span class="c1"># input -&gt; hidden</span>
+    <span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">(),</span>
+    <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>      <span class="c1"># hidden -&gt; output</span>
+<span class="p">)</span>
+
+<span class="n">loss_function</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BCEWithLogitsLoss</span><span class="p">()</span>               <span class="c1"># sigmoid + cross-entropy, fused</span>
+<span class="n">optimiser</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5001</span><span class="p">):</span>
+    <span class="n">optimiser</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>                 <span class="c1"># clear last step&#39;s gradients</span>
+    <span class="n">logits</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">X_tensor</span><span class="p">)</span>              <span class="c1"># forward</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_function</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">y_tensor</span><span class="p">)</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>                       <span class="c1"># backward — autograd does section 3</span>
+    <span class="n">optimiser</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>                      <span class="c1"># update</span>
+
+    <span class="k">if</span> <span class="n">epoch</span> <span class="o">%</span> <span class="mi">1000</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;epoch </span><span class="si">{</span><span class="n">epoch</span><span class="si">:</span><span class="s2">&gt;5</span><span class="si">}</span><span class="s2">   loss </span><span class="si">{</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">predictions:&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">X_tensor</span><span class="p">))</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>epoch     0   loss 0.7012
+epoch  1000   loss 0.0013
+epoch  2000   loss 0.0006
+
+
+epoch  3000   loss 0.0004
+epoch  4000   loss 0.0003
+epoch  5000   loss 0.0002
+
+predictions: [0. 1. 1. 0.]
+</code></pre></div>
+<p>Four lines inside the loop, and they are the same four lines for every neural
+network you will ever train — including the transformer in bonus 4.</p>
+<table>
+<thead>
+<tr>
+<th>Line</th>
+<th>What it does</th>
+<th>The NumPy equivalent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>optimiser.zero_grad()</code></td>
+<td>Clear gradients from the last step</td>
+<td>(we overwrote them)</td>
+</tr>
+<tr>
+<td><code>model(X)</code></td>
+<td>Forward pass</td>
+<td><code>np.tanh(X @ W1 + b1)</code> etc.</td>
+</tr>
+<tr>
+<td><code>loss.backward()</code></td>
+<td>Compute every gradient</td>
+<td>the whole of step 3</td>
+</tr>
+<tr>
+<td><code>optimiser.step()</code></td>
+<td>Update the weights</td>
+<td><code>W1 -= lr * dW1</code> etc.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Forgetting <code>zero_grad()</code> is the classic PyTorch bug.</strong> Gradients accumulate by
+default, so without it your updates are the sum of every batch so far and training
+quietly diverges.</p>
+<h3 id="nnmodule-the-version-you-will-actually-write"><code>nn.Module</code>: the version you will actually write</h3>
+<p><code>nn.Sequential</code> is fine for a straight chain. Anything with branches, skips or
+custom logic wants a class.</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SmallNet</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_features</span><span class="p">,</span> <span class="n">hidden</span><span class="o">=</span><span class="mi">32</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">n_features</span><span class="p">,</span> <span class="n">hidden</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hidden</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+
+
+<span class="n">net</span> <span class="o">=</span> <span class="n">SmallNet</span><span class="p">(</span><span class="n">n_features</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">parameters: </span><span class="si">{</span><span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">net</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>SmallNet(
+  (hidden): Linear(in_features=2, out_features=32, bias=True)
+  (output): Linear(in_features=32, out_features=1, bias=True)
+  (activation): ReLU()
+)
+
+parameters: 129
+</code></pre></div>
+<hr />
+<h2 id="5-a-neural-network-on-the-loan-problem">5. A neural network on the loan problem</h2>
+<p>Now the question this module cares about. Sessions 4 and 6 established that
+logistic regression reaches ROC-AUC 0.782 on the loan data, and that gradient
+boosting could not beat it by more than noise.</p>
+<p>Can a neural network?</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.compose</span><span class="w"> </span><span class="kn">import</span> <span class="n">ColumnTransformer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.impute</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleImputer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">average_precision_score</span><span class="p">,</span> <span class="n">roc_auc_score</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pipeline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">OneHotEncoder</span><span class="p">,</span> <span class="n">StandardScaler</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">find_repository_root</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span> <span class="o">*</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">folder</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">folder</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;could not find the repository root&quot;</span><span class="p">)</span>
+
+
+<span class="n">ROOT</span> <span class="o">=</span> <span class="n">find_repository_root</span><span class="p">()</span>
+<span class="n">loans</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">ROOT</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span> <span class="o">/</span> <span class="s2">&quot;loan_default.csv&quot;</span><span class="p">)</span>
+
+<span class="n">NUMERIC</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;loan_amount&quot;</span><span class="p">,</span> <span class="s2">&quot;tenure_months&quot;</span><span class="p">,</span> <span class="s2">&quot;interest_rate&quot;</span><span class="p">,</span> <span class="s2">&quot;previous_loans&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;days_past_due_history&quot;</span><span class="p">,</span> <span class="s2">&quot;annual_income&quot;</span><span class="p">,</span> <span class="s2">&quot;credit_score&quot;</span><span class="p">]</span>
+<span class="n">CATEGORICAL</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sector&quot;</span><span class="p">,</span> <span class="s2">&quot;employment_type&quot;</span><span class="p">,</span> <span class="s2">&quot;has_collateral&quot;</span><span class="p">]</span>
+
+<span class="n">preparation</span> <span class="o">=</span> <span class="n">ColumnTransformer</span><span class="p">([</span>
+    <span class="p">(</span><span class="s2">&quot;numeric&quot;</span><span class="p">,</span> <span class="n">Pipeline</span><span class="p">([(</span><span class="s2">&quot;impute&quot;</span><span class="p">,</span> <span class="n">SimpleImputer</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;median&quot;</span><span class="p">)),</span>
+                          <span class="p">(</span><span class="s2">&quot;scale&quot;</span><span class="p">,</span> <span class="n">StandardScaler</span><span class="p">())]),</span> <span class="n">NUMERIC</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;categorical&quot;</span><span class="p">,</span> <span class="n">Pipeline</span><span class="p">([(</span><span class="s2">&quot;impute&quot;</span><span class="p">,</span> <span class="n">SimpleImputer</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;most_frequent&quot;</span><span class="p">)),</span>
+                              <span class="p">(</span><span class="s2">&quot;encode&quot;</span><span class="p">,</span> <span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">handle_unknown</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">))]),</span>
+     <span class="n">CATEGORICAL</span><span class="p">),</span>
+<span class="p">])</span>
+
+<span class="n">X_train_raw</span><span class="p">,</span> <span class="n">X_test_raw</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">loans</span><span class="p">[</span><span class="n">NUMERIC</span> <span class="o">+</span> <span class="n">CATEGORICAL</span><span class="p">],</span> <span class="n">loans</span><span class="p">[</span><span class="s2">&quot;defaulted&quot;</span><span class="p">],</span>
+    <span class="n">test_size</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">loans</span><span class="p">[</span><span class="s2">&quot;defaulted&quot;</span><span class="p">],</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">X_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">preparation</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_train_raw</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="n">X_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">preparation</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_test_raw</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> training rows, </span><span class="si">{</span><span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> features after preprocessing&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;scaling matters more for neural networks than for anything else —&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;unscaled inputs make the gradients wildly different sizes per feature&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>9,000 training rows, 16 features after preprocessing
+scaling matters more for neural networks than for anything else —
+unscaled inputs make the gradients wildly different sizes per feature
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span><span class="p">,</span> <span class="n">TensorDataset</span>
+
+<span class="n">train_data</span> <span class="o">=</span> <span class="n">TensorDataset</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">X_train</span><span class="p">),</span>
+                           <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">y_train</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">net</span> <span class="o">=</span> <span class="n">SmallNet</span><span class="p">(</span><span class="n">n_features</span><span class="o">=</span><span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">hidden</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+<span class="n">optimiser</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+<span class="n">loss_function</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BCEWithLogitsLoss</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">60</span><span class="p">):</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">batch_X</span><span class="p">,</span> <span class="n">batch_y</span> <span class="ow">in</span> <span class="n">loader</span><span class="p">:</span>
+        <span class="n">optimiser</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_function</span><span class="p">(</span><span class="n">net</span><span class="p">(</span><span class="n">batch_X</span><span class="p">),</span> <span class="n">batch_y</span><span class="p">)</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="n">optimiser</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+<span class="n">net</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+    <span class="n">probabilities</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">net</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">X_test</span><span class="p">)))</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+
+<span class="n">logistic</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="n">logistic_probabilities</span> <span class="o">=</span> <span class="n">logistic</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;neural network      AUC </span><span class="si">{</span><span class="n">roc_auc_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="w"> </span><span class="n">probabilities</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">   &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;AP </span><span class="si">{</span><span class="n">average_precision_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="w"> </span><span class="n">probabilities</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;logistic regression AUC </span><span class="si">{</span><span class="n">roc_auc_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="w"> </span><span class="n">logistic_probabilities</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">   &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;AP </span><span class="si">{</span><span class="n">average_precision_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="w"> </span><span class="n">logistic_probabilities</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>neural network      AUC 0.7795   AP 0.3848
+logistic regression AUC 0.7822   AP 0.3817
+</code></pre></div>
+<p>A dead heat — and session 6 taught us to read a difference that small as noise,
+because the cross-validation folds varied by ±0.03.</p>
+<p>This is the normal result on small, tidy tabular data, and it is worth saying
+plainly: <strong>neural networks are not a general upgrade.</strong> They win where the
+structure of the data is something a human would have to hand-engineer features
+for — pixels, waveforms, characters, sequences — and they lose where a linear
+model already fits, because they pay for flexibility with data hunger,
+opacity, and tuning.</p>
+<table>
+<thead>
+<tr>
+<th>Neural networks win</th>
+<th>Classical models win</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Images, audio, text, video</td>
+<td>Tabular data with meaningful columns</td>
+</tr>
+<tr>
+<td>Hundreds of thousands of examples</td>
+<td>Thousands of examples</td>
+</tr>
+<tr>
+<td>Raw inputs, no obvious features</td>
+<td>Features a domain expert can name</td>
+</tr>
+<tr>
+<td>Accuracy dominates explainability</td>
+<td>Decisions must be defended</td>
+</tr>
+</tbody>
+</table>
+<p>Our charter demanded explainable declines. That alone would have settled it,
+before a single epoch.</p>
+<h3 id="bigger-is-not-better">Bigger is not better</h3>
+<div class="highlight"><pre><span></span><code><span class="n">deeper</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+    <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">64</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+    <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+    <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">optimiser</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">deeper</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+
+<span class="n">train_curve</span><span class="p">,</span> <span class="n">test_curve</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+<span class="n">X_test_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+<span class="n">y_test_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">y_test</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">60</span><span class="p">):</span>
+    <span class="n">deeper</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">batch_X</span><span class="p">,</span> <span class="n">batch_y</span> <span class="ow">in</span> <span class="n">loader</span><span class="p">:</span>
+        <span class="n">optimiser</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_function</span><span class="p">(</span><span class="n">deeper</span><span class="p">(</span><span class="n">batch_X</span><span class="p">),</span> <span class="n">batch_y</span><span class="p">)</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="n">optimiser</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+    <span class="n">deeper</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+        <span class="n">train_curve</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss_function</span><span class="p">(</span><span class="n">deeper</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">X_train</span><span class="p">)),</span>
+                                         <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">y_train</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+        <span class="n">test_curve</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss_function</span><span class="p">(</span><span class="n">deeper</span><span class="p">(</span><span class="n">X_test_tensor</span><span class="p">),</span> <span class="n">y_test_tensor</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+
+<span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+    <span class="n">deep_probabilities</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">deeper</span><span class="p">(</span><span class="n">X_test_tensor</span><span class="p">))</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;deeper network AUC </span><span class="si">{</span><span class="n">roc_auc_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="w"> </span><span class="n">deep_probabilities</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">train_curve</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;training loss&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">test_curve</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;validation loss&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;epoch&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;binary cross-entropy&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;The gap that opens is overfitting&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>deeper network AUC 0.7757
+</code></pre></div>
+<p><img alt="png" src="../11_neural_networks_files/11_neural_networks_29_1.png" /></p>
+<p>The training loss keeps falling and the validation loss stops improving, then
+turns upward. That divergence is session 4's train–test gap, watched live.</p>
+<p>The standard defences, in the order you should reach for them:</p>
+<table>
+<thead>
+<tr>
+<th>Defence</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Early stopping</strong></td>
+<td>Stop at the validation minimum — free, and always worth doing</td>
+</tr>
+<tr>
+<td><strong>More data</strong></td>
+<td>The only fix that adds information</td>
+</tr>
+<tr>
+<td><strong>Weight decay</strong> (<code>weight_decay=</code> in the optimiser)</td>
+<td>L2 regularisation, exactly as in ridge</td>
+</tr>
+<tr>
+<td><strong>Dropout</strong> (<code>nn.Dropout(0.2)</code>)</td>
+<td>Randomly zeroes units during training, forcing redundancy</td>
+</tr>
+<tr>
+<td><strong>A smaller network</strong></td>
+<td>The defence people skip, and often the right one</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-the-training-loop-annotated-once">6. The training loop, annotated once</h2>
+<p>Every notebook in this bonus series uses this loop. Learn it here.</p>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>                          <span class="c1"># enable dropout / batch-norm training behaviour</span>
+    <span class="k">for</span> <span class="n">batch_X</span><span class="p">,</span> <span class="n">batch_y</span> <span class="ow">in</span> <span class="n">loader</span><span class="p">:</span>        <span class="c1"># mini-batches, reshuffled each epoch</span>
+        <span class="n">optimiser</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>              <span class="c1"># clear old gradients</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_function</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">batch_X</span><span class="p">),</span> <span class="n">batch_y</span><span class="p">)</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>                    <span class="c1"># autograd fills every .grad</span>
+        <span class="n">optimiser</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>                   <span class="c1"># weights move against the gradient</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>                           <span class="c1"># disable dropout for evaluation</span>
+    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>                  <span class="c1"># no gradient bookkeeping — faster, less memory</span>
+        <span class="n">validate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Choice</th>
+<th>Typical starting point</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Optimiser</strong></td>
+<td><code>Adam(lr=1e-3)</code></td>
+<td>Adapts per-parameter step sizes; forgiving</td>
+</tr>
+<tr>
+<td><strong>Batch size</strong></td>
+<td>32–256</td>
+<td>Bigger is faster per epoch, noisier gradients are sometimes better</td>
+</tr>
+<tr>
+<td><strong>Learning rate</strong></td>
+<td>1e-3, then tune by factors of 10</td>
+<td>The single most important hyperparameter</td>
+</tr>
+<tr>
+<td><strong>Epochs</strong></td>
+<td>As many as validation keeps improving</td>
+<td>Combine with early stopping</td>
+</tr>
+<tr>
+<td><strong>Loss</strong></td>
+<td><code>BCEWithLogitsLoss</code> (binary), <code>CrossEntropyLoss</code> (multi-class), <code>MSELoss</code> (regression)</td>
+<td>Must match the output layer</td>
+</tr>
+</tbody>
+</table>
+<p>Two rules that save hours of confusion.</p>
+<p><strong>Match the loss to the final layer.</strong> <code>BCEWithLogitsLoss</code> and <code>CrossEntropyLoss</code>
+apply the sigmoid or softmax internally, so your model must output <strong>raw logits</strong>.
+Applying a sigmoid yourself and then using <code>BCEWithLogitsLoss</code> trains a
+sigmoid-of-a-sigmoid, which learns badly and silently.</p>
+<p><strong>Scale your inputs.</strong> Neural networks are far more sensitive to feature scale
+than trees. Session 7's <code>ColumnTransformer</code> earns its place here too.</p>
+<hr />
+<h2 id="your-turn">Your turn</h2>
+<p><strong>1. Break XOR.</strong> Set <code>HIDDEN = 4</code> in section 3 and re-run. What final loss do you
+get, and which rows does the network get wrong? Now change the seed. How many
+seeds out of five succeed?</p>
+<p><strong>2. Activation matters.</strong> Replace <code>np.tanh</code> in the NumPy network with the ReLU
+<code>np.maximum(0, z)</code> — remembering that its derivative is <code>(z &gt; 0)</code>. Does it learn
+faster, slower, or not at all?</p>
+<p><strong>3. Learning rate sweep.</strong> Train the loan network with learning rates 1e-1, 1e-2,
+1e-3 and 1e-4 for 30 epochs each, and plot the loss curves together. Which
+diverges, which crawls?</p>
+<p><strong>4. Add regularisation.</strong> Give the deeper network <code>weight_decay=1e-3</code> and a
+<code>nn.Dropout(0.3)</code> layer. Does the validation curve stop turning upward, and does
+the test AUC improve?</p>
+<p><strong>5. Early stopping.</strong> Modify the training loop to keep the weights from the epoch
+with the lowest validation loss (<code>copy.deepcopy(model.state_dict())</code>). Report the
+AUC of the saved model against the final one.</p>
+<p><strong>6. The honest comparison.</strong> Cross-validate the neural network properly — five
+folds, retraining each time — and report mean ± standard deviation against
+logistic regression's 0.363 ± 0.032 average precision from session 6. Is the
+difference larger than the fold spread?</p>
+<hr />
+<h2 id="if-you-remember-nothing-else">If you remember nothing else</h2>
+<p><strong>A neuron is a weighted sum, a bias, and an activation.</strong> Logistic regression is
+one neuron with a sigmoid.</p>
+<p><strong>Depth buys you non-linearity.</strong> A single layer cannot solve XOR; one hidden
+layer can. Without an activation function, depth buys nothing at all.</p>
+<p><strong>Backpropagation is the chain rule, applied layer by layer.</strong> You wrote it in
+twenty lines; PyTorch just automates the bookkeeping.</p>
+<p><strong>Four lines are the whole training loop.</strong> <code>zero_grad</code>, forward, <code>backward</code>,
+<code>step</code> — and forgetting the first is the classic bug.</p>
+<p><strong>Neural networks are not a general upgrade.</strong> On the loan data a network matched
+logistic regression and a deeper one was worse. They earn their keep on pixels,
+audio, text and sequences — which is exactly what the next three notebooks are.</p>
+<p><strong>Watch the two curves.</strong> Training loss falling while validation loss rises is
+overfitting, live.</p>
+<hr />
+<h2 id="glossary">Glossary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Neuron / unit</strong></td>
+<td>Weighted sum of inputs plus bias, passed through an activation</td>
+</tr>
+<tr>
+<td><strong>Activation function</strong></td>
+<td>The non-linearity — sigmoid, tanh, ReLU</td>
+</tr>
+<tr>
+<td><strong>Hidden layer</strong></td>
+<td>Any layer between input and output</td>
+</tr>
+<tr>
+<td><strong>Forward pass</strong></td>
+<td>Computing the prediction from the inputs</td>
+</tr>
+<tr>
+<td><strong>Loss function</strong></td>
+<td>The number training minimises</td>
+</tr>
+<tr>
+<td><strong>Backpropagation</strong></td>
+<td>Computing gradients by applying the chain rule backwards</td>
+</tr>
+<tr>
+<td><strong>Gradient descent</strong></td>
+<td>Moving weights against their gradients</td>
+</tr>
+<tr>
+<td><strong>Epoch</strong></td>
+<td>One pass over the whole training set</td>
+</tr>
+<tr>
+<td><strong>Mini-batch</strong></td>
+<td>A subset of rows used for one update</td>
+</tr>
+<tr>
+<td><strong>Autograd</strong></td>
+<td>PyTorch's automatic differentiation</td>
+</tr>
+<tr>
+<td><strong>Logits</strong></td>
+<td>Raw model outputs before sigmoid or softmax</td>
+</tr>
+<tr>
+<td><strong>Vanishing gradient</strong></td>
+<td>Gradients shrinking toward zero through many layers</td>
+</tr>
+<tr>
+<td><strong>Dropout</strong></td>
+<td>Randomly zeroing units during training, as regularisation</td>
+</tr>
+<tr>
+<td><strong>Weight decay</strong></td>
+<td>L2 regularisation applied by the optimiser</td>
+</tr>
+</tbody>
+</table>
+<h2 id="further-reading">Further reading</h2>
+<ul>
+<li>Michael Nielsen, <em>Neural Networks and Deep Learning</em>, chapters 1–2 — free, and
+  the clearest derivation of backpropagation in existence.</li>
+<li>Andrej Karpathy, <em>The spelled-out intro to neural networks</em> (micrograd) — builds
+  autograd from nothing in a couple of hours.</li>
+<li>PyTorch documentation, <em>Learn the Basics</em> — tensors through training loop.</li>
+<li>Goodfellow, Bengio and Courville, <em>Deep Learning</em>, chapter 6 — the reference
+  treatment of feed-forward networks.</li>
+</ul>
+<hr />
+<p><strong>Next:</strong> <em>Convolutional Neural Networks</em> — why a fully connected network is the
+wrong shape for an image, and what convolution does instead.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../10_end_to_end_project/" class="btn btn-neutral float-left" title="10. End-to-End ML Project"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../12_cnn/" class="btn btn-neutral float-right" title="2. Convolutional Neural Networks">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright &copy; 2026 - Aayush Raj Regmi</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../10_end_to_end_project/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../12_cnn/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../javascripts/mathjax.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

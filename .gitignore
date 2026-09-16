@@ -2,7 +2,7 @@
 __pycache__/
 *.py[codz]
 *$py.class
-
+torch
 # C extensions
 *.so
 live-class/
@@ -234,3 +234,11 @@ mlartifacts/
 app/models/*.joblib
 app/models/*.pkl
 .ipynb_checkpoints/
+
+# MLflow local tracking (session 7)
+mlflow.db
+mlruns/
+mlartifacts/
+
+# torchvision datasets (bonus notebooks)
+data/torch/

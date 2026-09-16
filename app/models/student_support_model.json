@@ -1,0 +1,17 @@
+{
+  "name": "student-support-ranking",
+  "version": "0.1.0",
+  "trained_at": "2026-09-16 07:32",
+  "training_rows": 395,
+  "training_data_md5": "4dc304be95c6",
+  "target": "G3",
+  "decision": "which ~20% of students get sustained counsellor support",
+  "capacity": 0.2,
+  "excluded_features": [
+    "G1",
+    "G2"
+  ],
+  "excluded_reason": "not available at the start of the school year",
+  "offline_result": "reaches 33% of failing students at 20% capacity (random: 20%)",
+  "status": "pilot \u2014 suggestion only, never automatic assignment"
+}

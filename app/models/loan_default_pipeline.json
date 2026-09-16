@@ -1,0 +1,24 @@
+{
+  "name": "loan-default",
+  "version": "1.0.0",
+  "trained_at": "2026-09-16 07:15",
+  "training_rows": 12000,
+  "training_data_md5": "18b4b7c4918f",
+  "numeric_features": [
+    "loan_amount",
+    "tenure_months",
+    "interest_rate",
+    "previous_loans",
+    "days_past_due_history",
+    "annual_income",
+    "credit_score"
+  ],
+  "categorical_features": [
+    "sector",
+    "employment_type",
+    "has_collateral"
+  ],
+  "threshold": 0.2,
+  "sklearn_version": "1.9.0",
+  "notes": "Probability of default within 12 months, scored at application time."
+}

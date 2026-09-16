@@ -14,12 +14,12 @@ OUTPUT_DIR := docs/DCS404
 # AI Module (Applied ML in Production)
 AI_INPUT_DIR  := notebooks/ai-module
 AI_OUTPUT_DIR := docs/AIModule
-AI_NOTEBOOK   ?= notebooks/ai-module/00_setup_and_orientation.ipynb
+AI_NOTEBOOK   ?= notebooks/ai-module/01_problem_framing.ipynb
 AI_NOTEBOOKS  := $(wildcard $(AI_INPUT_DIR)/*.ipynb)
 
 NOTEBOOKS  := $(wildcard $(INPUT_DIR)/*.ipynb)
 
-.PHONY: run deploy build serve convert all convert-all convert-project convert-ai convert-ai-all
+.PHONY: run deploy build serve convert all convert-all convert-project convert-ai convert-ai-all fix-image-paths
 
 run:
 	python main.py
@@ -55,6 +55,8 @@ all: build serve
 convert-ai:
 	@mkdir -p $(AI_OUTPUT_DIR)
 	jupyter nbconvert --to markdown $(AI_NOTEBOOK) --output-dir=$(AI_OUTPUT_DIR)
+	@cp -R $(AI_INPUT_DIR)/images $(AI_OUTPUT_DIR)/ 2>/dev/null || true
+	@$(MAKE) --no-print-directory fix-image-paths
 
 # All AI-module notebooks
 convert-ai-all:
@@ -63,4 +65,14 @@ convert-ai-all:
 	@for nb in $(AI_NOTEBOOKS); do \
 		echo "Converting $$nb..."; \
 		jupyter nbconvert --to markdown $$nb --output-dir=$(AI_OUTPUT_DIR) || exit 1; \
+	done
+	@cp -R $(AI_INPUT_DIR)/images $(AI_OUTPUT_DIR)/ 2>/dev/null || true
+	@$(MAKE) --no-print-directory fix-image-paths
+
+# MkDocs serves each page at its own directory URL (.../01_problem_framing/), so a
+# notebook's "images/x.png" would resolve one level too deep. Rewrite those to
+# "../images/x.png" after conversion; the notebooks keep working in Jupyter.
+fix-image-paths:
+	@for md in $(AI_OUTPUT_DIR)/*.md; do \
+		perl -pi -e 's{(src=\"|\]\()images/}{$$1../images/}g' $$md; \
 	done

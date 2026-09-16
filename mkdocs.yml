@@ -1,14 +1,26 @@
 site_name: Applied ML
 site_description: Applied Machine Learning and AI
 
-exclude_docs: |
-  superpowers/
-
 nav:
   - Welcome: index.md
   - Getting Started:
     - Installation Guide: InstallationGuide.md
-  - Applied Machine Learning:
+  - Applied ML in Production:
+    - 1. ML Problem Framing and the Industry Workflow: AIModule/01_problem_framing.md
+    - 2. Data Preparation for ML: AIModule/02_data_preparation.md
+    - 3. Feature Engineering: AIModule/03_feature_engineering.md
+    - 4. Building ML Models with Scikit-learn: AIModule/04_sklearn_models.md
+    - 5. Model Evaluation and Performance Metrics: AIModule/05_evaluation_metrics.md
+    - 6. Model Tuning and Error Analysis: AIModule/06_tuning_error_analysis.md
+    - 7. ML Pipelines and Experiment Tracking: AIModule/07_pipelines_tracking.md
+    - 8. Introduction to MLOps: AIModule/08_mlops_intro.md
+    - 9. Model Deployment and APIs: AIModule/09_deployment_apis.md
+    - 10. End-to-End ML Project: AIModule/10_end_to_end_project.md
+  - Bonus — Deep Learning:
+    - 1. Neural Networks from Scratch: AIModule/11_neural_networks.md
+    - 2. Convolutional Neural Networks: AIModule/12_cnn.md
+    - 3. Recurrent Networks — RNN, LSTM, GRU: AIModule/13_rnn_lstm_gru.md
+    - 4. Attention and Transformers: AIModule/14_attention_transformers.md
 
 theme:
   # name: material

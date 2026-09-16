@@ -1,32 +1,32 @@
 # AI Module — Applied ML in Production
-# Python 3.12 required (mlflow and streamlit lag on 3.13+)
+# Python 3.12. Versions match the environment the notebooks were executed with.
 
 # Core data stack
-numpy==2.1.3
-pandas==2.2.3
-matplotlib==3.9.2
+numpy==2.5.1
+pandas==3.0.3
+matplotlib==3.11.0
 seaborn==0.13.2
 
 # Modelling
-scikit-learn==1.5.2
-imbalanced-learn==0.12.4
+scikit-learn==1.9.0
+imbalanced-learn==0.14.2
 
-# Experiment tracking
-mlflow==2.17.2
+# Experiment tracking (session 7 uses a sqlite backend, not the legacy file store)
+mlflow==3.16.0
 
 # Serving
-fastapi==0.115.5
-uvicorn==0.32.1
-pydantic==2.10.2
-streamlit==1.40.2
-joblib==1.4.2
+fastapi==0.141.1
+uvicorn==0.53.0
+pydantic==2.13.5
+streamlit==1.63.0
+joblib==1.5.3
 
 # Authoring and publication
-jupyter==1.1.1
-nbconvert==7.16.4
-ipykernel==6.29.5
+jupyterlab  # any recent version; the stats environment runs notebooks through nbconvert
+nbconvert==7.17.1
+ipykernel==7.3.0
 mkdocs==1.6.1
-pymdown-extensions==12.0  # required by mkdocs.yml's pymdownx.highlight, pymdownx.superfences, pymdownx.arithmatex
+pymdown-extensions==11.0.1  # required by mkdocs.yml's pymdownx.* extensions
 
 # Testing
-pytest==8.3.4
+pytest==9.1.1

@@ -143,13 +143,7 @@ def test_no_missing_values_in_target_or_id(df):
     assert df["loan_id"].notna().all()
 
 
-COMMITTED_CSV = (
-    Path(__file__).resolve().parents[1]
-    / "notebooks"
-    / "ai-module"
-    / "data"
-    / "loan_default.csv"
-)
+COMMITTED_CSV = Path(__file__).resolve().parents[1] / "data" / "loan_default.csv"
 
 
 def test_committed_csv_matches_generator(df, tmp_path):

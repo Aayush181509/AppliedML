@@ -24,13 +24,7 @@ import pandas as pd
 
 SEED = 42
 DEFAULT_ROWS = 12_000
-DEFAULT_OUTPUT = (
-    Path(__file__).resolve().parents[1]
-    / "notebooks"
-    / "ai-module"
-    / "data"
-    / "loan_default.csv"
-)
+DEFAULT_OUTPUT = Path(__file__).resolve().parents[1] / "data" / "loan_default.csv"
 
 START_DATE = pd.Timestamp("2023-01-01")
 END_DATE = pd.Timestamp("2024-12-31")

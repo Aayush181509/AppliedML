@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>8. Introduction to MLOps - Applied ML</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "8. Introduction to MLOps";
+        var mkdocs_page_input_path = "AIModule/08_mlops_intro.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Applied ML
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Welcome</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../InstallationGuide/">Installation Guide</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Applied ML in Production</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../01_problem_framing/">1. ML Problem Framing and the Industry Workflow</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02_data_preparation/">2. Data Preparation for ML</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../03_feature_engineering/">3. Feature Engineering</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04_sklearn_models/">4. Building ML Models with Scikit-learn</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../05_evaluation_metrics/">5. Model Evaluation and Performance Metrics</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../06_tuning_error_analysis/">6. Model Tuning and Error Analysis</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07_pipelines_tracking/">7. ML Pipelines and Experiment Tracking</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">8. Introduction to MLOps</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-work-through-this">How to work through this</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#learning-objectives">Learning objectives</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#1-what-a-deployed-model-actually-is">1. What a deployed model actually is</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#the-production-loop">The production loop</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-deployment-workflow">2. Deployment workflow</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-monitoring-three-layers">3. Monitoring: three layers</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-two-kinds-of-drift">4. Two kinds of drift</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#the-population-stability-index">The population stability index</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-responding-recalibrate-retrain-or-roll-back">5. Responding: recalibrate, retrain, or roll back?</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#does-retraining-help">Does retraining help?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#how-often-should-you-retrain">How often should you retrain?</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-cicd-for-machine-learning">6. CI/CD for machine learning</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-a-monitoring-runbook-for-this-project">7. A monitoring runbook for this project</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#your-turn">Your turn</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#if-you-remember-nothing-else">If you remember nothing else</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#glossary">Glossary</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#further-reading">Further reading</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../09_deployment_apis/">9. Model Deployment and APIs</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Applied ML</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Applied ML in Production</li>
+      <li class="breadcrumb-item active">8. Introduction to MLOps</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="introduction-to-mlops">Introduction to MLOps</h1>
+<p><strong>Applied ML in Production · Session 8</strong></p>
+<hr />
+<p>Every session so far ended with a model that scored well on data we already had.
+This one is about the part nobody warns you about: a model in production is not
+a result, it is a <strong>process that runs forever in a world that keeps changing</strong>.</p>
+<p>We will look at what has to exist around a model for it to be owned rather than
+merely built — deployment workflow, monitoring, retraining, CI/CD — and then we
+will watch this dataset break.</p>
+<p>Because it does break. There has been a shift hiding in the loan book since
+session 2, and every notebook so far has quietly stepped over it. Today we find
+it, measure it, and decide what to do about it.</p>
+<h2 id="how-to-work-through-this">How to work through this</h2>
+<p>Type the code. The monitoring section is deliberately plain — grouping by month
+and comparing distributions — because that is genuinely what production
+monitoring looks like underneath the dashboards.</p>
+<p>Run each cell, read the output, then read the commentary. If a cell errors, run
+from the top.</p>
+<h2 id="learning-objectives">Learning objectives</h2>
+<p>After this session you will be able to:</p>
+<ul>
+<li>Say what a deployed model consists of, beyond the model file.</li>
+<li>Describe shadow, canary and champion–challenger deployments, and when each is used.</li>
+<li>Monitor three layers — system, data, and model — and explain what to do when
+  labels arrive months late.</li>
+<li>Distinguish <strong>data drift</strong> from <strong>concept drift</strong>, and detect the first without
+  any labels at all.</li>
+<li>Compute and read a <strong>population stability index</strong>.</li>
+<li>Choose between recalibrating a threshold and retraining a model.</li>
+<li>Read a Dockerfile and a CI workflow for an ML project and say what each step protects.</li>
+</ul>
+<h2 id="setup">Setup</h2>
+<p>We train on everything up to 30 June 2024 and treat July onward as "production" —
+applications arriving one month at a time, scored by a model that was trained
+before they existed.</p>
+<div class="highlight"><pre><span></span><code><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.compose</span><span class="w"> </span><span class="kn">import</span> <span class="n">ColumnTransformer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.impute</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleImputer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogisticRegression</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pipeline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">OneHotEncoder</span><span class="p">,</span> <span class="n">StandardScaler</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="s2">&quot;axes.grid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;grid.alpha&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">})</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.width&quot;</span><span class="p">,</span> <span class="mi">130</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">find_repository_root</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span> <span class="o">*</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">folder</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">folder</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;could not find the repository root&quot;</span><span class="p">)</span>
+
+
+<span class="n">ROOT</span> <span class="o">=</span> <span class="n">find_repository_root</span><span class="p">()</span>
+<span class="n">loans</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">ROOT</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span> <span class="o">/</span> <span class="s2">&quot;loan_default.csv&quot;</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;application_date&quot;</span><span class="p">])</span>
+
+<span class="n">NUMERIC</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;loan_amount&quot;</span><span class="p">,</span> <span class="s2">&quot;tenure_months&quot;</span><span class="p">,</span> <span class="s2">&quot;interest_rate&quot;</span><span class="p">,</span> <span class="s2">&quot;previous_loans&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;days_past_due_history&quot;</span><span class="p">,</span> <span class="s2">&quot;annual_income&quot;</span><span class="p">,</span> <span class="s2">&quot;credit_score&quot;</span><span class="p">]</span>
+<span class="n">CATEGORICAL</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sector&quot;</span><span class="p">,</span> <span class="s2">&quot;employment_type&quot;</span><span class="p">,</span> <span class="s2">&quot;has_collateral&quot;</span><span class="p">]</span>
+
+<span class="n">preprocessing</span> <span class="o">=</span> <span class="n">ColumnTransformer</span><span class="p">([</span>
+    <span class="p">(</span><span class="s2">&quot;numeric&quot;</span><span class="p">,</span> <span class="n">Pipeline</span><span class="p">([(</span><span class="s2">&quot;impute&quot;</span><span class="p">,</span> <span class="n">SimpleImputer</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;median&quot;</span><span class="p">)),</span>
+                          <span class="p">(</span><span class="s2">&quot;scale&quot;</span><span class="p">,</span> <span class="n">StandardScaler</span><span class="p">())]),</span> <span class="n">NUMERIC</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;categorical&quot;</span><span class="p">,</span> <span class="n">Pipeline</span><span class="p">([(</span><span class="s2">&quot;impute&quot;</span><span class="p">,</span> <span class="n">SimpleImputer</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;most_frequent&quot;</span><span class="p">)),</span>
+                              <span class="p">(</span><span class="s2">&quot;encode&quot;</span><span class="p">,</span> <span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">handle_unknown</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">))]),</span> <span class="n">CATEGORICAL</span><span class="p">),</span>
+<span class="p">])</span>
+
+<span class="n">GO_LIVE</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s2">&quot;2024-07-01&quot;</span><span class="p">)</span>
+<span class="n">training</span> <span class="o">=</span> <span class="n">loans</span><span class="p">[</span><span class="n">loans</span><span class="p">[</span><span class="s2">&quot;application_date&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">GO_LIVE</span><span class="p">]</span>
+<span class="n">production</span> <span class="o">=</span> <span class="n">loans</span><span class="p">[</span><span class="n">loans</span><span class="p">[</span><span class="s2">&quot;application_date&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">GO_LIVE</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">([(</span><span class="s2">&quot;prepare&quot;</span><span class="p">,</span> <span class="n">preprocessing</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;classify&quot;</span><span class="p">,</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">))])</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">training</span><span class="p">[</span><span class="n">NUMERIC</span> <span class="o">+</span> <span class="n">CATEGORICAL</span><span class="p">],</span> <span class="n">training</span><span class="p">[</span><span class="s2">&quot;defaulted&quot;</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;trained on </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">training</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> applications up to </span><span class="si">{</span><span class="n">GO_LIVE</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="si">:</span><span class="s2">%d %b %Y</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;training default rate: </span><span class="si">{</span><span class="n">training</span><span class="p">[</span><span class="s1">&#39;defaulted&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;production stream: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">production</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> applications from </span><span class="si">{</span><span class="n">GO_LIVE</span><span class="si">:</span><span class="s2">%b %Y</span><span class="si">}</span><span class="s2"> onward&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>trained on 9,029 applications up to 30 Jun 2024
+training default rate: 11.9%
+production stream: 2,971 applications from Jul 2024 onward
+</code></pre></div>
+<hr />
+<h2 id="1-what-a-deployed-model-actually-is">1. What a deployed model actually is</h2>
+<p>A trained pipeline is one item on a list. To put a model into service you need all
+of these, and a team that knows where each one lives:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>What it is</th>
+<th>Where it came from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Model artifact</strong></td>
+<td>The serialised pipeline</td>
+<td>Session 7's MLflow run</td>
+</tr>
+<tr>
+<td><strong>Input schema</strong></td>
+<td>Field names, types, allowed ranges</td>
+<td>Session 1's specification</td>
+</tr>
+<tr>
+<td><strong>Decision rule</strong></td>
+<td>The threshold, and any per-segment variation</td>
+<td>Sessions 5 and 6</td>
+</tr>
+<tr>
+<td><strong>Serving code</strong></td>
+<td>The API that loads the artifact and answers</td>
+<td>Session 9</td>
+</tr>
+<tr>
+<td><strong>Monitoring</strong></td>
+<td>What is measured, how often, and the alarm levels</td>
+<td>This session</td>
+</tr>
+<tr>
+<td><strong>Runbook</strong></td>
+<td>What to do when an alarm fires, and who does it</td>
+<td>This session</td>
+</tr>
+<tr>
+<td><strong>Owner</strong></td>
+<td>A named person accountable for it in six months</td>
+<td>Your organisation</td>
+</tr>
+</tbody>
+</table>
+<p>The last two are the ones that get skipped, and they are the reason models rot
+quietly instead of failing loudly.</p>
+<h3 id="the-production-loop">The production loop</h3>
+<p>Session 1's CRISP-DM diagram ended with Deployment pointing back to Business
+Understanding. In production that arrow is a schedule:</p>
+<div class="highlight"><pre><span></span><code>   train  →  package  →  deploy  →  serve  →  monitor  →  decide
+     ↑                                                      │
+     └──────────────  retrain / recalibrate / roll back  ────┘
+</code></pre></div>
+<p><strong>MLOps is the practice of making every arrow in that loop routine</strong> — automated
+where possible, documented where not, and owned in all cases.</p>
+<hr />
+<h2 id="2-deployment-workflow">2. Deployment workflow</h2>
+<p>Nobody sensible replaces a live decision system in one step. The standard ladder:</p>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>What happens</th>
+<th>What it protects against</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Shadow</strong></td>
+<td>The new model scores live traffic; its output is logged but not used</td>
+<td>Crashes, latency, nonsense predictions — at zero business risk</td>
+</tr>
+<tr>
+<td><strong>Canary</strong></td>
+<td>A small share of decisions (1–5%) use the new model</td>
+<td>Real-world damage from a model that looked fine offline</td>
+</tr>
+<tr>
+<td><strong>A/B or champion–challenger</strong></td>
+<td>Two models run side by side, measured against each other</td>
+<td>Choosing on offline metrics when the business outcome disagrees</td>
+</tr>
+<tr>
+<td><strong>Full rollout</strong></td>
+<td>Everything uses the new model</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Rollback</strong></td>
+<td>Revert to the previous artifact</td>
+<td>Everything else</td>
+</tr>
+</tbody>
+</table>
+<p>Two rules that come from experience rather than theory.</p>
+<p><strong>Rollback must be one command, and it must be tested.</strong> A rollback plan that has
+never been run is a hope, not a plan.</p>
+<p><strong>Shadow mode is where you discover the boring failures.</strong> A field that is always
+null in production, a category the encoder has never seen, a request that takes
+four seconds. None of those appear in a notebook.</p>
+<blockquote>
+<p><strong>Industry note — the model that never saw a real request.</strong>
+A common sequence: the offline model is excellent, the API is built, and on day
+one every prediction comes back near the same value. The cause is almost always
+a preprocessing mismatch — the service computes a feature differently from the
+training code. Session 7's pipeline is the structural fix, and shadow mode is
+how you catch what is left.</p>
+</blockquote>
+<hr />
+<h2 id="3-monitoring-three-layers">3. Monitoring: three layers</h2>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Examples</th>
+<th>How fast you learn</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>System</strong></td>
+<td>Latency, error rate, uptime, queue depth</td>
+<td>Seconds</td>
+</tr>
+<tr>
+<td><strong>Data</strong></td>
+<td>Input distributions, missing-value rates, new categories, schema changes</td>
+<td>Minutes to days</td>
+</tr>
+<tr>
+<td><strong>Model</strong></td>
+<td>Precision, recall, cost, calibration</td>
+<td><strong>As fast as labels arrive</strong></td>
+</tr>
+</tbody>
+</table>
+<p>That last row is the hard one. Our charter defines default as observed within
+<strong>12 months</strong> of disbursement. A model deployed today cannot be scored properly
+until next year.</p>
+<p>This is normal — fraud labels take weeks, credit labels take months, churn labels
+take a quarter — and it is why production monitoring leans so heavily on the first
+two layers. You watch the inputs and the predictions, because those are available
+immediately, and you treat a change in them as the early warning for a change in
+performance you cannot yet measure.</p>
+<p>For teaching purposes we have a luxury production never has: the labels are in the
+file. So we can watch the early warnings <em>and</em> check, immediately, whether they
+were right.</p>
+<div class="highlight"><pre><span></span><code><span class="n">production</span><span class="p">[</span><span class="s2">&quot;probability&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">production</span><span class="p">[</span><span class="n">NUMERIC</span> <span class="o">+</span> <span class="n">CATEGORICAL</span><span class="p">])[:,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">production</span><span class="p">[</span><span class="s2">&quot;month&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">production</span><span class="p">[</span><span class="s2">&quot;application_date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">to_period</span><span class="p">(</span><span class="s2">&quot;M&quot;</span><span class="p">)</span>
+
+<span class="n">THRESHOLD</span> <span class="o">=</span> <span class="mf">0.20</span>        <span class="c1"># the operating point chosen in session 5</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">average_precision_score</span><span class="p">,</span> <span class="n">recall_score</span><span class="p">,</span> <span class="n">roc_auc_score</span>
+
+<span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">month</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">production</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;month&quot;</span><span class="p">):</span>
+    <span class="n">flagged</span> <span class="o">=</span> <span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="s2">&quot;probability&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">THRESHOLD</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+        <span class="s2">&quot;month&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">month</span><span class="p">),</span>
+        <span class="s2">&quot;applications&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">group</span><span class="p">),</span>
+        <span class="s2">&quot;predicted_rate&quot;</span><span class="p">:</span> <span class="n">group</span><span class="p">[</span><span class="s2">&quot;probability&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+        <span class="s2">&quot;actual_rate&quot;</span><span class="p">:</span> <span class="n">group</span><span class="p">[</span><span class="s2">&quot;defaulted&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+        <span class="s2">&quot;flagged&quot;</span><span class="p">:</span> <span class="n">flagged</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+        <span class="s2">&quot;recall&quot;</span><span class="p">:</span> <span class="n">recall_score</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="s2">&quot;defaulted&quot;</span><span class="p">],</span> <span class="n">flagged</span><span class="p">),</span>
+        <span class="s2">&quot;AP&quot;</span><span class="p">:</span> <span class="n">average_precision_score</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="s2">&quot;defaulted&quot;</span><span class="p">],</span> <span class="n">group</span><span class="p">[</span><span class="s2">&quot;probability&quot;</span><span class="p">]),</span>
+        <span class="s2">&quot;AUC&quot;</span><span class="p">:</span> <span class="n">roc_auc_score</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="s2">&quot;defaulted&quot;</span><span class="p">],</span> <span class="n">group</span><span class="p">[</span><span class="s2">&quot;probability&quot;</span><span class="p">]),</span>
+    <span class="p">})</span>
+
+<span class="n">monthly</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;month&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">monthly</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>         applications  predicted_rate  actual_rate  flagged  recall     AP    AUC
+month                                                                            
+2024-07           521           0.114        0.113    0.161   0.508  0.381  0.784
+2024-08           499           0.126        0.134    0.190   0.552  0.408  0.782
+2024-09           488           0.127        0.084    0.201   0.561  0.289  0.804
+2024-10           471           0.136        0.242    0.208   0.474  0.555  0.785
+2024-11           469           0.135        0.247    0.207   0.397  0.443  0.716
+2024-12           523           0.159        0.291    0.264   0.553  0.599  0.763
+</code></pre></div>
+<p>Stop and read that table before the plot.</p>
+<p>For three months the model behaves exactly as designed: the predicted default rate
+(0.11–0.13) tracks the actual rate (0.08–0.13), and the review queue holds steady
+at 16–20% of applications.</p>
+<p>Then October arrives. <strong>The actual default rate doubles to 24%, and keeps
+climbing to 29% by December — while the model's predicted rate barely moves,
+from 0.13 to 0.16.</strong></p>
+<p>The model is not broken in the sense of being buggy. It is answering a question
+about a world that no longer exists.</p>
+<div class="highlight"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">monthly</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">monthly</span><span class="p">[</span><span class="s2">&quot;actual_rate&quot;</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;actual default rate&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">monthly</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">monthly</span><span class="p">[</span><span class="s2">&quot;predicted_rate&quot;</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;model&#39;s predicted rate&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;The model stopped tracking reality&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;rate&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">monthly</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">monthly</span><span class="p">[</span><span class="s2">&quot;recall&quot;</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;recall&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">monthly</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">monthly</span><span class="p">[</span><span class="s2">&quot;flagged&quot;</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;share flagged&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Same threshold (</span><span class="si">{</span><span class="n">THRESHOLD</span><span class="si">}</span><span class="s2">), different world&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">:</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../08_mlops_intro_files/08_mlops_intro_10_0.png" /></p>
+<hr />
+<h2 id="4-two-kinds-of-drift">4. Two kinds of drift</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>What moved</th>
+<th>Example here</th>
+<th>Detectable without labels?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Data drift</strong> (covariate shift)</td>
+<td>The distribution of the <em>inputs</em></td>
+<td>Interest rates jump, incomes fall</td>
+<td><strong>Yes</strong> — compare distributions</td>
+</tr>
+<tr>
+<td><strong>Concept drift</strong></td>
+<td>The <em>relationship</em> between inputs and outcome</td>
+<td>The same applicant profile now defaults more often</td>
+<td>No — needs labels</td>
+</tr>
+</tbody>
+</table>
+<p>Ours is both, which is the usual case. Something changed in the lending
+environment in October 2024: rates rose, incomes softened, and borrowers who
+would have repaid a year earlier stopped repaying.</p>
+<p>The good news is that data drift is visible <strong>immediately</strong>, from the inputs
+alone, months before any label arrives.</p>
+<h3 id="the-population-stability-index">The population stability index</h3>
+<p>PSI compares a feature's distribution now against a reference period. Bucket the
+reference into deciles, count what share of the new data falls into each, and sum
+the divergence.</p>
+<table>
+<thead>
+<tr>
+<th>PSI</th>
+<th>Conventional reading</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>below 0.10</td>
+<td>no meaningful change</td>
+</tr>
+<tr>
+<td>0.10 – 0.25</td>
+<td>moderate shift — investigate</td>
+</tr>
+<tr>
+<td>above 0.25</td>
+<td>major shift — act</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">population_stability_index</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="n">current</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;How far `current` has moved from `reference`, using the reference&#39;s deciles.&quot;&quot;&quot;</span>
+    <span class="n">edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">reference</span><span class="o">.</span><span class="n">dropna</span><span class="p">(),</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bins</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">edges</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">edges</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+
+    <span class="n">reference_share</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">reference</span><span class="o">.</span><span class="n">dropna</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="n">edges</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">reference</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">current_share</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">current</span><span class="o">.</span><span class="n">dropna</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="n">edges</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">current</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+    <span class="n">reference_share</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">reference_share</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">current_share</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">current_share</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(((</span><span class="n">current_share</span> <span class="o">-</span> <span class="n">reference_share</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">current_share</span> <span class="o">/</span> <span class="n">reference_share</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+
+
+<span class="n">watch</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;interest_rate&quot;</span><span class="p">,</span> <span class="s2">&quot;annual_income&quot;</span><span class="p">,</span> <span class="s2">&quot;loan_amount&quot;</span><span class="p">,</span> <span class="s2">&quot;credit_score&quot;</span><span class="p">]</span>
+
+<span class="n">drift</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="n">column</span><span class="p">:</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">month</span><span class="p">):</span> <span class="n">population_stability_index</span><span class="p">(</span><span class="n">training</span><span class="p">[</span><span class="n">column</span><span class="p">],</span> <span class="n">group</span><span class="p">[</span><span class="n">column</span><span class="p">])</span>
+             <span class="k">for</span> <span class="n">month</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">production</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;month&quot;</span><span class="p">)}</span>
+    <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">watch</span>
+<span class="p">})</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="n">drift</span><span class="p">[</span><span class="s2">&quot;predicted_probability&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="nb">round</span><span class="p">(</span><span class="n">population_stability_index</span><span class="p">(</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">training</span><span class="p">[</span><span class="n">NUMERIC</span> <span class="o">+</span> <span class="n">CATEGORICAL</span><span class="p">])[:,</span> <span class="mi">1</span><span class="p">]),</span>
+        <span class="n">group</span><span class="p">[</span><span class="s2">&quot;probability&quot;</span><span class="p">]),</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">production</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;month&quot;</span><span class="p">)</span>
+<span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">drift</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>         interest_rate  annual_income  loan_amount  credit_score  predicted_probability
+2024-07          0.023          0.011        0.031         0.028                  0.017
+2024-08          0.020          0.017        0.011         0.049                  0.040
+2024-09          0.016          0.034        0.010         0.017                  0.021
+2024-10          1.106          0.063        0.019         0.040                  0.042
+2024-11          1.450          0.048        0.019         0.007                  0.047
+2024-12          1.341          0.104        0.030         0.030                  0.159
+</code></pre></div>
+<p>There it is, without a single label.</p>
+<p><code>interest_rate</code> sits quietly at PSI 0.02 through July, August and September, then
+jumps to <strong>1.11 in October</strong> — four times the "major shift" threshold, in the
+first month of the change. An alarm on that one number would have fired in early
+November, roughly <strong>eleven months before</strong> the defaults it predicts could have
+been confirmed.</p>
+<p>Three more things in that table are worth arguing about in class.</p>
+<p><strong><code>annual_income</code> drifts too, but mildly</strong> (0.06 to 0.10). The incomes fell by
+about 12%; in PSI terms that is a moderate signal you would investigate, not an
+emergency. Small PSI does not mean harmless.</p>
+<p><strong>The predicted probability barely drifts</strong> (0.02 to 0.16). The model's <em>output</em>
+distribution looks almost normal, because it is dutifully mapping the new inputs
+through the old relationship. <strong>Prediction drift is a weaker alarm than input
+drift.</strong> Monitor both.</p>
+<p><strong>AUC held up</strong> — 0.78, 0.72, 0.76 through the drift window, against 0.78 before.
+The model's <em>ranking</em> still works: it still sorts risky applicants above safe
+ones. What broke is the <em>level</em> — how much risk a given profile now implies. That
+distinction decides what we do next.</p>
+<div class="highlight"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">drift</span><span class="p">[[</span><span class="s2">&quot;interest_rate&quot;</span><span class="p">,</span> <span class="s2">&quot;annual_income&quot;</span><span class="p">,</span> <span class="s2">&quot;predicted_probability&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#C44E52&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;major shift (0.25)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mf">0.10</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;investigate (0.10)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;population stability index&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Input drift is visible months before labels arrive&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../08_mlops_intro_files/08_mlops_intro_14_0.png" /></p>
+<hr />
+<h2 id="5-responding-recalibrate-retrain-or-roll-back">5. Responding: recalibrate, retrain, or roll back?</h2>
+<p>The diagnosis in section 4 — ranking intact, level wrong — points at the cheapest
+fix first: <strong>move the threshold</strong>, not the model.</p>
+<div class="highlight"><pre><span></span><code><span class="n">december</span> <span class="o">=</span> <span class="n">production</span><span class="p">[</span><span class="n">production</span><span class="p">[</span><span class="s2">&quot;month&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">Period</span><span class="p">(</span><span class="s2">&quot;2024-12&quot;</span><span class="p">)]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;December 2024, the same model, different thresholds</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">threshold</span> <span class="ow">in</span> <span class="p">[</span><span class="mf">0.20</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.12</span><span class="p">,</span> <span class="mf">0.10</span><span class="p">]:</span>
+    <span class="n">flagged</span> <span class="o">=</span> <span class="p">(</span><span class="n">december</span><span class="p">[</span><span class="s2">&quot;probability&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">threshold</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">missed</span> <span class="o">=</span> <span class="n">december</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">december</span><span class="p">[</span><span class="s2">&quot;defaulted&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">flagged</span> <span class="o">==</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;loan_amount&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="mf">0.55</span>
+    <span class="n">false_alarm</span> <span class="o">=</span> <span class="n">december</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">december</span><span class="p">[</span><span class="s2">&quot;defaulted&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">flagged</span> <span class="o">==</span> <span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;loan_amount&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="mf">0.045</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  threshold </span><span class="si">{</span><span class="n">threshold</span><span class="si">:</span><span class="s2">&lt;5</span><span class="si">}</span><span class="s2"> recall </span><span class="si">{</span><span class="n">recall_score</span><span class="p">(</span><span class="n">december</span><span class="p">[</span><span class="s1">&#39;defaulted&#39;</span><span class="p">],</span><span class="w"> </span><span class="n">flagged</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">   &quot;</span>
+          <span class="sa">f</span><span class="s2">&quot;flagged </span><span class="si">{</span><span class="n">flagged</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">   cost NPR </span><span class="si">{</span><span class="p">(</span><span class="n">missed</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">false_alarm</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">1e6</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">m&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>December 2024, the same model, different thresholds
+
+  threshold 0.2   recall 0.553   flagged 26.4%   cost NPR 15.1m
+  threshold 0.15  recall 0.664   flagged 36.1%   cost NPR 11.2m
+  threshold 0.12  recall 0.724   flagged 46.5%   cost NPR 10.5m
+  threshold 0.1   recall 0.796   flagged 55.6%   cost NPR 8.6m
+</code></pre></div>
+<p>Dropping the threshold from 0.20 to 0.12 lifts December recall from 0.55 to 0.72
+and cuts the monthly cost from NPR 15.1m to 10.5m — with the model untouched.</p>
+<p>It also pushes the review queue to 47% of applications, far past the charter's
+25%. Which is the honest answer: <strong>a worse world costs more to lend in.</strong> The
+choice is between more review capacity, more losses, or less lending — and it is
+the Head of Credit's choice, not the data scientist's. Your job is to put those
+three numbers in front of them quickly.</p>
+<h3 id="does-retraining-help">Does retraining help?</h3>
+<div class="highlight"><pre><span></span><code><span class="n">RETRAIN_CUTOFF</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s2">&quot;2024-12-01&quot;</span><span class="p">)</span>
+
+<span class="n">retrained</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">([(</span><span class="s2">&quot;prepare&quot;</span><span class="p">,</span> <span class="n">preprocessing</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;classify&quot;</span><span class="p">,</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">))])</span>
+<span class="n">retrained</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">loans</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">loans</span><span class="p">[</span><span class="s2">&quot;application_date&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">RETRAIN_CUTOFF</span><span class="p">,</span> <span class="n">NUMERIC</span> <span class="o">+</span> <span class="n">CATEGORICAL</span><span class="p">],</span>
+              <span class="n">loans</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">loans</span><span class="p">[</span><span class="s2">&quot;application_date&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">RETRAIN_CUTOFF</span><span class="p">,</span> <span class="s2">&quot;defaulted&quot;</span><span class="p">])</span>
+
+<span class="n">old_probabilities</span> <span class="o">=</span> <span class="n">december</span><span class="p">[</span><span class="s2">&quot;probability&quot;</span><span class="p">]</span>
+<span class="n">new_probabilities</span> <span class="o">=</span> <span class="n">retrained</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">december</span><span class="p">[</span><span class="n">NUMERIC</span> <span class="o">+</span> <span class="n">CATEGORICAL</span><span class="p">])[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;December actual default rate: </span><span class="si">{</span><span class="n">december</span><span class="p">[</span><span class="s1">&#39;defaulted&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  original model  mean predicted </span><span class="si">{</span><span class="n">old_probabilities</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">   &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;AP </span><span class="si">{</span><span class="n">average_precision_score</span><span class="p">(</span><span class="n">december</span><span class="p">[</span><span class="s1">&#39;defaulted&#39;</span><span class="p">],</span><span class="w"> </span><span class="n">old_probabilities</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  retrained model mean predicted </span><span class="si">{</span><span class="n">new_probabilities</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">   &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;AP </span><span class="si">{</span><span class="n">average_precision_score</span><span class="p">(</span><span class="n">december</span><span class="p">[</span><span class="s1">&#39;defaulted&#39;</span><span class="p">],</span><span class="w"> </span><span class="n">new_probabilities</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>December actual default rate: 0.291
+
+  original model  mean predicted 0.159   AP 0.599
+  retrained model mean predicted 0.198   AP 0.598
+</code></pre></div>
+<p>Retraining on data that includes two months of the new regime moves the predicted
+rate from 0.159 to 0.198 — closer to December's true 0.291, but nowhere near it —
+and leaves average precision unchanged at 0.60.</p>
+<p>That is a realistic outcome, and it teaches the decision rule:</p>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>First response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ranking holds, level is wrong</td>
+<td>Base rate moved</td>
+<td><strong>Recalibrate</strong>: move the threshold, or refit calibration</td>
+</tr>
+<tr>
+<td>Ranking degrades (AUC falls)</td>
+<td>The relationship changed</td>
+<td><strong>Retrain</strong> on recent data</td>
+</tr>
+<tr>
+<td>Inputs shifted, performance unknown</td>
+<td>Data drift, labels pending</td>
+<td>Investigate the source; consider shadow-testing a retrained model</td>
+</tr>
+<tr>
+<td>A feature stopped arriving</td>
+<td>Upstream breakage</td>
+<td><strong>Roll back or patch</strong> — this is an engineering incident</td>
+</tr>
+<tr>
+<td>Sudden, total collapse</td>
+<td>Almost always a pipeline bug</td>
+<td>Roll back first, diagnose second</td>
+</tr>
+</tbody>
+</table>
+<p>Retraining is not free: it needs enough data from the new regime to learn
+anything, and two months of it is thin. Retraining too eagerly on a short window
+gives you a model fitted to noise — another reason the threshold is usually the
+first lever.</p>
+<h3 id="how-often-should-you-retrain">How often should you retrain?</h3>
+<table>
+<thead>
+<tr>
+<th>Trigger</th>
+<th>When it suits</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Scheduled</strong> — monthly, quarterly</td>
+<td>Stable domains; simple to operate and audit</td>
+</tr>
+<tr>
+<td><strong>Triggered by drift</strong> — PSI over a threshold</td>
+<td>Domains that move unpredictably, like ours</td>
+</tr>
+<tr>
+<td><strong>Triggered by performance</strong></td>
+<td>Only where labels arrive quickly</td>
+</tr>
+<tr>
+<td><strong>Never</strong></td>
+<td>More common than anyone admits, and usually an accident</td>
+</tr>
+</tbody>
+</table>
+<p>For this lender, a sensible policy is: PSI monitored weekly on the top five
+features, a quarterly scheduled retrain, and an immediate review whenever any
+feature crosses 0.25. Write it into the runbook, with a name against it.</p>
+<hr />
+<h2 id="6-cicd-for-machine-learning">6. CI/CD for machine learning</h2>
+<p>Continuous integration runs your tests automatically on every change.
+Continuous delivery packages and ships the result. For ordinary software that
+means "do the unit tests pass". For ML there are three kinds of test, and the
+first is the one teams forget.</p>
+<p><strong>1. Data tests.</strong> Does the data still look like the data? This repository already
+has them, in <code>tests/test_spine_data.py</code> — row counts, column names and order,
+missingness within expected bands, the class balance in its teaching range. They
+run in half a second and they catch the silent breakages that destroy models.</p>
+<p><strong>2. Pipeline tests.</strong> Does the pipeline fit and predict on a small sample? Does
+it produce the expected number of columns? Does it survive an unseen category?</p>
+<p><strong>3. Performance gates.</strong> Does the retrained model still beat the agreed bar on a
+held-out set? If cross-validated average precision drops below, say, 0.30, the
+pipeline fails and nothing ships.</p>
+<p>You do not need to run the two artifacts below — read them. They are what the
+deployment of this project would look like, and you will meet both shapes in
+industry.</p>
+<p><strong><code>Dockerfile</code></strong> — packages the model and its serving code with a pinned
+environment, so the thing that runs in production is the thing you tested.</p>
+<div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">python:3.12-slim</span>
+
+<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/app</span>
+
+<span class="c"># Dependencies first: this layer is cached unless requirements change.</span>
+<span class="k">COPY</span><span class="w"> </span>requirements-serving.txt<span class="w"> </span>.
+<span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--no-cache-dir<span class="w"> </span>-r<span class="w"> </span>requirements-serving.txt
+
+<span class="c"># Then the code and the model artifact.</span>
+<span class="k">COPY</span><span class="w"> </span>app/<span class="w"> </span>./app/
+<span class="k">COPY</span><span class="w"> </span>models/loan_default_pipeline.joblib<span class="w"> </span>./models/
+
+<span class="c"># The API from session 9.</span>
+<span class="k">EXPOSE</span><span class="w"> </span><span class="s">8000</span>
+<span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;uvicorn&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;app.api.main:app&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--host&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--port&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;8000&quot;</span><span class="p">]</span>
+</code></pre></div>
+<p>Three things that image guarantees: the Python version cannot drift, the library
+versions cannot drift, and the model file travels with the code that loads it.
+"It works on my machine" stops being a sentence anyone can say.</p>
+<p><strong><code>.github/workflows/ml.yml</code></strong> — the pipeline that runs on every push.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ml</span>
+
+<span class="nt">on</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">push</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">pull_request</span><span class="p p-Indicator">]</span>
+
+<span class="nt">jobs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">test</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
+<span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/checkout@v4</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/setup-python@v5</span>
+<span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">python-version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3.12&quot;</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Install dependencies</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pip install -r requirements-aimodule.txt</span>
+
+<span class="w">      </span><span class="c1"># 1. Data tests — does the dataset still look like the dataset?</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Data tests</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pytest tests/ -q</span>
+
+<span class="w">      </span><span class="c1"># 2. Pipeline test — does training run end to end on a sample?</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Smoke-train</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python scripts/train.py --sample 2000 --output /tmp/model.joblib</span>
+
+<span class="w">      </span><span class="c1"># 3. Performance gate — refuse to ship a model that got worse.</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Performance gate</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python scripts/evaluate.py --model /tmp/model.joblib --min-average-precision 0.30</span>
+</code></pre></div>
+<p>Read the comments rather than the YAML. The shape is the lesson: <strong>tests on the
+data, tests on the pipeline, and a gate on the metric</strong> — so a change that
+quietly degrades the model cannot reach production unnoticed.</p>
+<p>The one genuinely ML-specific idea here is that last step. In ordinary software a
+test is pass or fail. In ML the test is "is this number still good enough", the
+answer is statistical, and somebody has to have written down what "good enough"
+means. That number came from your charter, in session 1.</p>
+<hr />
+<h2 id="7-a-monitoring-runbook-for-this-project">7. A monitoring runbook for this project</h2>
+<p>The deliverable of this session is not code. It is this page, agreed and owned.</p>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Frequency</th>
+<th>Alarm</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API errors, latency</td>
+<td>Continuous</td>
+<td>Error rate &gt; 1%, p95 &gt; 2s</td>
+<td>Page the on-call engineer</td>
+</tr>
+<tr>
+<td>Schema and null rates</td>
+<td>Daily</td>
+<td>Any new null pattern, any new category</td>
+<td>Investigate upstream</td>
+</tr>
+<tr>
+<td>PSI on top 5 features</td>
+<td>Weekly</td>
+<td>Any feature &gt; 0.25</td>
+<td>Investigate; consider recalibration</td>
+</tr>
+<tr>
+<td>Predicted default rate</td>
+<td>Weekly</td>
+<td>±30% against the trailing quarter</td>
+<td>Investigate</td>
+</tr>
+<tr>
+<td>Flag rate versus capacity</td>
+<td>Weekly</td>
+<td>Queue above agreed capacity</td>
+<td>Adjust threshold with Head of Credit</td>
+</tr>
+<tr>
+<td>Realised default rate</td>
+<td>Monthly, as labels mature</td>
+<td>Above charter assumptions</td>
+<td>Full review: recalibrate or retrain</td>
+</tr>
+<tr>
+<td>Slice performance</td>
+<td>Quarterly</td>
+<td>Any slice materially worse</td>
+<td>Session 6's error analysis</td>
+</tr>
+<tr>
+<td>Scheduled retrain</td>
+<td>Quarterly</td>
+<td>—</td>
+<td>Retrain, gate, shadow, canary, promote</td>
+</tr>
+</tbody>
+</table>
+<p>Every row needs a name attached. A dashboard nobody is responsible for reading is
+a screensaver.</p>
+<hr />
+<h2 id="your-turn">Your turn</h2>
+<p><strong>1. Find the change point.</strong> Compute PSI on <code>interest_rate</code> weekly instead of
+monthly, against the training window. Which week does it first cross 0.25? How
+much earlier is that than the monthly check?</p>
+<p><strong>2. Watch the categoricals.</strong> PSI as written handles numbers. Write a version for
+categorical columns (compare category shares) and run it on <code>sector</code> and
+<code>employment_type</code>. Did the mix of borrowers change, or only their circumstances?</p>
+<p><strong>3. Set the alarm you would actually ship.</strong> Using July–September as the "normal"
+period, pick a PSI alarm level for <code>interest_rate</code> that would not have fired in
+those three months but fires in October. How much margin did you leave?</p>
+<p><strong>4. Rolling retrain.</strong> Retrain the model each month on the previous 12 months of
+data, score the following month, and plot AP over time. Does a rolling window beat
+the single frozen model?</p>
+<p><strong>5. Recalibrate instead of retraining.</strong> Keep the original model but refit only
+its intercept on October–November data (or wrap it in
+<code>CalibratedClassifierCV</code>). Compare December's predicted rate and cost against
+both the frozen model and the fully retrained one.</p>
+<p><strong>6. Write the incident.</strong> One page: what happened in October, when monitoring
+would have caught it, what you recommend, and what it costs. Address it to the
+Head of Credit — no AUC, no PSI jargon, just the decision and the money.</p>
+<hr />
+<h2 id="if-you-remember-nothing-else">If you remember nothing else</h2>
+<p><strong>A deployed model is a process, not an artifact.</strong> Schema, threshold, serving
+code, monitoring, runbook, owner — the <code>.joblib</code> file is the smallest part.</p>
+<p><strong>Ship gradually and be able to roll back in one command.</strong> Shadow, canary, then
+full. A rollback that has never been tested is not a rollback.</p>
+<p><strong>Labels arrive late, so monitor inputs.</strong> Our defaults take 12 months to confirm;
+the input drift was visible in the first month of the shift.</p>
+<p><strong>PSI caught this in October</strong> — 0.02 to 1.11 on <code>interest_rate</code> — with no labels
+at all.</p>
+<p><strong>Data drift and concept drift are different problems.</strong> The inputs moved <em>and</em>
+the relationship moved; ranking survived, the level did not.</p>
+<p><strong>Recalibrate before retraining.</strong> Moving the threshold recovered most of
+December's loss instantly; retraining on two months of new data barely moved the
+score.</p>
+<p><strong>Write the runbook before the incident.</strong> During the incident nobody has time to
+decide who owns the decision.</p>
+<hr />
+<h2 id="glossary">Glossary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>MLOps</strong></td>
+<td>The practices that keep a model running and owned in production</td>
+</tr>
+<tr>
+<td><strong>Shadow deployment</strong></td>
+<td>New model scores live traffic; outputs logged, not used</td>
+</tr>
+<tr>
+<td><strong>Canary</strong></td>
+<td>A small share of live decisions routed to the new model</td>
+</tr>
+<tr>
+<td><strong>Champion–challenger</strong></td>
+<td>Current model and candidate run side by side and are compared</td>
+</tr>
+<tr>
+<td><strong>Rollback</strong></td>
+<td>Reverting to the previous model artifact</td>
+</tr>
+<tr>
+<td><strong>Data drift</strong></td>
+<td>The input distribution changes</td>
+</tr>
+<tr>
+<td><strong>Concept drift</strong></td>
+<td>The input-to-outcome relationship changes</td>
+</tr>
+<tr>
+<td><strong>PSI</strong></td>
+<td>Population stability index — how far a distribution has moved</td>
+</tr>
+<tr>
+<td><strong>Label delay</strong></td>
+<td>The lag between a prediction and knowing whether it was right</td>
+</tr>
+<tr>
+<td><strong>Recalibration</strong></td>
+<td>Adjusting output levels or thresholds without retraining</td>
+</tr>
+<tr>
+<td><strong>Performance gate</strong></td>
+<td>A CI step that refuses to ship a model below an agreed metric</td>
+</tr>
+<tr>
+<td><strong>Runbook</strong></td>
+<td>The written procedure for what to do when an alarm fires</td>
+</tr>
+</tbody>
+</table>
+<h2 id="further-reading">Further reading</h2>
+<ul>
+<li>Chip Huyen, <em>Designing Machine Learning Systems</em>, chapters 8–9 — data
+  distribution shifts and monitoring, the best treatment of this material.</li>
+<li>Google, <em>MLOps: Continuous delivery and automation pipelines in machine
+  learning</em> — the maturity-levels paper everyone cites.</li>
+<li>Breck et al., <em>The ML Test Score</em> (Google, 2017) — a checklist of production
+  readiness tests, including the data tests in section 6.</li>
+<li><code>evidently</code> and <code>nannyml</code> documentation — open-source drift monitoring, if you
+  would rather not write PSI by hand twice.</li>
+</ul>
+<hr />
+<p><strong>Next session:</strong> <em>Model Deployment and APIs</em> — saving the pipeline, serving it
+with FastAPI, validating what arrives, and putting a Streamlit interface in front
+of it.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../07_pipelines_tracking/" class="btn btn-neutral float-left" title="7. ML Pipelines and Experiment Tracking"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../09_deployment_apis/" class="btn btn-neutral float-right" title="9. Model Deployment and APIs">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright &copy; 2026 - Aayush Raj Regmi</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../07_pipelines_tracking/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../09_deployment_apis/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../javascripts/mathjax.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

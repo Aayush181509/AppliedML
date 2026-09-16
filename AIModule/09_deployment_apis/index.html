@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>9. Model Deployment and APIs - Applied ML</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "9. Model Deployment and APIs";
+        var mkdocs_page_input_path = "AIModule/09_deployment_apis.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Applied ML
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Welcome</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../InstallationGuide/">Installation Guide</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Applied ML in Production</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../01_problem_framing/">1. ML Problem Framing and the Industry Workflow</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02_data_preparation/">2. Data Preparation for ML</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../03_feature_engineering/">3. Feature Engineering</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04_sklearn_models/">4. Building ML Models with Scikit-learn</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../05_evaluation_metrics/">5. Model Evaluation and Performance Metrics</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../06_tuning_error_analysis/">6. Model Tuning and Error Analysis</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07_pipelines_tracking/">7. ML Pipelines and Experiment Tracking</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../08_mlops_intro/">8. Introduction to MLOps</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">9. Model Deployment and APIs</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-work-through-this">How to work through this</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#learning-objectives">Learning objectives</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#1-saving-the-model-and-everything-around-it">1. Saving the model — and everything around it</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-the-inference-contract">2. The inference contract</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-running-it-and-calling-it">3. Running it, and calling it</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-latency">4. Latency</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-an-interface-for-humans">5. An interface for humans</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-what-a-real-service-also-needs">6. What a real service also needs</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#your-turn">Your turn</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#if-you-remember-nothing-else">If you remember nothing else</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#glossary">Glossary</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#further-reading">Further reading</a>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Applied ML</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Applied ML in Production</li>
+      <li class="breadcrumb-item active">9. Model Deployment and APIs</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="model-deployment-and-apis">Model Deployment and APIs</h1>
+<p><strong>Applied ML in Production · Session 9</strong></p>
+<hr />
+<p>Eight sessions of work exist only inside a notebook. A credit officer cannot open
+a notebook, and neither can the bank's loan origination system.</p>
+<p>This session closes that gap. We save the pipeline to a file, wrap it in a small
+web service that validates what it is sent, measure how fast it answers, and put a
+simple interface in front of it. By the end this project is something another
+program can call.</p>
+<p>The engineering here is deliberately modest — a hundred lines in total. The ideas
+that matter are the <strong>inference contract</strong> (what the service promises), <strong>input
+validation</strong> (what it refuses), and the discipline that the code serving the model
+must be the code that trained it.</p>
+<h2 id="how-to-work-through-this">How to work through this</h2>
+<p>This notebook writes real files into the repository: <code>app/api/main.py</code>,
+<code>app/ui/app.py</code>, and the saved model in <code>app/models/</code>. Run it and they appear,
+ready to launch from a terminal.</p>
+<p>Run each cell, read the output, then read the commentary. If a cell errors, run
+from the top.</p>
+<h2 id="learning-objectives">Learning objectives</h2>
+<p>After this session you will be able to:</p>
+<ul>
+<li>Persist a fitted pipeline with <code>joblib</code>, and say what else must be saved with it.</li>
+<li>Write down an <strong>inference contract</strong>: inputs, outputs, errors, and version.</li>
+<li>Build a <strong>FastAPI</strong> prediction service with Pydantic validation.</li>
+<li>Test the service end to end and read a <code>422</code> validation error.</li>
+<li>Measure prediction <strong>latency</strong> and compare it to the charter's budget.</li>
+<li>Build a <strong>Streamlit</strong> interface for the people who will not call an API.</li>
+<li>List what a prediction service must log for session 8's monitoring to work.</li>
+</ul>
+<h2 id="setup">Setup</h2>
+<p>We train the final pipeline on the whole dataset — at deployment time you use
+everything you have — and record the context that has to travel with it.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">joblib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sklearn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.compose</span><span class="w"> </span><span class="kn">import</span> <span class="n">ColumnTransformer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.impute</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleImputer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogisticRegression</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pipeline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">OneHotEncoder</span><span class="p">,</span> <span class="n">StandardScaler</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">find_repository_root</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span> <span class="o">*</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">folder</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">folder</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;could not find the repository root&quot;</span><span class="p">)</span>
+
+
+<span class="n">ROOT</span> <span class="o">=</span> <span class="n">find_repository_root</span><span class="p">()</span>
+<span class="n">loans</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">ROOT</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span> <span class="o">/</span> <span class="s2">&quot;loan_default.csv&quot;</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;application_date&quot;</span><span class="p">])</span>
+
+<span class="n">NUMERIC</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;loan_amount&quot;</span><span class="p">,</span> <span class="s2">&quot;tenure_months&quot;</span><span class="p">,</span> <span class="s2">&quot;interest_rate&quot;</span><span class="p">,</span> <span class="s2">&quot;previous_loans&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;days_past_due_history&quot;</span><span class="p">,</span> <span class="s2">&quot;annual_income&quot;</span><span class="p">,</span> <span class="s2">&quot;credit_score&quot;</span><span class="p">]</span>
+<span class="n">CATEGORICAL</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sector&quot;</span><span class="p">,</span> <span class="s2">&quot;employment_type&quot;</span><span class="p">,</span> <span class="s2">&quot;has_collateral&quot;</span><span class="p">]</span>
+<span class="n">THRESHOLD</span> <span class="o">=</span> <span class="mf">0.20</span>            <span class="c1"># the operating point agreed in session 5</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">([</span>
+    <span class="p">(</span><span class="s2">&quot;prepare&quot;</span><span class="p">,</span> <span class="n">ColumnTransformer</span><span class="p">([</span>
+        <span class="p">(</span><span class="s2">&quot;numeric&quot;</span><span class="p">,</span> <span class="n">Pipeline</span><span class="p">([(</span><span class="s2">&quot;impute&quot;</span><span class="p">,</span> <span class="n">SimpleImputer</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;median&quot;</span><span class="p">)),</span>
+                              <span class="p">(</span><span class="s2">&quot;scale&quot;</span><span class="p">,</span> <span class="n">StandardScaler</span><span class="p">())]),</span> <span class="n">NUMERIC</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;categorical&quot;</span><span class="p">,</span> <span class="n">Pipeline</span><span class="p">([(</span><span class="s2">&quot;impute&quot;</span><span class="p">,</span> <span class="n">SimpleImputer</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;most_frequent&quot;</span><span class="p">)),</span>
+                                  <span class="p">(</span><span class="s2">&quot;encode&quot;</span><span class="p">,</span> <span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">handle_unknown</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">))]),</span>
+         <span class="n">CATEGORICAL</span><span class="p">),</span>
+    <span class="p">])),</span>
+    <span class="p">(</span><span class="s2">&quot;classify&quot;</span><span class="p">,</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">)),</span>
+<span class="p">])</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">loans</span><span class="p">[</span><span class="n">NUMERIC</span> <span class="o">+</span> <span class="n">CATEGORICAL</span><span class="p">],</span> <span class="n">loans</span><span class="p">[</span><span class="s2">&quot;defaulted&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;trained on&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">loans</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;applications&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>trained on 12,000 applications
+</code></pre></div>
+<hr />
+<h2 id="1-saving-the-model-and-everything-around-it">1. Saving the model — and everything around it</h2>
+<p><code>joblib.dump</code> writes the fitted pipeline to disk. Because it is a <em>pipeline</em>, the
+file contains the imputers, the scaler, the encoder and the model together, so the
+serving code cannot preprocess differently from the training code. That is session
+7's payoff arriving.</p>
+<p>But a model file alone is not deployable. Three questions it cannot answer:</p>
+<ul>
+<li>Which threshold turns this probability into a decision?</li>
+<li>What fields does it expect, and of what type?</li>
+<li>Which version of scikit-learn wrote it, and from which data?</li>
+</ul>
+<p>So we save a small metadata file beside it. This is the cheapest habit in
+production machine learning and it prevents the most confusing incidents.</p>
+<div class="highlight"><pre><span></span><code><span class="n">MODEL_DIR</span> <span class="o">=</span> <span class="n">ROOT</span> <span class="o">/</span> <span class="s2">&quot;app&quot;</span> <span class="o">/</span> <span class="s2">&quot;models&quot;</span>
+<span class="n">MODEL_DIR</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">MODEL_PATH</span> <span class="o">=</span> <span class="n">MODEL_DIR</span> <span class="o">/</span> <span class="s2">&quot;loan_default_pipeline.joblib&quot;</span>
+<span class="n">METADATA_PATH</span> <span class="o">=</span> <span class="n">MODEL_DIR</span> <span class="o">/</span> <span class="s2">&quot;loan_default_pipeline.json&quot;</span>
+
+<span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">MODEL_PATH</span><span class="p">)</span>
+
+<span class="n">data_file</span> <span class="o">=</span> <span class="n">ROOT</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span> <span class="o">/</span> <span class="s2">&quot;loan_default.csv&quot;</span>
+<span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;loan-default&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;trained_at&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;training_rows&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">loans</span><span class="p">),</span>
+    <span class="s2">&quot;training_data_md5&quot;</span><span class="p">:</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">data_file</span><span class="o">.</span><span class="n">read_bytes</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()[:</span><span class="mi">12</span><span class="p">],</span>
+    <span class="s2">&quot;numeric_features&quot;</span><span class="p">:</span> <span class="n">NUMERIC</span><span class="p">,</span>
+    <span class="s2">&quot;categorical_features&quot;</span><span class="p">:</span> <span class="n">CATEGORICAL</span><span class="p">,</span>
+    <span class="s2">&quot;threshold&quot;</span><span class="p">:</span> <span class="n">THRESHOLD</span><span class="p">,</span>
+    <span class="s2">&quot;sklearn_version&quot;</span><span class="p">:</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">__version__</span><span class="p">,</span>
+    <span class="s2">&quot;notes&quot;</span><span class="p">:</span> <span class="s2">&quot;Probability of default within 12 months, scored at application time.&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">METADATA_PATH</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;model    </span><span class="si">{</span><span class="n">MODEL_PATH</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">  (</span><span class="si">{</span><span class="n">MODEL_PATH</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> KB)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;metadata </span><span class="si">{</span><span class="n">METADATA_PATH</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)[:</span><span class="mi">400</span><span class="p">],</span> <span class="s2">&quot;...&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>model    loan_default_pipeline.joblib  (5.5 KB)
+metadata loan_default_pipeline.json
+{
+  &quot;name&quot;: &quot;loan-default&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;trained_at&quot;: &quot;2026-09-16 07:15&quot;,
+  &quot;training_rows&quot;: 12000,
+  &quot;training_data_md5&quot;: &quot;18b4b7c4918f&quot;,
+  &quot;numeric_features&quot;: [
+    &quot;loan_amount&quot;,
+    &quot;tenure_months&quot;,
+    &quot;interest_rate&quot;,
+    &quot;previous_loans&quot;,
+    &quot;days_past_due_history&quot;,
+    &quot;annual_income&quot;,
+    &quot;credit_score&quot;
+  ],
+  &quot;categorical_features&quot;: [
+    &quot;sector&quot;,
+    &quot;employment_type&quot;,
+    ...
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># The round trip that must always be checked: does the reloaded model agree?</span>
+<span class="n">reloaded</span> <span class="o">=</span> <span class="n">joblib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">MODEL_PATH</span><span class="p">)</span>
+
+<span class="n">sample</span> <span class="o">=</span> <span class="n">loans</span><span class="p">[</span><span class="n">NUMERIC</span> <span class="o">+</span> <span class="n">CATEGORICAL</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">original_predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">sample</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">reloaded_predictions</span> <span class="o">=</span> <span class="n">reloaded</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">sample</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;original:&quot;</span><span class="p">,</span> <span class="n">original_predictions</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;reloaded:&quot;</span><span class="p">,</span> <span class="n">reloaded_predictions</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;identical:&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">original_predictions</span><span class="p">,</span> <span class="n">reloaded_predictions</span><span class="p">))</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>original: [0.0856 0.0229 0.1419 0.3178 0.0383]
+reloaded: [0.0856 0.0229 0.1419 0.3178 0.0383]
+identical: True
+</code></pre></div>
+<blockquote>
+<p><strong>The version trap.</strong> A <code>joblib</code> file is a pickled Python object graph. Load it
+with a different scikit-learn version and you may get a warning, a subtly
+different model, or an exception. That is why <code>sklearn_version</code> is in the
+metadata and why session 8's Dockerfile pins the environment. If you remember one
+deployment rule: <strong>the model file and its environment travel together.</strong></p>
+</blockquote>
+<hr />
+<h2 id="2-the-inference-contract">2. The inference contract</h2>
+<p>Before writing the service, write down what it promises. This is the API
+equivalent of session 1's specification, and it is what the team integrating with
+you actually needs.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Endpoint</strong></td>
+<td><code>POST /predict</code></td>
+</tr>
+<tr>
+<td><strong>Input</strong></td>
+<td>One application: seven numeric fields, three categorical. <code>annual_income</code> and <code>credit_score</code> may be null</td>
+</tr>
+<tr>
+<td><strong>Output</strong></td>
+<td><code>probability_of_default</code> (0–1), <code>decision</code> (<code>approve</code> / <code>review</code>), <code>threshold</code>, <code>model_version</code></td>
+</tr>
+<tr>
+<td><strong>Errors</strong></td>
+<td><code>422</code> if a field is missing, the wrong type, or out of range</td>
+</tr>
+<tr>
+<td><strong>Latency budget</strong></td>
+<td>Under 5 seconds (session 1's charter); we should be far under</td>
+</tr>
+<tr>
+<td><strong>Not promised</strong></td>
+<td>An explanation, a batch mode, or a guarantee across model versions</td>
+</tr>
+</tbody>
+</table>
+<p>Two decisions worth noticing.</p>
+<p><strong>We return the probability <em>and</em> the decision.</strong> The probability lets the
+consumer do something smarter later; the decision means they do not have to know
+what a threshold is. Returning only one of them is a common design mistake.</p>
+<p><strong>We return the threshold and the model version.</strong> When somebody asks in March why
+an application was flagged in January, those two fields are the answer.</p>
+<div class="highlight"><pre><span></span><code><span class="n">api_code</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;&quot;&quot;&quot;Loan default prediction service.</span>
+
+<span class="s1">Run from the repository root:</span>
+<span class="s1">    uvicorn app.api.main:app --reload</span>
+
+<span class="s1">Then open http://127.0.0.1:8000/docs for the generated documentation.</span>
+<span class="s1">&quot;&quot;&quot;</span>
+
+<span class="s1">import json</span>
+<span class="s1">from pathlib import Path</span>
+<span class="s1">from typing import Literal, Optional</span>
+
+<span class="s1">import joblib</span>
+<span class="s1">import pandas as pd</span>
+<span class="s1">from fastapi import FastAPI</span>
+<span class="s1">from pydantic import BaseModel, Field</span>
+
+<span class="s1">MODEL_DIR = Path(__file__).resolve().parents[1] / &quot;models&quot;</span>
+
+<span class="s1"># Loaded ONCE, at startup — never inside the request handler.</span>
+<span class="s1">model = joblib.load(MODEL_DIR / &quot;loan_default_pipeline.joblib&quot;)</span>
+<span class="s1">metadata = json.loads((MODEL_DIR / &quot;loan_default_pipeline.json&quot;).read_text())</span>
+
+<span class="s1">app = FastAPI(title=&quot;Loan default prediction&quot;, version=metadata[&quot;version&quot;])</span>
+
+
+<span class="s1">class Application(BaseModel):</span>
+<span class="s1">    &quot;&quot;&quot;One loan application, as it exists at the moment of submission.&quot;&quot;&quot;</span>
+
+<span class="s1">    loan_amount: float = Field(gt=0, le=50_000_000, examples=[800_000])</span>
+<span class="s1">    tenure_months: int = Field(ge=1, le=120, examples=[24])</span>
+<span class="s1">    interest_rate: float = Field(ge=0, le=50, examples=[14.5])</span>
+<span class="s1">    previous_loans: int = Field(ge=0, le=50, examples=[0])</span>
+<span class="s1">    days_past_due_history: int = Field(ge=0, le=3650, examples=[30])</span>
+<span class="s1">    annual_income: Optional[float] = Field(default=None, ge=0)</span>
+<span class="s1">    credit_score: Optional[float] = Field(default=None, ge=300, le=850)</span>
+<span class="s1">    sector: str</span>
+<span class="s1">    employment_type: str</span>
+<span class="s1">    has_collateral: Literal[&quot;Yes&quot;, &quot;No&quot;]</span>
+
+
+<span class="s1">class Prediction(BaseModel):</span>
+<span class="s1">    probability_of_default: float</span>
+<span class="s1">    decision: Literal[&quot;approve&quot;, &quot;review&quot;]</span>
+<span class="s1">    threshold: float</span>
+<span class="s1">    model_version: str</span>
+
+
+<span class="s1">@app.get(&quot;/health&quot;)</span>
+<span class="s1">def health():</span>
+<span class="s1">    &quot;&quot;&quot;Liveness check — what a load balancer calls every few seconds.&quot;&quot;&quot;</span>
+<span class="s1">    return {&quot;status&quot;: &quot;ok&quot;, &quot;model_version&quot;: metadata[&quot;version&quot;]}</span>
+
+
+<span class="s1">@app.get(&quot;/metadata&quot;)</span>
+<span class="s1">def model_metadata():</span>
+<span class="s1">    &quot;&quot;&quot;What is deployed right now. The first thing to check in an incident.&quot;&quot;&quot;</span>
+<span class="s1">    return metadata</span>
+
+
+<span class="s1">@app.post(&quot;/predict&quot;, response_model=Prediction)</span>
+<span class="s1">def predict(application: Application) -&gt; Prediction:</span>
+<span class="s1">    frame = pd.DataFrame([application.model_dump()])</span>
+<span class="s1">    probability = float(model.predict_proba(frame)[0, 1])</span>
+
+<span class="s1">    return Prediction(</span>
+<span class="s1">        probability_of_default=round(probability, 4),</span>
+<span class="s1">        decision=&quot;review&quot; if probability &gt;= metadata[&quot;threshold&quot;] else &quot;approve&quot;,</span>
+<span class="s1">        threshold=metadata[&quot;threshold&quot;],</span>
+<span class="s1">        model_version=metadata[&quot;version&quot;],</span>
+<span class="s1">    )</span>
+<span class="s1">&#39;&#39;&#39;</span>
+
+<span class="n">API_PATH</span> <span class="o">=</span> <span class="n">ROOT</span> <span class="o">/</span> <span class="s2">&quot;app&quot;</span> <span class="o">/</span> <span class="s2">&quot;api&quot;</span> <span class="o">/</span> <span class="s2">&quot;main.py&quot;</span>
+<span class="n">API_PATH</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">API_PATH</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">api_code</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;wrote </span><span class="si">{</span><span class="n">API_PATH</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">ROOT</span><span class="p">)</span><span class="si">}</span><span class="s2">  (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">api_code</span><span class="o">.</span><span class="n">splitlines</span><span class="p">())</span><span class="si">}</span><span class="s2"> lines)&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>wrote app/api/main.py  (71 lines)
+</code></pre></div>
+<p>Read that file rather than skimming it. Four details carry the lesson.</p>
+<p><strong>The model is loaded once, at import.</strong> Loading it inside <code>predict</code> would reread
+the file on every request and turn a 2 millisecond answer into a 200 millisecond
+one.</p>
+<p><strong><code>Application</code> is the schema, and the validation.</strong> Pydantic enforces types and
+ranges before your code sees anything. <code>loan_amount</code> must be positive,
+<code>credit_score</code> must lie between 300 and 850, <code>has_collateral</code> must be exactly
+<code>"Yes"</code> or <code>"No"</code>. A bad request is rejected with a readable error rather than
+scored.</p>
+<p><strong>Optional fields are explicit.</strong> <code>annual_income</code> and <code>credit_score</code> may be
+<code>None</code>, because sessions 2 and 3 established that missing values are normal here
+and the pipeline's imputer handles them. Fields that may <em>not</em> be missing are
+required, and that distinction is now enforced by the service.</p>
+<p><strong><code>/metadata</code> exists.</strong> When a prediction is questioned, the first thing anyone
+needs is what was deployed at the time.</p>
+<hr />
+<h2 id="3-running-it-and-calling-it">3. Running it, and calling it</h2>
+<p>In a terminal you would start the service with:</p>
+<div class="highlight"><pre><span></span><code>uvicorn<span class="w"> </span>app.api.main:app<span class="w"> </span>--reload
+</code></pre></div>
+<p>Inside this notebook we start the same application on a background thread so we
+can call it and shut it down cleanly.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uvicorn</span>
+
+<span class="c1"># Import the app we just wrote, as a module, exactly as uvicorn would.</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">ROOT</span><span class="p">))</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.api.main</span><span class="w"> </span><span class="kn">import</span> <span class="n">app</span>        <span class="c1"># noqa: E402</span>
+
+<span class="n">PORT</span> <span class="o">=</span> <span class="mi">8123</span>
+<span class="n">server</span> <span class="o">=</span> <span class="n">uvicorn</span><span class="o">.</span><span class="n">Server</span><span class="p">(</span><span class="n">uvicorn</span><span class="o">.</span><span class="n">Config</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">PORT</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="s2">&quot;error&quot;</span><span class="p">))</span>
+<span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>                <span class="c1"># wait for startup, at most 10 seconds</span>
+    <span class="k">if</span> <span class="n">server</span><span class="o">.</span><span class="n">started</span><span class="p">:</span>
+        <span class="k">break</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+
+<span class="n">BASE</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;http://127.0.0.1:</span><span class="si">{</span><span class="n">PORT</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;server started:&quot;</span><span class="p">,</span> <span class="n">server</span><span class="o">.</span><span class="n">started</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;health:&quot;</span><span class="p">,</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BASE</span><span class="si">}</span><span class="s2">/health&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>server started: True
+health: {&#39;status&#39;: &#39;ok&#39;, &#39;model_version&#39;: &#39;1.0.0&#39;}
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">application</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;loan_amount&quot;</span><span class="p">:</span> <span class="mi">800_000</span><span class="p">,</span>
+    <span class="s2">&quot;tenure_months&quot;</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span>
+    <span class="s2">&quot;interest_rate&quot;</span><span class="p">:</span> <span class="mf">14.5</span><span class="p">,</span>
+    <span class="s2">&quot;previous_loans&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;days_past_due_history&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="s2">&quot;annual_income&quot;</span><span class="p">:</span> <span class="mi">600_000</span><span class="p">,</span>
+    <span class="s2">&quot;credit_score&quot;</span><span class="p">:</span> <span class="mi">545</span><span class="p">,</span>
+    <span class="s2">&quot;sector&quot;</span><span class="p">:</span> <span class="s2">&quot;Construction&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;employment_type&quot;</span><span class="p">:</span> <span class="s2">&quot;Self-Employed&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;has_collateral&quot;</span><span class="p">:</span> <span class="s2">&quot;No&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BASE</span><span class="si">}</span><span class="s2">/predict&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">application</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">(),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>200
+{
+  &quot;probability_of_default&quot;: 0.5311,
+  &quot;decision&quot;: &quot;review&quot;,
+  &quot;threshold&quot;: 0.2,
+  &quot;model_version&quot;: &quot;1.0.0&quot;
+}
+</code></pre></div>
+<p>A real HTTP request, a real model, a real decision. That JSON is what the loan
+origination system would receive.</p>
+<p>Now the more interesting half: what happens when the request is wrong.</p>
+<div class="highlight"><pre><span></span><code><span class="n">broken</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">application</span><span class="p">,</span> <span class="n">loan_amount</span><span class="o">=-</span><span class="mi">5000</span><span class="p">,</span> <span class="n">credit_score</span><span class="o">=</span><span class="mi">1200</span><span class="p">)</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BASE</span><span class="si">}</span><span class="s2">/predict&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">broken</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;status:&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;detail&quot;</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">error</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">error</span><span class="p">[</span><span class="s1">&#39;msg&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">missing_field</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">application</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s2">&quot;sector&quot;</span><span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BASE</span><span class="si">}</span><span class="s2">/predict&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">missing_field</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">missing a required field -&gt;&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
+      <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;detail&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;msg&quot;</span><span class="p">])</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>status: 422
+  loan_amount: Input should be greater than 0
+  credit_score: Input should be less than or equal to 850
+
+missing a required field -&gt; 422 Field required
+</code></pre></div>
+<p><strong><code>422 Unprocessable Entity</code></strong>, with a message naming the offending field.</p>
+<p>Compare that with what happens without validation: a negative loan amount is
+perfectly acceptable arithmetic, the pipeline scales it, the model returns a
+confident probability, and a nonsense decision travels downstream with no trace of
+anything having gone wrong. Session 4's <code>reindex</code> warning was the notebook version
+of this problem; Pydantic is the production answer.</p>
+<p>The rule: <strong>a service should refuse what it cannot score, loudly and early.</strong></p>
+<hr />
+<h2 id="4-latency">4. Latency</h2>
+<p>Session 1's charter gave a budget of five seconds. Measure against it rather than
+assuming.</p>
+<div class="highlight"><pre><span></span><code><span class="n">timings</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">):</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+    <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BASE</span><span class="si">}</span><span class="s2">/predict&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">application</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">timings</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+
+<span class="n">timings</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">timings</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;median  </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">timings</span><span class="p">)</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> ms&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;p95     </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">timings</span><span class="p">,</span><span class="w"> </span><span class="mi">95</span><span class="p">)</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> ms&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;slowest </span><span class="si">{</span><span class="n">timings</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> ms&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">budget  5000 ms  —  headroom: </span><span class="si">{</span><span class="mi">5000</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">timings</span><span class="p">)</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">x&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>median  2.3 ms
+p95     3.4 ms
+slowest 7.3 ms
+
+budget  5000 ms  —  headroom: 2202x
+</code></pre></div>
+<p>A couple of milliseconds per request, against a five-second budget. Three
+observations that generalise beyond this project.</p>
+<p><strong>Most of that time is HTTP, not the model.</strong> The pipeline itself takes tens of
+microseconds; the rest is request parsing, validation and serialisation. Which is
+why "make the model faster" is usually the wrong first optimisation.</p>
+<p><strong>Report the p95, not the mean.</strong> Users experience the slow requests. A service
+with a 2 ms median and a 4 second p95 is a broken service with a flattering
+average.</p>
+<p><strong>Latency is a design constraint, discovered early.</strong> If the charter had demanded
+predictions in 5 milliseconds, that would have ruled out the KNN model in session
+4 before anyone trained it.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Shut the background server down so the notebook exits cleanly.</span>
+<span class="n">server</span><span class="o">.</span><span class="n">should_exit</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">thread</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;server stopped:&quot;</span><span class="p">,</span> <span class="ow">not</span> <span class="n">thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">())</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>server stopped: True
+</code></pre></div>
+<hr />
+<h2 id="5-an-interface-for-humans">5. An interface for humans</h2>
+<p>An API serves systems. A credit officer needs a screen. <strong>Streamlit</strong> turns a
+Python script into a web interface without any front-end work, which makes it
+ideal for internal tools and demonstrations.</p>
+<p>The interface calls the API rather than loading the model itself. That separation
+matters: one model, one place where the decision is made, and the UI can be
+redeployed without touching the service.</p>
+<div class="highlight"><pre><span></span><code><span class="n">ui_code</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;&quot;&quot;&quot;Streamlit interface for the loan default service.</span>
+
+<span class="s1">Start the API first:</span>
+<span class="s1">    uvicorn app.api.main:app</span>
+
+<span class="s1">Then, in a second terminal:</span>
+<span class="s1">    streamlit run app/ui/app.py</span>
+<span class="s1">&quot;&quot;&quot;</span>
+
+<span class="s1">import requests</span>
+<span class="s1">import streamlit as st</span>
+
+<span class="s1">API = &quot;http://127.0.0.1:8000&quot;</span>
+
+<span class="s1">st.title(&quot;Loan default risk&quot;)</span>
+<span class="s1">st.caption(&quot;Scores an application at submission time. Decision support, not a decision.&quot;)</span>
+
+<span class="s1">with st.form(&quot;application&quot;):</span>
+<span class="s1">    column_left, column_right = st.columns(2)</span>
+
+<span class="s1">    with column_left:</span>
+<span class="s1">        loan_amount = st.number_input(&quot;Loan amount (NPR)&quot;, min_value=50_000, value=800_000, step=50_000)</span>
+<span class="s1">        tenure_months = st.selectbox(&quot;Tenure (months)&quot;, [6, 12, 18, 24, 36, 48, 60], index=3)</span>
+<span class="s1">        interest_rate = st.slider(&quot;Interest rate (%)&quot;, 8.0, 24.0, 14.5, 0.1)</span>
+<span class="s1">        previous_loans = st.number_input(&quot;Previous loans&quot;, min_value=0, max_value=20, value=0)</span>
+<span class="s1">        days_past_due_history = st.number_input(&quot;Days past due (history)&quot;, min_value=0, value=30)</span>
+
+<span class="s1">    with column_right:</span>
+<span class="s1">        sector = st.selectbox(&quot;Sector&quot;, [&quot;Trade&quot;, &quot;Service&quot;, &quot;Manufacturing&quot;,</span>
+<span class="s1">                                         &quot;Agriculture&quot;, &quot;Construction&quot;, &quot;Tourism&quot;])</span>
+<span class="s1">        employment_type = st.selectbox(&quot;Employment&quot;, [&quot;Salaried&quot;, &quot;Self-Employed&quot;,</span>
+<span class="s1">                                                      &quot;Business Owner&quot;, &quot;Informal&quot;])</span>
+<span class="s1">        has_collateral = st.radio(&quot;Collateral&quot;, [&quot;Yes&quot;, &quot;No&quot;], horizontal=True)</span>
+<span class="s1">        has_income = st.checkbox(&quot;Income documented&quot;, value=True)</span>
+<span class="s1">        annual_income = st.number_input(&quot;Annual income (NPR)&quot;, min_value=0, value=600_000,</span>
+<span class="s1">                                        step=50_000, disabled=not has_income)</span>
+<span class="s1">        has_score = st.checkbox(&quot;Credit score available&quot;, value=True)</span>
+<span class="s1">        credit_score = st.number_input(&quot;Credit score&quot;, min_value=300, max_value=850,</span>
+<span class="s1">                                       value=545, disabled=not has_score)</span>
+
+<span class="s1">    submitted = st.form_submit_button(&quot;Score application&quot;)</span>
+
+<span class="s1">if submitted:</span>
+<span class="s1">    payload = {</span>
+<span class="s1">        &quot;loan_amount&quot;: loan_amount,</span>
+<span class="s1">        &quot;tenure_months&quot;: tenure_months,</span>
+<span class="s1">        &quot;interest_rate&quot;: interest_rate,</span>
+<span class="s1">        &quot;previous_loans&quot;: previous_loans,</span>
+<span class="s1">        &quot;days_past_due_history&quot;: days_past_due_history,</span>
+<span class="s1">        &quot;annual_income&quot;: annual_income if has_income else None,</span>
+<span class="s1">        &quot;credit_score&quot;: credit_score if has_score else None,</span>
+<span class="s1">        &quot;sector&quot;: sector,</span>
+<span class="s1">        &quot;employment_type&quot;: employment_type,</span>
+<span class="s1">        &quot;has_collateral&quot;: has_collateral,</span>
+<span class="s1">    }</span>
+
+<span class="s1">    try:</span>
+<span class="s1">        response = requests.post(f&quot;</span><span class="si">{API}</span><span class="s1">/predict&quot;, json=payload, timeout=5)</span>
+<span class="s1">    except requests.exceptions.ConnectionError:</span>
+<span class="s1">        st.error(f&quot;Cannot reach the API at </span><span class="si">{API}</span><span class="s1">. Is uvicorn running?&quot;)</span>
+<span class="s1">        st.stop()</span>
+
+<span class="s1">    if response.status_code != 200:</span>
+<span class="s1">        st.error(f&quot;The service rejected this application: {response.json()}&quot;)</span>
+<span class="s1">        st.stop()</span>
+
+<span class="s1">    result = response.json()</span>
+<span class="s1">    probability = result[&quot;probability_of_default&quot;]</span>
+
+<span class="s1">    st.metric(&quot;Probability of default&quot;, f&quot;</span><span class="si">{probability:.1%}</span><span class="s1">&quot;)</span>
+<span class="s1">    st.progress(min(probability / 0.5, 1.0))</span>
+
+<span class="s1">    if result[&quot;decision&quot;] == &quot;review&quot;:</span>
+<span class="s1">        st.warning(&quot;Send to senior review&quot;)</span>
+<span class="s1">    else:</span>
+<span class="s1">        st.success(&quot;Within auto-approval range&quot;)</span>
+
+<span class="s1">    st.caption(f&quot;threshold </span><span class="si">{result[&#39;threshold&#39;]:.0%}</span><span class="s1"> · model </span><span class="si">{result[&#39;model_version&#39;]}</span><span class="s1">&quot;)</span>
+<span class="s1">&#39;&#39;&#39;</span>
+
+<span class="n">UI_PATH</span> <span class="o">=</span> <span class="n">ROOT</span> <span class="o">/</span> <span class="s2">&quot;app&quot;</span> <span class="o">/</span> <span class="s2">&quot;ui&quot;</span> <span class="o">/</span> <span class="s2">&quot;app.py&quot;</span>
+<span class="n">UI_PATH</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">UI_PATH</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">ui_code</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;wrote </span><span class="si">{</span><span class="n">UI_PATH</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">ROOT</span><span class="p">)</span><span class="si">}</span><span class="s2">  (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ui_code</span><span class="o">.</span><span class="n">splitlines</span><span class="p">())</span><span class="si">}</span><span class="s2"> lines)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">To use it, in two terminals from the repository root:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  1)  uvicorn app.api.main:app&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  2)  streamlit run app/ui/app.py&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>wrote app/ui/app.py  (78 lines)
+
+To use it, in two terminals from the repository root:
+  1)  uvicorn app.api.main:app
+  2)  streamlit run app/ui/app.py
+</code></pre></div>
+<p>Notice three deliberate choices in that interface.</p>
+<p><strong>Missing values are a checkbox, not a blank box.</strong> "Income documented" reflects
+the reality sessions 2 and 3 uncovered — an applicant with no documented income is
+a normal case, not a form error. The UI sends <code>null</code> and the pipeline imputes.</p>
+<p><strong>The probability and the recommendation are both shown.</strong> The officer sees the
+number and the suggested action, and remains the decision-maker. The caption
+naming the threshold and model version is what makes a decision auditable months
+later.</p>
+<p><strong>Failures are handled.</strong> If the API is down the interface says so. Demos that
+crash on a disconnected backend lose more credibility than models that score 0.05
+lower.</p>
+<hr />
+<h2 id="6-what-a-real-service-also-needs">6. What a real service also needs</h2>
+<p>Our hundred lines are honest but incomplete. Before this served real applications,
+the following would not be optional.</p>
+<table>
+<thead>
+<tr>
+<th>Concern</th>
+<th>What to add</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Prediction logging</strong></td>
+<td>Write every request and response to a store</td>
+<td>Session 8's monitoring has nothing to measure otherwise</td>
+</tr>
+<tr>
+<td><strong>Authentication</strong></td>
+<td>An API key or service token</td>
+<td>A scoring endpoint open to the internet is a data leak</td>
+</tr>
+<tr>
+<td><strong>Rate limiting</strong></td>
+<td>Requests per client per minute</td>
+<td>One broken loop should not take the service down</td>
+</tr>
+<tr>
+<td><strong>Timeouts and retries</strong></td>
+<td>On both sides of the call</td>
+<td>Networks fail; hanging requests are worse than failed ones</td>
+</tr>
+<tr>
+<td><strong>Structured logging</strong></td>
+<td>Request id on every line</td>
+<td>Tracing one application through the system</td>
+</tr>
+<tr>
+<td><strong>Containerisation</strong></td>
+<td>Session 8's Dockerfile</td>
+<td>The environment stops drifting</td>
+</tr>
+<tr>
+<td><strong>Batch endpoint</strong></td>
+<td><code>POST /predict/batch</code></td>
+<td>Overnight scoring of the whole book</td>
+</tr>
+</tbody>
+</table>
+<p>The first row is the one that connects this session to the last one. <strong>A
+prediction that is not logged cannot be monitored</strong>, and a service that is not
+monitored will drift exactly as session 8's did — silently, for months.</p>
+<p>The minimum log record: timestamp, request id, model version, the input fields,
+the probability, the decision, and the response time. With those, every chart in
+session 8 can be rebuilt from production traffic instead of from a CSV.</p>
+<hr />
+<h2 id="your-turn">Your turn</h2>
+<p><strong>1. Add prediction logging.</strong> Append every request and response to a JSON Lines
+file in <code>app/logs/</code>. Then load that file with pandas and reproduce session 8's
+predicted-rate chart from it.</p>
+<p><strong>2. Add a batch endpoint.</strong> <code>POST /predict/batch</code> taking a list of applications
+and returning a list of predictions. Measure its latency for 1, 10 and 100
+applications — how much of the cost is per request rather than per application?</p>
+<p><strong>3. Serve the size-aware thresholds.</strong> Session 6 saved NPR 8.6m using a lower
+threshold for large loans. Move that rule into the service (it belongs in the
+metadata file, not in the code) and return which band was applied.</p>
+<p><strong>4. Break it on purpose.</strong> Send a <code>sector</code> value the model has never seen, such
+as <code>"Fintech"</code>. Does the service reject it, or score it? Should the schema use a
+<code>Literal</code> of known sectors, and what breaks when the lender opens a new sector
+next year?</p>
+<p><strong>5. Version endpoint discipline.</strong> Retrain the model, bump <code>version</code> to <code>1.1.0</code>,
+restart the API, and confirm <code>/metadata</code> reports the change. Write the two
+sentences you would send the integrating team about the new version.</p>
+<p><strong>6. Health check that means something.</strong> <code>/health</code> currently returns <code>ok</code>
+unconditionally. Make it score a fixed known application and check the result is
+within tolerance, so a corrupted model file fails the check instead of passing it.</p>
+<hr />
+<h2 id="if-you-remember-nothing-else">If you remember nothing else</h2>
+<p><strong>Save the pipeline, not the model.</strong> Preprocessing and estimator in one file is
+what makes training and serving the same computation.</p>
+<p><strong>A model file is not deployable on its own.</strong> Threshold, schema, versions and
+training data hash travel with it, or nobody can explain a decision six months
+later.</p>
+<p><strong>Write the inference contract before the code.</strong> Inputs, outputs, errors,
+latency, and what you are <em>not</em> promising.</p>
+<p><strong>Validate at the boundary.</strong> A service that scores a negative loan amount has
+produced a confident, wrong, untraceable decision. <code>422</code> is a feature.</p>
+<p><strong>Load the model once, at startup.</strong> Not per request.</p>
+<p><strong>Measure latency, report the p95.</strong> We had a 5-second budget and a 2-millisecond
+median; most of that was HTTP, not the model.</p>
+<p><strong>Log every prediction.</strong> Monitoring, incident analysis, and next year's retrain
+all depend on the log you either wrote or did not.</p>
+<hr />
+<h2 id="glossary">Glossary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Serialisation</strong></td>
+<td>Writing a fitted object to a file — <code>joblib</code>, pickle, skops</td>
+</tr>
+<tr>
+<td><strong>Model artifact</strong></td>
+<td>The saved model file, plus the metadata it needs to be used</td>
+</tr>
+<tr>
+<td><strong>Inference contract</strong></td>
+<td>The documented promise a prediction service makes</td>
+</tr>
+<tr>
+<td><strong>Endpoint</strong></td>
+<td>One callable URL on a service, e.g. <code>POST /predict</code></td>
+</tr>
+<tr>
+<td><strong>Pydantic model</strong></td>
+<td>A typed schema that validates request bodies</td>
+</tr>
+<tr>
+<td><strong>422</strong></td>
+<td>HTTP status for a well-formed request whose contents fail validation</td>
+</tr>
+<tr>
+<td><strong>Health check</strong></td>
+<td>An endpoint a load balancer polls to see if the service is alive</td>
+</tr>
+<tr>
+<td><strong>p95 latency</strong></td>
+<td>The response time 95% of requests come in under</td>
+</tr>
+<tr>
+<td><strong>Cold start</strong></td>
+<td>The first request after startup, before caches are warm</td>
+</tr>
+<tr>
+<td><strong>Prediction log</strong></td>
+<td>The record of every input and output, the raw material of monitoring</td>
+</tr>
+</tbody>
+</table>
+<h2 id="further-reading">Further reading</h2>
+<ul>
+<li>FastAPI documentation, <em>Tutorial — User Guide</em>, first ten pages; then
+  <em>Response Model</em> and <em>Handling Errors</em>.</li>
+<li>Pydantic documentation, <em>Fields</em> and <em>Validators</em> — everything the schema in
+  section 2 could enforce.</li>
+<li>Streamlit documentation, <em>Get started</em> and <em>API reference — Input widgets</em>.</li>
+<li>scikit-learn User Guide, <em>Model persistence</em> — the security and version
+  caveats around pickle and joblib, and where <code>skops</code> fits.</li>
+</ul>
+<hr />
+<p><strong>Next session:</strong> <em>End-to-End ML Project</em> — the whole module in one pass on a
+fresh problem, plus the project brief and grading rubric for your own submission.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../08_mlops_intro/" class="btn btn-neutral float-left" title="8. Introduction to MLOps"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright &copy; 2026 - Aayush Raj Regmi</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../08_mlops_intro/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../javascripts/mathjax.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

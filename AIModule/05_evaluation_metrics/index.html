@@ -5,14 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>Model Evaluation and Performance Metrics - Applied ML</title>
+    <title>5. Model Evaluation and Performance Metrics - Applied ML</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Model Evaluation and Performance Metrics";
+        var mkdocs_page_name = "5. Model Evaluation and Performance Metrics";
         var mkdocs_page_input_path = "AIModule/05_evaluation_metrics.md";
         var mkdocs_page_url = null;
       </script>
@@ -49,12 +49,73 @@
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Applied ML in Production</span></p>
-              <ul>
+              <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../01_problem_framing/">1. ML Problem Framing and the Industry Workflow</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../02_data_preparation/">2. Data Preparation for ML</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../03_feature_engineering/">3. Feature Engineering</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04_sklearn_models/">4. Building ML Models with Scikit-learn</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">5. Model Evaluation and Performance Metrics</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-work-through-this">How to work through this</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#learning-objectives">Learning objectives</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#1-four-numbers-in-business-language">1. Four numbers, in business language</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#every-metric-is-a-ratio-of-those-four">Every metric is a ratio of those four</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-accuracys-last-appearance">2. Accuracy's last appearance</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-threshold-free-views-roc-and-precisionrecall">3. Threshold-free views: ROC and precision–recall</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-the-cost-matrix-how-the-metric-is-actually-chosen">4. The cost matrix — how the metric is actually chosen</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-capacity-the-constraint-the-cost-curve-ignores">5. Capacity: the constraint the cost curve ignores</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-calibration-do-the-probabilities-mean-anything">6. Calibration: do the probabilities mean anything?</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-regression-metrics-briefly">7. Regression metrics, briefly</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#8-what-to-report-and-to-whom">8. What to report, and to whom</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#your-turn">Your turn</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#if-you-remember-nothing-else">If you remember nothing else</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#glossary">Glossary</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#further-reading">Further reading</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../06_tuning_error_analysis/">6. Model Tuning and Error Analysis</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07_pipelines_tracking/">7. ML Pipelines and Experiment Tracking</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../08_mlops_intro/">8. Introduction to MLOps</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../09_deployment_apis/">9. Model Deployment and APIs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../10_end_to_end_project/">10. End-to-End ML Project</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Bonus — Deep Learning</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../11_neural_networks/">1. Neural Networks from Scratch</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../12_cnn/">2. Convolutional Neural Networks</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../13_rnn_lstm_gru/">3. Recurrent Networks — RNN, LSTM, GRU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../14_attention_transformers/">4. Attention and Transformers</a>
                   </li>
               </ul>
       </div>
@@ -71,7 +132,8 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Model Evaluation and Performance Metrics</li>
+          <li class="breadcrumb-item">Applied ML in Production</li>
+      <li class="breadcrumb-item active">5. Model Evaluation and Performance Metrics</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -766,6 +828,10 @@ book where this model quietly fails.</p>
               
             </div>
           </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../04_sklearn_models/" class="btn btn-neutral float-left" title="4. Building ML Models with Scikit-learn"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../06_tuning_error_analysis/" class="btn btn-neutral float-right" title="6. Model Tuning and Error Analysis">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
 
   <hr/>
 
@@ -788,6 +854,10 @@ book where this model quietly fails.</p>
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
+      <span><a href="../04_sklearn_models/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../06_tuning_error_analysis/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

@@ -5,14 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>Convolutional Neural Networks - Applied ML</title>
+    <title>2. Convolutional Neural Networks - Applied ML</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Convolutional Neural Networks";
+        var mkdocs_page_name = "2. Convolutional Neural Networks";
         var mkdocs_page_input_path = "AIModule/12_cnn.md";
         var mkdocs_page_url = null;
       </script>
@@ -56,6 +56,63 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../03_feature_engineering/">3. Feature Engineering</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04_sklearn_models/">4. Building ML Models with Scikit-learn</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../05_evaluation_metrics/">5. Model Evaluation and Performance Metrics</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../06_tuning_error_analysis/">6. Model Tuning and Error Analysis</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07_pipelines_tracking/">7. ML Pipelines and Experiment Tracking</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../08_mlops_intro/">8. Introduction to MLOps</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../09_deployment_apis/">9. Model Deployment and APIs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../10_end_to_end_project/">10. End-to-End ML Project</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Bonus — Deep Learning</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../11_neural_networks/">1. Neural Networks from Scratch</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">2. Convolutional Neural Networks</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-work-through-this">How to work through this</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#learning-objectives">Learning objectives</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#1-why-not-just-flatten-it">1. Why not just flatten it?</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-convolution-by-hand">2. Convolution, by hand</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#the-vocabulary">The vocabulary</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-pooling">3. Pooling</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-a-cnn-and-the-mlp-it-has-to-beat">4. A CNN, and the MLP it has to beat</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-looking-inside">5. Looking inside</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-error-analysis-session-6-style">6. Error analysis, session 6 style</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-what-real-image-projects-add">7. What real image projects add</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#your-turn">Your turn</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#if-you-remember-nothing-else">If you remember nothing else</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#glossary">Glossary</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#further-reading">Further reading</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../13_rnn_lstm_gru/">3. Recurrent Networks — RNN, LSTM, GRU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../14_attention_transformers/">4. Attention and Transformers</a>
+                  </li>
               </ul>
       </div>
     </div>
@@ -71,7 +128,8 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Convolutional Neural Networks</li>
+          <li class="breadcrumb-item">Bonus — Deep Learning</li>
+      <li class="breadcrumb-item active">2. Convolutional Neural Networks</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -661,6 +719,10 @@ a sequence and order carries the meaning.</p>
               
             </div>
           </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../11_neural_networks/" class="btn btn-neutral float-left" title="1. Neural Networks from Scratch"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../13_rnn_lstm_gru/" class="btn btn-neutral float-right" title="3. Recurrent Networks — RNN, LSTM, GRU">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
 
   <hr/>
 
@@ -683,6 +745,10 @@ a sequence and order carries the meaning.</p>
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
+      <span><a href="../11_neural_networks/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../13_rnn_lstm_gru/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

@@ -125,8 +125,6 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#project-structure">Project Structure</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#timeline-and-deliverables-5-weeks">Timeline and Deliverables (5 weeks)</a>
-    </li>
     <li class="toctree-l3"><a class="reference internal" href="#what-to-submit">What to Submit</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#final-report-structure-46-pages">Final Report Structure (4–6 pages)</a>
@@ -532,9 +530,8 @@ your requests.</p>
 </ol>
 <hr />
 <h3 id="step-3-write-the-project-charter-business-understanding">Step 3 — Write the Project Charter (Business Understanding)</h3>
-<p>Before touching a model, write session 1's <strong>one-page charter</strong> and get it checked. Every later stage
-refers back to it: choosing a metric fills in a charter field; detecting drift tests a charter
-assumption.</p>
+<p>Before touching a model, write session 1's <strong>one-page charter</strong>. Every later stage refers back to it:
+choosing a metric fills in a charter field; detecting drift tests a charter assumption.</p>
 <table>
 <thead>
 <tr>
@@ -804,7 +801,7 @@ as outcomes.</p>
 <tbody>
 <tr>
 <td><strong>Team size</strong></td>
-<td>Individual. Reviewing each other's charters in week 1 is encouraged</td>
+<td>Individual</td>
 </tr>
 <tr>
 <td><strong>Language</strong></td>
@@ -836,7 +833,7 @@ as outcomes.</p>
 </tr>
 <tr>
 <td><strong>Version control</strong></td>
-<td>Git repository with regular, meaningful commits throughout the project — not one commit on the last day</td>
+<td>Git repository with regular, meaningful commits — not one commit at the end</td>
 </tr>
 </tbody>
 </table>
@@ -878,50 +875,6 @@ as outcomes.</p>
 <a href="https://cookiecutter-data-science.drivendata.org/">Cookiecutter Data Science</a>,
 <a href="https://kedro.org/">Kedro</a>, or your own layout, as long as it separates data, exploration, source
 code, models and the app.</p>
-<hr />
-<h3 id="timeline-and-deliverables-5-weeks">Timeline and Deliverables (5 weeks)</h3>
-<table>
-<thead>
-<tr>
-<th>Week</th>
-<th>Stages</th>
-<th>Work</th>
-<th>Deliverable</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>1</strong></td>
-<td>Problem + data + business understanding</td>
-<td>Identify the decision and owner, secure and freeze the dataset, write the charter</td>
-<td><strong>Charter (1 page)</strong> + 3–5 slide idea pitch. Get it checked before going further</td>
-</tr>
-<tr>
-<td><strong>2</strong></td>
-<td>Data understanding and preparation</td>
-<td>Point-in-time audit, EDA, missingness, split, baselines measured, tracker set up</td>
-<td>Data audit notebook; baselines logged as tracked runs</td>
-</tr>
-<tr>
-<td><strong>3</strong></td>
-<td>Features, modelling, evaluation</td>
-<td>Feature pipeline in <code>src/</code>, ≥ 2 model families, cross-validation, metric and operating point</td>
-<td>Tracked comparison table: baselines vs. models, with fold spread</td>
-</tr>
-<tr>
-<td><strong>4</strong></td>
-<td>Error analysis, packaging, deployment</td>
-<td>Slice analysis, final model registered, artifact + metadata, API/UI, Dockerfile</td>
-<td>Working <code>src/train.py</code>, served model running in Docker, report draft</td>
-</tr>
-<tr>
-<td><strong>5</strong></td>
-<td>Monitoring, documentation, presentation</td>
-<td>Monitoring runbook, README, final report, rehearse the walkthrough</td>
-<td>Final submission + 10-minute presentation with <strong>live demo</strong></td>
-</tr>
-</tbody>
-</table>
 <hr />
 <h3 id="what-to-submit">What to Submit</h3>
 <p>Submit a single <strong>GitHub repository link</strong> containing:</p>
@@ -982,7 +935,7 @@ code, models and the app.</p>
 <tr>
 <td>10</td>
 <td><strong>Slides</strong></td>
-<td>For the 10-minute presentation</td>
+<td>For a 10-minute presentation with a <strong>live demo</strong></td>
 </tr>
 </tbody>
 </table>

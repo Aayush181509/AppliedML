@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Project Guidelines - Applied ML</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Project Guidelines";
+        var mkdocs_page_input_path = "AIModule/project/Project.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> Applied ML
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">Welcome</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../InstallationGuide/">Installation Guide</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Applied ML in Production</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../01_problem_framing/">1. ML Problem Framing and the Industry Workflow</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../02_data_preparation/">2. Data Preparation for ML</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../03_feature_engineering/">3. Feature Engineering</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../04_sklearn_models/">4. Building ML Models with Scikit-learn</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../05_evaluation_metrics/">5. Model Evaluation and Performance Metrics</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../06_tuning_error_analysis/">6. Model Tuning and Error Analysis</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../07_pipelines_tracking/">7. ML Pipelines and Experiment Tracking</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../08_mlops_intro/">8. Introduction to MLOps</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../09_deployment_apis/">9. Model Deployment and APIs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../10_end_to_end_project/">10. End-to-End ML Project</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Course Project</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Project Guidelines</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#building-and-shipping-an-end-to-end-machine-learning-system">Building and Shipping an End-to-End Machine Learning System</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#objective">Objective</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#the-workflow-you-will-follow">The Workflow You Will Follow</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-1-identify-the-problem">Step 1 — Identify the Problem</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#project-types">Project types</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#sample-project-ideas-by-domain">Sample project ideas by domain</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-2-select-a-dataset">Step 2 — Select a Dataset</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#dataset-requirements">Dataset requirements</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#where-to-find-data">Where to find data</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#three-data-rules">Three data rules</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-3-write-the-project-charter-business-understanding">Step 3 — Write the Project Charter (Business Understanding)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-4-data-understanding-preparation-and-features">Step 4 — Data Understanding, Preparation and Features</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-5-baselines-modelling-and-evaluation">Step 5 — Baselines, Modelling and Evaluation</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-6-experiment-tracking">Step 6 — Experiment Tracking</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-7-packaging-and-basic-deployment">Step 7 — Packaging and Basic Deployment</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#the-artifact">The artifact</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#the-served-model-required">The served model (required)</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#containerisation-required">Containerisation (required)</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#public-deployment-bonus">Public deployment (bonus)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-8-monitoring-plan">Step 8 — Monitoring Plan</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#core-requirements">Core Requirements</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#project-structure">Project Structure</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#timeline-and-deliverables-5-weeks">Timeline and Deliverables (5 weeks)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#what-to-submit">What to Submit</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#final-report-structure-46-pages">Final Report Structure (4–6 pages)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#evaluation-criteria">Evaluation Criteria</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#common-ways-projects-lose-marks">Common Ways Projects Lose Marks</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#recommended-tools">Recommended Tools</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#getting-started">Getting Started</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#frequently-asked">Frequently Asked</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#academic-integrity">Academic Integrity</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Bonus — Deep Learning</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../11_neural_networks/">1. Neural Networks from Scratch</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../12_cnn/">2. Convolutional Neural Networks</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../13_rnn_lstm_gru/">3. Recurrent Networks — RNN, LSTM, GRU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../14_attention_transformers/">4. Attention and Transformers</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">Applied ML</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Course Project</li>
+      <li class="breadcrumb-item active">Project Guidelines</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="applied-machine-learning-course-project">Applied Machine Learning — Course Project</h1>
+<h2 id="building-and-shipping-an-end-to-end-machine-learning-system">Building and Shipping an End-to-End Machine Learning System</h2>
+<hr />
+<h3 id="objective">Objective</h3>
+<p>You will take a real problem from a domain you care about (healthcare, finance, education, agriculture,
+retail, transport, energy, public services…) and carry it through the <strong>full industry ML workflow</strong>
+covered in this module:</p>
+<ul>
+<li><strong>Identify a problem</strong> where a real decision changes because of your model.</li>
+<li><strong>Select and secure a dataset</strong> that can actually answer it.</li>
+<li>Follow the workflow from <strong>business understanding</strong> through data preparation, feature engineering,
+  modelling, evaluation and error analysis.</li>
+<li><strong>Track every experiment</strong> with a proper tool (MLflow, Aim or Weights &amp; Biases) instead of a
+  notebook full of printed scores.</li>
+<li><strong>Package and deploy</strong> the trained pipeline behind a simple API or interface, and write down how you
+  would monitor it.</li>
+</ul>
+<p><strong>Keep it small and finished.</strong> A well-framed logistic regression, tracked in MLflow and served by a
+working FastAPI endpoint, scores higher than an ambitious model that only exists inside a notebook.</p>
+<p><strong>What is graded is the reasoning, not the score.</strong> An honest AUC of 0.68 with a clear decision and a
+measured baseline beats a 0.95 produced by a leaked column, every time. If your first model looks
+excellent, your first job is to find out why.</p>
+<hr />
+<h3 id="the-workflow-you-will-follow">The Workflow You Will Follow</h3>
+<p>The project mirrors the module, session by session. Each stage produces something you hand in.</p>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Session</th>
+<th>Question you must answer</th>
+<th>What it produces</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. Business understanding</strong></td>
+<td><a href="../../01_problem_framing/">1</a></td>
+<td>What decision changes, who owns it, and what does "success" mean before any modelling?</td>
+<td>Project charter</td>
+</tr>
+<tr>
+<td><strong>2. Data understanding and preparation</strong></td>
+<td><a href="../../02_data_preparation/">2</a></td>
+<td>What is one row? When is each column written? What is missing, and why?</td>
+<td>Data audit, cleaned dataset, justified split</td>
+</tr>
+<tr>
+<td><strong>3. Feature engineering</strong></td>
+<td><a href="../../03_feature_engineering/">3</a></td>
+<td>Which features exist <em>at prediction time</em>, and what can be built from them?</td>
+<td>Feature pipeline in <code>src/</code></td>
+</tr>
+<tr>
+<td><strong>4. Baselines and modelling</strong></td>
+<td><a href="../../01_problem_framing/">1</a>, <a href="../../04_sklearn_models/">4</a></td>
+<td>What do a constant, a rule and a simple model achieve? Does anything beat them?</td>
+<td>Baseline table, ≥ 2 model families</td>
+</tr>
+<tr>
+<td><strong>5. Evaluation</strong></td>
+<td><a href="../../05_evaluation_metrics/">5</a></td>
+<td>Which metric matches the decision? What is the operating point?</td>
+<td>Metric choice, threshold, cost/capacity reasoning</td>
+</tr>
+<tr>
+<td><strong>6. Tuning and error analysis</strong></td>
+<td><a href="../../06_tuning_error_analysis/">6</a></td>
+<td>Where is the model wrong, and for whom?</td>
+<td>Cross-validated tuning, slice analysis</td>
+</tr>
+<tr>
+<td><strong>7. Pipelines and experiment tracking</strong></td>
+<td><a href="../../07_pipelines_tracking/">7</a></td>
+<td>Which run produced the final model, with which settings and data?</td>
+<td>Tracked experiments, registered model</td>
+</tr>
+<tr>
+<td><strong>8. Deployment</strong></td>
+<td><a href="../../09_deployment_apis/">9</a></td>
+<td>How does someone else get a prediction?</td>
+<td>Saved artifact + metadata, served model, Dockerfile</td>
+</tr>
+<tr>
+<td><strong>9. Monitoring plan</strong></td>
+<td><a href="../../08_mlops_intro/">8</a></td>
+<td>How would you know it has stopped working?</td>
+<td>Monitoring runbook</td>
+</tr>
+</tbody>
+</table>
+<p>Session <a href="../../10_end_to_end_project/">10</a> walks through this entire sequence on one dataset. Use it as
+your template.</p>
+<hr />
+<h3 id="step-1-identify-the-problem">Step 1 — Identify the Problem</h3>
+<p>Start from a <strong>decision</strong>, not from a dataset or an algorithm. Before choosing data, you must be able to
+fill in these four lines:</p>
+<ol>
+<li><strong>The decision:</strong> <em>"At <strong><em>_ (decision point), </em></strong>_ (who) decides whether to ____."</em></li>
+<li><strong>The owner:</strong> the person or role whose work changes because of your model.</li>
+<li><strong>The action:</strong> what they will do differently with a prediction in hand.</li>
+<li><strong>The cost of being wrong:</strong> what a false positive costs, and what a false negative costs.</li>
+</ol>
+<p>If you cannot name the person whose work changes, pick a different problem. "Understanding the drivers
+of X" is a report, not a decision.</p>
+<p>Also ask session 1's question honestly: <strong>is this an ML problem at all?</strong> If a simple rule, a lookup or a
+dashboard would do the job, say so — and then either reframe or choose another problem.</p>
+<h4 id="project-types">Project types</h4>
+<p>The module covers supervised learning on tabular data in depth, so that is the default.</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Example problems</th>
+<th>Your baseline is…</th>
+<th>You are judged on…</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Classification</strong> (default)</td>
+<td>Loan default, patient no-shows, customer churn, crop disease risk, fraud flagging</td>
+<td>Majority class <em>and</em> an existing or plausible business rule</td>
+<td>Metric at a chosen operating point (recall at a fixed flag rate, precision@k, PR-AUC), tied to cost or capacity</td>
+</tr>
+<tr>
+<td><strong>Regression</strong></td>
+<td>Delivery time, house price, crop yield, energy demand</td>
+<td>Mean/median prediction <em>and</em> a simple rule</td>
+<td>MAE / RMSE in business units, error by slice</td>
+</tr>
+<tr>
+<td><strong>Other</strong> (with prior approval)</td>
+<td>Deep learning on images/text, time-series forecasting, recommenders</td>
+<td>Agreed with your facilitator</td>
+<td>Agreed with your facilitator</td>
+</tr>
+</tbody>
+</table>
+<p>Deep learning is allowed if it beats a well-tuned classical baseline on your data and you can justify
+its cost. On tabular data of this size it usually will not, and it earns no marks by itself.</p>
+<h4 id="sample-project-ideas-by-domain">Sample project ideas by domain</h4>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Problem</th>
+<th>Decision that changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Healthcare</td>
+<td>Predict appointment no-shows</td>
+<td>Which patients receive a reminder call the day before</td>
+</tr>
+<tr>
+<td>Finance</td>
+<td>Predict SME loan default</td>
+<td>Which applications go to senior review</td>
+</tr>
+<tr>
+<td>Education</td>
+<td>Predict course dropout risk</td>
+<td>Which students a counsellor contacts in week 3</td>
+</tr>
+<tr>
+<td>Retail / E-commerce</td>
+<td>Predict customer churn</td>
+<td>Who receives a retention offer this month</td>
+</tr>
+<tr>
+<td>Agriculture</td>
+<td>Predict crop yield from weather and soil</td>
+<td>How much fertiliser or storage a cooperative orders</td>
+</tr>
+<tr>
+<td>Transport / Logistics</td>
+<td>Predict late deliveries</td>
+<td>Which orders get priority dispatch</td>
+</tr>
+<tr>
+<td>Energy</td>
+<td>Predict daily electricity demand</td>
+<td>How much generation capacity is scheduled</td>
+</tr>
+<tr>
+<td>Telecom</td>
+<td>Predict network complaints by area</td>
+<td>Where field engineers are sent first</td>
+</tr>
+<tr>
+<td>Public services</td>
+<td>Predict tax or utility payment default</td>
+<td>Which accounts receive early follow-up</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="step-2-select-a-dataset">Step 2 — Select a Dataset</h3>
+<h4 id="dataset-requirements">Dataset requirements</h4>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Format</strong></td>
+<td>Tabular (unless an "Other" project has been approved)</td>
+</tr>
+<tr>
+<td><strong>Size</strong></td>
+<td>At least <strong>1,000 rows</strong></td>
+</tr>
+<tr>
+<td><strong>Target</strong></td>
+<td>A column you could genuinely act on, observed <em>after</em> the decision point</td>
+</tr>
+<tr>
+<td><strong>Point-in-time</strong></td>
+<td>Features must be available at the moment the prediction is made</td>
+</tr>
+<tr>
+<td><strong>Not allowed</strong></td>
+<td>The loan book or the student file used in class, or a classic tutorial dataset (Titanic, Iris, MNIST, Boston housing) with names changed. Well-known datasets are acceptable only if you ask a genuinely new question of them</td>
+</tr>
+<tr>
+<td><strong>Documented</strong></td>
+<td>Source, licence, date downloaded and size recorded in your README</td>
+</tr>
+</tbody>
+</table>
+<h4 id="where-to-find-data">Where to find data</h4>
+<p><strong>General repositories</strong></p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://www.kaggle.com/datasets">Kaggle Datasets</a></td>
+<td>Widest catalogue. Always check the <strong>Licence</strong> tab, and be suspicious of datasets with suspiciously perfect scores in their notebooks</td>
+</tr>
+<tr>
+<td><a href="https://archive.ics.uci.edu/">UCI Machine Learning Repository</a></td>
+<td>Small, clean tabular datasets with documentation</td>
+</tr>
+<tr>
+<td><a href="https://www.openml.org/">OpenML</a></td>
+<td>Curated tabular datasets with task definitions and benchmark results</td>
+</tr>
+<tr>
+<td><a href="https://datasetsearch.research.google.com/">Google Dataset Search</a></td>
+<td>Search engine across thousands of data portals</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/datasets">Hugging Face Datasets</a></td>
+<td>Text, image, audio and a growing set of tabular data</td>
+</tr>
+<tr>
+<td><a href="https://github.com/awesomedata/awesome-public-datasets">Awesome Public Datasets</a></td>
+<td>Large list grouped by domain</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Domain-specific</strong></p>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Sources</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Health</td>
+<td><a href="https://www.who.int/data/gho">WHO Global Health Observatory</a>, <a href="https://data.cdc.gov/">CDC Data</a>, <a href="https://physionet.org/">PhysioNet</a> (registration required)</td>
+</tr>
+<tr>
+<td>Finance &amp; Economics</td>
+<td><a href="https://data.worldbank.org/">World Bank Open Data</a>, <a href="https://www.imf.org/en/Data">IMF Data</a>, <a href="https://pypi.org/project/yfinance/"><code>yfinance</code></a></td>
+</tr>
+<tr>
+<td>Education</td>
+<td><a href="https://www.oecd.org/pisa/data/">PISA</a>, <a href="https://archive.ics.uci.edu/dataset/320/student+performance">UCI Student Performance</a></td>
+</tr>
+<tr>
+<td>Climate &amp; Agriculture</td>
+<td><a href="https://www.earthdata.nasa.gov/">NASA Earthdata</a>, <a href="https://www.fao.org/faostat/en/#data">FAOSTAT</a>, <a href="https://open-meteo.com/">Open-Meteo API</a></td>
+</tr>
+<tr>
+<td>Sports</td>
+<td><a href="https://www.football-data.co.uk/data.php">football-data.co.uk</a>, <a href="https://stats.espncricinfo.com/">ESPNcricinfo Statsguru</a></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Nepal and regional data</strong></p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://opendatanepal.com/">Open Data Nepal</a></td>
+<td>Education, health, demographics, local government</td>
+</tr>
+<tr>
+<td><a href="https://data.gov.np/">data.gov.np</a></td>
+<td>Government open data portal</td>
+</tr>
+<tr>
+<td><a href="https://censusnepal.cbs.gov.np/">National Statistics Office</a></td>
+<td>Census and national survey data</td>
+</tr>
+<tr>
+<td><a href="https://www.nrb.org.np/">Nepal Rastra Bank</a></td>
+<td>Macroeconomic and banking statistics</td>
+</tr>
+<tr>
+<td><a href="https://data.humdata.org/group/npl">Humanitarian Data Exchange</a></td>
+<td>Health, infrastructure and humanitarian data</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Workplace or self-collected data</strong> is encouraged — it usually produces the most interesting projects.
+Workplace data requires written permission and must be anonymised; never commit personal data to a
+public repository. If you scrape, respect <code>robots.txt</code> and the site's terms of service, and rate-limit
+your requests.</p>
+<h4 id="three-data-rules">Three data rules</h4>
+<ol>
+<li><strong>Check the licence</strong> and cite the source. If it forbids redistribution, link to it instead of
+   committing the file.</li>
+<li><strong>Freeze your data.</strong> Download once, record its MD5 hash, and work from that copy. If you pull from an
+   API, cache the response to CSV. A dataset that changes underneath you makes every number in your
+   report irreproducible.</li>
+<li><strong>Keep the repository small.</strong> Commit files under ~50 MB. For anything larger, put download
+   instructions in <code>data/README.md</code> and git-ignore <code>data/raw/</code>. (DVC is a welcome optional extra.)</li>
+</ol>
+<hr />
+<h3 id="step-3-write-the-project-charter-business-understanding">Step 3 — Write the Project Charter (Business Understanding)</h3>
+<p>Before touching a model, write session 1's <strong>one-page charter</strong> and get it checked. Every later stage
+refers back to it: choosing a metric fills in a charter field; detecting drift tests a charter
+assumption.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>What it must say</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Business problem</strong></td>
+<td>What is going wrong today, in the business's own words and numbers</td>
+</tr>
+<tr>
+<td><strong>Decision changed</strong></td>
+<td>The decision, the decision point, and the possible actions</td>
+</tr>
+<tr>
+<td><strong>Decision owner</strong></td>
+<td>The role accountable for that decision</td>
+</tr>
+<tr>
+<td><strong>ML task</strong></td>
+<td>Classification / regression, and what exactly is predicted</td>
+</tr>
+<tr>
+<td><strong>Target</strong></td>
+<td>The column, and over what window it is observed</td>
+</tr>
+<tr>
+<td><strong>Unit of prediction</strong></td>
+<td>What one row is, and <em>when</em> it is scored</td>
+</tr>
+<tr>
+<td><strong>Baseline to beat</strong></td>
+<td>The existing rule or practice, measured — not assumed</td>
+</tr>
+<tr>
+<td><strong>Offline criterion</strong></td>
+<td>A metric with a number, e.g. <em>"recall ≥ 0.60 while flagging ≤ 25% of cases"</em></td>
+</tr>
+<tr>
+<td><strong>Business criterion</strong></td>
+<td>The outcome in business units (rupees, hours, patients reached)</td>
+</tr>
+<tr>
+<td><strong>Guardrails</strong></td>
+<td>What must not get worse: latency, fairness across groups, explainability, no protected attributes</td>
+</tr>
+<tr>
+<td><strong>Kill criteria</strong></td>
+<td>The conditions under which you would stop or recommend against deployment</td>
+</tr>
+<tr>
+<td><strong>Known risks</strong></td>
+<td>Leakage suspects, shifting conditions, data quality concerns</td>
+</tr>
+</tbody>
+</table>
+<p>Success and kill criteria are written <strong>before modelling</strong> and are not changed afterwards to fit the
+result. If you change them, say so and say why.</p>
+<hr />
+<h3 id="step-4-data-understanding-preparation-and-features">Step 4 — Data Understanding, Preparation and Features</h3>
+<ul>
+<li><strong>Point-in-time audit of every column:</strong> when is it written, relative to the decision point? Drop
+  anything written afterwards. Be especially suspicious of <code>status</code>, <code>final_</code>, <code>resolution_</code>, <code>closed_</code>
+  and any single column that is suspiciously predictive.</li>
+<li><strong>Missingness:</strong> understand <em>why</em> values are missing before filling them. Missingness itself is often
+  a feature.</li>
+<li><strong>Distributions, outliers, duplicates, class balance</strong> — with written insights, not just plots.</li>
+<li><strong>A justified split:</strong> random, stratified, grouped or time-based — and why that one matches how the
+  model will be used.</li>
+<li><strong>All preprocessing inside a scikit-learn <code>Pipeline</code> / <code>ColumnTransformer</code></strong>, fitted only on training
+  data. If preprocessing is fitted before the split, the evaluation is invalid.</li>
+<li><strong>Engineered features</strong> built from information available at prediction time, implemented in <code>src/</code>
+  so training and serving use the same code.</li>
+</ul>
+<hr />
+<h3 id="step-5-baselines-modelling-and-evaluation">Step 5 — Baselines, Modelling and Evaluation</h3>
+<p><strong>Baselines first. You must report them, and you must try to beat them.</strong> At minimum:</p>
+<ol>
+<li>A <strong>constant</strong> (majority class or mean).</li>
+<li>A <strong>rule</strong> (the existing business practice, or the most obvious one-line heuristic).</li>
+<li>A <strong>simple model</strong> (logistic or linear regression on a few obvious features).</li>
+</ol>
+<p>Then:</p>
+<ul>
+<li>Compare <strong>at least two model families</strong> (e.g. regularised linear model vs. gradient boosting / random
+  forest) with <strong>cross-validation</strong>, reporting the <strong>spread across folds</strong>, not just the mean.</li>
+<li>Tune hyperparameters inside cross-validation (<code>GridSearchCV</code>, <code>RandomizedSearchCV</code> or Optuna).</li>
+<li><strong>Choose the metric for the decision.</strong> Accuracy on imbalanced data is not acceptable. For
+  classification, pick an <strong>operating point</strong> (threshold) using cost or capacity — e.g. "the team can
+  call 200 patients a day".</li>
+<li>Touch the <strong>held-out test set once</strong>, at the end.</li>
+<li><strong>Error analysis by slice:</strong> where is the model wrong, and for whom? Check performance across
+  meaningful groups (region, gender, age band, product type…) for both accuracy and fairness.</li>
+<li>Optional but valued: explainability (permutation importance, SHAP) and probability calibration.</li>
+</ul>
+<hr />
+<h3 id="step-6-experiment-tracking">Step 6 — Experiment Tracking</h3>
+<p>Every training run that appears in your report must be <strong>logged in an experiment tracker</strong>. "It's
+somewhere in the notebook" is not acceptable.</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><a href="https://mlflow.org/">MLflow</a></strong> (recommended)</td>
+<td>Used in session 7. Runs entirely locally with a SQLite backend; includes a model registry</td>
+</tr>
+<tr>
+<td><a href="https://aimstack.io/">Aim</a></td>
+<td>Open-source, local, fast UI for comparing many runs</td>
+</tr>
+<tr>
+<td><a href="https://wandb.ai/">Weights &amp; Biases</a></td>
+<td>Hosted, free for students; easy sharing of dashboards</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Minimum requirements for every run:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Log</th>
+<th>Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>Model family, hyperparameters, feature set, threshold, random seed, split strategy</td>
+</tr>
+<tr>
+<td><strong>Metrics</strong></td>
+<td>CV mean and standard deviation, test metric(s), metric at the operating point, baseline scores</td>
+</tr>
+<tr>
+<td><strong>Artifacts</strong></td>
+<td>The fitted pipeline, confusion matrix / residual plot, feature importance, the metadata JSON</td>
+</tr>
+<tr>
+<td><strong>Lineage</strong></td>
+<td>Data file hash (MD5) and git commit hash</td>
+</tr>
+</tbody>
+</table>
+<p>Also required:</p>
+<ul>
+<li>Baselines logged as runs too, so the comparison lives in the tracker.</li>
+<li>The <strong>final model registered or tagged</strong> (e.g. MLflow Model Registry, or a <code>final</code> tag) so it can be
+  reloaded by run ID.</li>
+<li><strong>Screenshots</strong> of the run comparison view in your report.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">mlflow</span>
+
+<span class="n">mlflow</span><span class="o">.</span><span class="n">set_tracking_uri</span><span class="p">(</span><span class="s2">&quot;sqlite:///mlflow.db&quot;</span><span class="p">)</span>
+<span class="n">mlflow</span><span class="o">.</span><span class="n">set_experiment</span><span class="p">(</span><span class="s2">&quot;my-project&quot;</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">mlflow</span><span class="o">.</span><span class="n">start_run</span><span class="p">(</span><span class="n">run_name</span><span class="o">=</span><span class="s2">&quot;gradient-boosting-v2&quot;</span><span class="p">):</span>
+    <span class="n">mlflow</span><span class="o">.</span><span class="n">log_params</span><span class="p">({</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;HistGradientBoosting&quot;</span><span class="p">,</span> <span class="s2">&quot;learning_rate&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span> <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">})</span>
+    <span class="n">mlflow</span><span class="o">.</span><span class="n">log_metrics</span><span class="p">({</span><span class="s2">&quot;cv_pr_auc_mean&quot;</span><span class="p">:</span> <span class="mf">0.41</span><span class="p">,</span> <span class="s2">&quot;cv_pr_auc_std&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">})</span>
+    <span class="n">mlflow</span><span class="o">.</span><span class="n">sklearn</span><span class="o">.</span><span class="n">log_model</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="step-7-packaging-and-basic-deployment">Step 7 — Packaging and Basic Deployment</h3>
+<h4 id="the-artifact">The artifact</h4>
+<p>Save the <strong>entire pipeline</strong> (preprocessing + model) with <code>joblib</code>, plus a <strong>metadata JSON</strong> beside it,
+as in session 9: model name and version, training date, number of training rows, data hash, feature
+lists, threshold, library versions and a one-line description of what the prediction means. Always check
+the round trip: a reloaded model must give the same predictions.</p>
+<h4 id="the-served-model-required">The served model (required)</h4>
+<p>Build <strong>one</strong> of the following that loads the saved artifact once at startup:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>What it must do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>FastAPI endpoint</strong></td>
+<td><code>POST /predict</code> with a Pydantic-validated input schema; returns prediction, probability (classification) and model version. A <code>GET /health</code> endpoint. Rejects invalid input with a clear error</td>
+</tr>
+<tr>
+<td><strong>Streamlit / Gradio interface</strong></td>
+<td>Form for the inputs; shows the prediction, its probability and the recommended action in plain words</td>
+</tr>
+</tbody>
+</table>
+<p>Doing both (Streamlit calling your FastAPI) is welcome but not required.</p>
+<p><strong>One rule that matters:</strong> never copy preprocessing code from a notebook into the app. Import it from
+<code>src/</code>, or load it inside the saved pipeline. Otherwise the two drift apart and the app predicts nonsense.</p>
+<h4 id="containerisation-required">Containerisation (required)</h4>
+<p>A <code>Dockerfile</code> that builds and runs your service from a clean clone. <code>docker-compose.yml</code> is recommended
+if you run more than one service (e.g. API + UI, or API + MLflow).</p>
+<h4 id="public-deployment-bonus">Public deployment (bonus)</h4>
+<p>Deploy to a free host and put the URL in your README — e.g.
+<a href="https://huggingface.co/spaces">Hugging Face Spaces</a>, <a href="https://streamlit.io/cloud">Streamlit Community Cloud</a>,
+<a href="https://render.com/">Render</a> or <a href="https://railway.app/">Railway</a>.</p>
+<hr />
+<h3 id="step-8-monitoring-plan">Step 8 — Monitoring Plan</h3>
+<p>Half a page, in the format of session 8's runbook. Labels usually arrive late, so monitor inputs as well
+as outcomes.</p>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Frequency</th>
+<th>Alarm</th>
+<th>Action</th>
+<th>Owner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API errors, latency</td>
+<td>Continuous</td>
+<td>e.g. error rate &gt; 1%, p95 &gt; 2 s</td>
+<td>…</td>
+<td>…</td>
+</tr>
+<tr>
+<td>Schema and null rates</td>
+<td>Daily</td>
+<td>New null pattern or category</td>
+<td>…</td>
+<td>…</td>
+</tr>
+<tr>
+<td>PSI on top features</td>
+<td>Weekly</td>
+<td>Any feature &gt; 0.25</td>
+<td>…</td>
+<td>…</td>
+</tr>
+<tr>
+<td>Prediction / flag rate</td>
+<td>Weekly</td>
+<td>±30% vs. trailing period</td>
+<td>…</td>
+<td>…</td>
+</tr>
+<tr>
+<td>Realised performance</td>
+<td>As labels mature</td>
+<td>Below charter criterion</td>
+<td>Recalibrate, retrain or roll back</td>
+<td>…</td>
+</tr>
+</tbody>
+</table>
+<p>State when you would retrain, and what would make you roll back.</p>
+<hr />
+<h3 id="core-requirements">Core Requirements</h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Team size</strong></td>
+<td>Individual. Reviewing each other's charters in week 1 is encouraged</td>
+</tr>
+<tr>
+<td><strong>Language</strong></td>
+<td>Python. scikit-learn is sufficient</td>
+</tr>
+<tr>
+<td><strong>Workflow</strong></td>
+<td>All stages above, each with its deliverable</td>
+</tr>
+<tr>
+<td><strong>Experiment tracking</strong></td>
+<td>MLflow, Aim or W&amp;B — every reported result traceable to a run</td>
+</tr>
+<tr>
+<td><strong>Code structure</strong></td>
+<td>Organised repository (below), not one long notebook</td>
+</tr>
+<tr>
+<td><strong>Serving</strong></td>
+<td>FastAPI endpoint or Streamlit/Gradio interface loading the saved artifact</td>
+</tr>
+<tr>
+<td><strong>Containerisation</strong></td>
+<td><code>Dockerfile</code> that runs from a clean clone</td>
+</tr>
+<tr>
+<td><strong>Reproducibility</strong></td>
+<td>Pinned <code>requirements.txt</code>, fixed seeds, <code>python src/train.py</code> runs end to end</td>
+</tr>
+<tr>
+<td><strong>Version control</strong></td>
+<td>Git repository with regular, meaningful commits throughout the project — not one commit on the last day</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="project-structure">Project Structure</h3>
+<div class="highlight"><pre><span></span><code>your-project/
+├── README.md                 # recommendation, problem, data, results, how to run
+├── CHARTER.md                # the one-page project charter
+├── MONITORING.md             # the monitoring runbook
+├── requirements.txt          # pinned versions
+├── Dockerfile
+├── docker-compose.yml        # recommended
+├── data/
+│   ├── README.md             # source, licence, download date, MD5 hash
+│   ├── raw/                  # original data (git-ignored if large)
+│   └── processed/            # cleaned data used for training
+├── notebooks/
+│   ├── 01_data_audit_eda.ipynb
+│   ├── 02_baselines_modelling.ipynb
+│   └── 03_evaluation_error_analysis.ipynb
+├── src/
+│   ├── config.py             # paths, seeds, feature lists, threshold
+│   ├── data.py               # loading, cleaning, splitting
+│   ├── features.py           # preprocessing + feature pipeline
+│   ├── train.py              # trains, logs to the tracker, saves the artifact
+│   ├── evaluate.py           # test-set and slice evaluation
+│   └── predict.py            # loads the artifact and predicts
+├── models/
+│   ├── model.joblib          # the full pipeline
+│   └── model.json            # metadata
+├── app/
+│   ├── api.py                # FastAPI service
+│   └── ui.py                 # Streamlit / Gradio (if used)
+└── tests/                    # optional: pytest for features and the API
+</code></pre></div>
+<p>Notebooks are for exploring and explaining; <code>src/</code> holds everything the app depends on. Add <code>mlruns/</code>,
+<code>mlflow.db</code>, <code>.aim/</code> and <code>wandb/</code> to <code>.gitignore</code>.</p>
+<p>You may use a standard template instead — say which in your README:
+<a href="https://cookiecutter-data-science.drivendata.org/">Cookiecutter Data Science</a>,
+<a href="https://kedro.org/">Kedro</a>, or your own layout, as long as it separates data, exploration, source
+code, models and the app.</p>
+<hr />
+<h3 id="timeline-and-deliverables-5-weeks">Timeline and Deliverables (5 weeks)</h3>
+<table>
+<thead>
+<tr>
+<th>Week</th>
+<th>Stages</th>
+<th>Work</th>
+<th>Deliverable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1</strong></td>
+<td>Problem + data + business understanding</td>
+<td>Identify the decision and owner, secure and freeze the dataset, write the charter</td>
+<td><strong>Charter (1 page)</strong> + 3–5 slide idea pitch. Get it checked before going further</td>
+</tr>
+<tr>
+<td><strong>2</strong></td>
+<td>Data understanding and preparation</td>
+<td>Point-in-time audit, EDA, missingness, split, baselines measured, tracker set up</td>
+<td>Data audit notebook; baselines logged as tracked runs</td>
+</tr>
+<tr>
+<td><strong>3</strong></td>
+<td>Features, modelling, evaluation</td>
+<td>Feature pipeline in <code>src/</code>, ≥ 2 model families, cross-validation, metric and operating point</td>
+<td>Tracked comparison table: baselines vs. models, with fold spread</td>
+</tr>
+<tr>
+<td><strong>4</strong></td>
+<td>Error analysis, packaging, deployment</td>
+<td>Slice analysis, final model registered, artifact + metadata, API/UI, Dockerfile</td>
+<td>Working <code>src/train.py</code>, served model running in Docker, report draft</td>
+</tr>
+<tr>
+<td><strong>5</strong></td>
+<td>Monitoring, documentation, presentation</td>
+<td>Monitoring runbook, README, final report, rehearse the walkthrough</td>
+<td>Final submission + 10-minute presentation with <strong>live demo</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="what-to-submit">What to Submit</h3>
+<p>Submit a single <strong>GitHub repository link</strong> containing:</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Deliverable</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Project charter</strong></td>
+<td><code>CHARTER.md</code>, one page</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Notebooks</strong></td>
+<td>Data audit, modelling and evaluation — narrated, and they run top to bottom after a kernel restart</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Source code</strong></td>
+<td><code>src/</code> with a reproducible <code>train.py</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Experiment tracking evidence</strong></td>
+<td>Tracker screenshots in the report; run ID of the final model in the README (W&amp;B: a public project link)</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Model artifact</strong></td>
+<td>Saved pipeline + metadata JSON</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Served model</strong></td>
+<td>FastAPI or Streamlit/Gradio, with a <code>Dockerfile</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>Monitoring plan</strong></td>
+<td><code>MONITORING.md</code>, half a page</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>README</strong></td>
+<td>The recommendation in one paragraph at the top, then how to install, train, track and run — reproducible in under ten minutes</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>Final report</strong></td>
+<td>4–6 pages, PDF, structure below</td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>Slides</strong></td>
+<td>For the 10-minute presentation</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="final-report-structure-46-pages">Final Report Structure (4–6 pages)</h3>
+<ol>
+<li><strong>Recommendation</strong> — one paragraph, in words a head of department would use: deploy, do not deploy, or
+   what it would take.</li>
+<li><strong>Problem and charter</strong> — the decision, its owner, success and kill criteria.</li>
+<li><strong>Data</strong> — source, licence, size, point-in-time audit, leakage checks, split choice.</li>
+<li><strong>Preparation and features</strong> — key insights and the decisions you made, with reasons.</li>
+<li><strong>Modelling</strong> — baselines, models compared, tuning, with fold spread.</li>
+<li><strong>Evaluation and error analysis</strong> — metric at the operating point, cost/capacity reasoning, slices
+   where the model fails.</li>
+<li><strong>Experiment tracking</strong> — how runs were organised, screenshots, how to recover the final model.</li>
+<li><strong>Deployment</strong> — architecture, how to run it, screenshots or sample request/response.</li>
+<li><strong>Monitoring</strong> — summary of the runbook.</li>
+<li><strong>Limitations, ethics and next steps</strong> — what you would do with more time or data; who could be
+    harmed by errors; note any use of AI assistants and how.</li>
+</ol>
+<hr />
+<h3 id="evaluation-criteria">Evaluation Criteria</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th style="text-align: right;">Weight</th>
+<th>What a strong submission shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Problem framing and dataset</strong></td>
+<td style="text-align: right;">15%</td>
+<td>A named decision, owner and decision point. Success and kill criteria written before modelling. Suitable, documented, frozen dataset</td>
+</tr>
+<tr>
+<td><strong>Data discipline and features</strong></td>
+<td style="text-align: right;">20%</td>
+<td>Point-in-time audit of every column. Missingness understood, not just filled. Split justified. No leakage — and evidence you went looking. Features in a pipeline</td>
+</tr>
+<tr>
+<td><strong>Modelling and evaluation</strong></td>
+<td style="text-align: right;">20%</td>
+<td>Measured baselines beaten (or honestly not). ≥ 2 model families with cross-validation and fold spread. Metric matched to the decision, operating point chosen, error analysis by slice</td>
+</tr>
+<tr>
+<td><strong>Experiment tracking and reproducibility</strong></td>
+<td style="text-align: right;">15%</td>
+<td>Every reported result traceable to a tracked run with params, metrics, artifacts, data hash and commit. Final model registered. <code>train.py</code> runs from a clean clone with pinned dependencies</td>
+</tr>
+<tr>
+<td><strong>Deployment and monitoring</strong></td>
+<td style="text-align: right;">15%</td>
+<td>Saved pipeline with metadata, served via API or UI with input validation, Dockerised, runs from a clean clone. A concrete, owned monitoring runbook</td>
+</tr>
+<tr>
+<td><strong>Communication and honesty</strong></td>
+<td style="text-align: right;">15%</td>
+<td>Clear recommendation up front, complete report, 10-minute presentation with a working live demo, honest limitations</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td style="text-align: right;"><strong>100%</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Bonus (up to 5%):</strong> a public deployment URL; unit tests (<code>pytest</code>) for features and the API; a CI
+workflow (GitHub Actions) that runs tests and builds the Docker image; model explainability in the app;
+data versioning with DVC; a drift report (e.g. Evidently) on a simulated "future" slice of your data.</p>
+<hr />
+<h3 id="common-ways-projects-lose-marks">Common Ways Projects Lose Marks</h3>
+<ul>
+<li><strong>No named decision.</strong> The single biggest one.</li>
+<li><strong>No baseline,</strong> or a baseline that is assumed rather than measured.</li>
+<li><strong>A leaked column</strong> — and a celebrated score that came from it.</li>
+<li><strong>Accuracy on imbalanced data.</strong></li>
+<li><strong>Preprocessing fitted before the split.</strong> Use a pipeline and it cannot happen.</li>
+<li><strong>Results in the report that cannot be found in the tracker.</strong></li>
+<li><strong>An app that re-implements preprocessing</strong> instead of loading the pipeline.</li>
+<li><strong>"Works on my machine"</strong> — the Docker image or <code>requirements.txt</code> fails from a clean clone.</li>
+<li><strong>A notebook that does not run</strong> after restarting the kernel.</li>
+<li><strong>Burying the recommendation</strong> at the end of the report.</li>
+</ul>
+<hr />
+<h3 id="recommended-tools">Recommended Tools</h3>
+<table>
+<thead>
+<tr>
+<th>Purpose</th>
+<th>Recommended</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Data handling</td>
+<td>pandas, numpy</td>
+</tr>
+<tr>
+<td>Visualisation</td>
+<td>matplotlib, seaborn</td>
+</tr>
+<tr>
+<td>Modelling</td>
+<td>scikit-learn (optionally XGBoost / LightGBM, Optuna)</td>
+</tr>
+<tr>
+<td>Explainability</td>
+<td>permutation importance, SHAP</td>
+</tr>
+<tr>
+<td>Experiment tracking</td>
+<td><strong>MLflow</strong> (recommended), Aim, Weights &amp; Biases</td>
+</tr>
+<tr>
+<td>Model saving</td>
+<td>joblib + metadata JSON</td>
+</tr>
+<tr>
+<td>Serving</td>
+<td>FastAPI + Uvicorn, Streamlit, Gradio</td>
+</tr>
+<tr>
+<td>Containerisation</td>
+<td>Docker, Docker Compose</td>
+</tr>
+<tr>
+<td>Testing / CI (bonus)</td>
+<td>pytest, GitHub Actions</td>
+</tr>
+<tr>
+<td>Monitoring (bonus)</td>
+<td>Evidently, or PSI computed by hand as in session 8</td>
+</tr>
+<tr>
+<td>Version control</td>
+<td>Git, GitHub</td>
+</tr>
+</tbody>
+</table>
+<h3 id="getting-started">Getting Started</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Repository and environment</span>
+git<span class="w"> </span>init<span class="w"> </span>my-project<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>my-project
+python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+pip<span class="w"> </span>install<span class="w"> </span>pandas<span class="w"> </span>numpy<span class="w"> </span>scikit-learn<span class="w"> </span>matplotlib<span class="w"> </span>seaborn<span class="w"> </span>joblib<span class="w"> </span>mlflow<span class="w"> </span>fastapi<span class="w"> </span>uvicorn<span class="w"> </span>streamlit
+pip<span class="w"> </span>freeze<span class="w"> </span>&gt;<span class="w"> </span>requirements.txt
+
+<span class="c1"># Train and log runs</span>
+python<span class="w"> </span>src/train.py
+mlflow<span class="w"> </span>ui<span class="w"> </span>--backend-store-uri<span class="w"> </span>sqlite:///mlflow.db<span class="w">     </span><span class="c1"># open http://127.0.0.1:5000</span>
+
+<span class="c1"># Serve the model</span>
+uvicorn<span class="w"> </span>app.api:app<span class="w"> </span>--reload<span class="w">                          </span><span class="c1"># open http://127.0.0.1:8000/docs</span>
+streamlit<span class="w"> </span>run<span class="w"> </span>app/ui.py<span class="w">                               </span><span class="c1"># open http://localhost:8501</span>
+
+<span class="c1"># Containerised</span>
+docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>--build
+</code></pre></div>
+<hr />
+<h3 id="frequently-asked">Frequently Asked</h3>
+<p><strong>My model is barely better than the baseline.</strong> Then that is your finding. Report it clearly, show what
+you tried, and say what data would change the answer. This is a pass-worthy and often excellent project.</p>
+<p><strong>Do I have to use MLflow?</strong> No — Aim or Weights &amp; Biases are equally acceptable. What is required is
+that every reported number is traceable to a logged run.</p>
+<p><strong>Does "deployment" mean it has to be public?</strong> No. A Dockerised service that runs locally from a clean
+clone meets the requirement. A public URL is a bonus.</p>
+<p><strong>How long should the notebook be?</strong> Long enough to follow the reasoning, short enough that someone reads
+it all. Session 10's Part A is about the right length.</p>
+<hr />
+<h3 id="academic-integrity">Academic Integrity</h3>
+<p>You may use libraries, documentation and AI tools as references, but you must be able to explain every
+line of your code and every modelling decision in the presentation. Cite your data sources, and state in
+your report whether you used an AI assistant and how.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../../10_end_to_end_project/" class="btn btn-neutral float-left" title="10. End-to-End ML Project"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../11_neural_networks/" class="btn btn-neutral float-right" title="1. Neural Networks from Scratch">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright &copy; 2026 - Aayush Raj Regmi</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../../10_end_to_end_project/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../../11_neural_networks/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="../../../javascripts/mathjax.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
